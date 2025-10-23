@@ -4,22 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sabbir Rahoman - Digital Creator & Designer</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    
     <script>
-        // Custom Tailwind Theme (Slate Dark Mode)
+        // --- NEW: Custom Tailwind Theme (Emerald Dark Mode) ---
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        slate: {
-                            800: '#1e293b',
-                            900: '#0f172a',
+                        // New Accent Color
+                        emerald: {
+                            500: '#10B981',
+                            600: '#059669',
+                            700: '#047857',
                         },
+                        // Softer Dark Palette
+                        gray: {
+                            700: '#374151',
+                            800: '#1F2937',
+                            900: '#111827',
+                        }
                     },
                     fontFamily: {
-                        inter: ['Inter', 'sans-serif'],
+                        // New Font Family
+                        sans: ['Roboto', 'sans-serif'], // Default body font
+                        heading: ['Poppins', 'sans-serif'], // For headings
                     },
-                    /* NEW: Added keyframes for animations */
                     keyframes: {
                         fadeIn: {
                             '0%': { opacity: '0' },
@@ -29,34 +44,40 @@
                             '0%': { opacity: '0', transform: 'translateY(20px)' },
                             '100%': { opacity: '1', transform: 'translateY(0)' },
                         },
+                        // NEW: Typing cursor animation
+                        blink: {
+                            '0%, 100%': { borderColor: 'transparent' },
+                            '50%': { borderColor: '#10B981' }, // Emerald-500
+                        }
                     },
                     animation: {
                         fadeIn: 'fadeIn 1s ease-out',
                         fadeInUp: 'fadeInUp 1s ease-out',
+                        // NEW: Typing cursor animation
+                        blink: 'blink 1s step-end infinite',
                     },
                 },
             },
         };
     </script>
+    
     <style>
-        /* Inter Font */
+        /* Base font settings */
         body {
-            font-family: 'inter', sans-serif;
+            font-family: 'Roboto', sans-serif;
         }
-        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif;
+        }
+
         /* Chobi Download Protection */
         img.protected-image {
-            pointer-events: none; /* Dragging disable kore */
+            pointer-events: none;
             -webkit-user-drag: none;
             user-select: none;
         }
 
-        /* Smooth scrolling (already enabled by Tailwind 'scroll-smooth') */
-        html {
-            scroll-behavior: smooth;
-        }
-
-        /* Language Switcher Styles */
+        /* Language Switcher Styles (Updated Colors) */
         .lang-switch {
             position: relative;
             display: inline-block;
@@ -75,7 +96,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #4A5568; /* gray-700 */
+            background-color: #374151; /* gray-700 */
             transition: .4s;
             border-radius: 34px;
         }
@@ -91,7 +112,7 @@
             border-radius: 50%;
         }
         input:checked + .slider {
-            background-color: #3B82F6; /* blue-500 */
+            background-color: #059669; /* emerald-600 */
         }
         input:checked + .slider:before {
             transform: translateX(26px);
@@ -112,11 +133,11 @@
             left: 30%;
         }
 
-        /* --- Preloader Styles --- */
+        /* --- Preloader Styles (Updated Colors) --- */
         #preloader {
             position: fixed;
             inset: 0;
-            background-color: #0f172a; /* bg-slate-900 */
+            background-color: #111827; /* bg-gray-900 */
             z-index: 9999;
             display: flex;
             justify-content: center;
@@ -130,8 +151,8 @@
         .spinner {
             width: 50px;
             height: 50px;
-            border: 5px solid #1e293b; /* slate-800 */
-            border-top-color: #3b82f6; /* blue-500 */
+            border: 5px solid #1F2937; /* gray-800 */
+            border-top-color: #10B981; /* emerald-500 */
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -141,37 +162,56 @@
             }
         }
 
-        /* --- Scroll Animation Styles --- */
+        /* --- Scroll Animation Styles (Updated animation) --- */
         .fade-in-on-scroll {
             opacity: 0;
             transition: opacity 0.6s ease-out, transform 0.6s ease-out;
         }
         .fade-in-up {
-            transform: translateY(20px);
+            transform: translateY(30px) scale(0.98);
         }
         .fade-in-left {
-            transform: translateX(-20px);
+            transform: translateX(-30px) scale(0.98);
         }
         .fade-in-right {
-            transform: translateX(20px);
+            transform: translateX(30px) scale(0.98);
         }
         .fade-in-on-scroll.is-visible {
             opacity: 1;
-            transform: translateY(0) translateX(0);
+            transform: translateY(0) translateX(0) scale(1);
         }
 
-        /* --- NEW: Active Nav Link Style --- */
+        /* --- NEW: Active Nav Link Style (Underline) --- */
         .nav-link.active-link {
-            color: #3B82F6; /* blue-500 */
+            color: #10B981; /* emerald-500 */
             font-weight: 600;
+            position: relative;
+        }
+        .nav-link.active-link:after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #10B981; /* emerald-500 */
+        }
+        /* Mobile active link */
+        #mobile-menu .nav-link.active-link {
+            background-color: #1F2937; /* gray-800 */
+            color: #10B981;
+        }
+        #mobile-menu .nav-link.active-link:after {
+            display: none; /* No underline on mobile */
         }
         
-        /* --- NEW: Back to Top Button Styles --- */
+
+        /* --- NEW: Back to Top Button Styles (Updated Colors) --- */
         #back-to-top {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background-color: #3B82F6; /* blue-600 */
+            background-color: #059669; /* emerald-600 */
             color: white;
             width: 44px;
             height: 44px;
@@ -191,36 +231,56 @@
             transform: translateY(0);
         }
         #back-to-top:hover {
-            background-color: #2563EB; /* blue-700 */
+            background-color: #047857; /* emerald-700 */
+        }
+
+        /* --- NEW: Gallery Masonry Grid --- */
+        .gallery-grid {
+            column-gap: 1.5rem; /* gap-6 */
+            columns: 2; /* 2 columns for mobile */
+        }
+        @media (min-width: 768px) {
+            .gallery-grid {
+                columns: 3;
+            }
+        }
+        @media (min-width: 1024px) {
+            .gallery-grid {
+                columns: 5;
+            }
+        }
+        .gallery-item {
+            break-inside: avoid-column;
+            margin-bottom: 1.5rem; /* space-y-6 equivalent */
         }
 
     </style>
 </head>
-<body class="bg-slate-900 text-gray-300 antialiased">
+<body class="bg-gray-900 text-gray-300 antialiased font-sans">
 
     <div id="preloader">
         <div class="spinner"></div>
     </div>
 
-    <header class="bg-slate-900/70 backdrop-blur-md sticky top-0 z-50 border-b border-slate-800">
+    <header class="bg-gray-900/70 backdrop-blur-md sticky top-0 z-50 border-b border-gray-800">
         <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="#" class="text-2xl md:text-3xl font-bold text-white">
-                Sabbir <span class="text-blue-500">Rahoman</span>
+            <a href="#" class="text-2xl md:text-3xl font-bold text-white font-heading">
+                Sabbir <span class="text-emerald-500">Rahoman</span>
             </a>
             
             <div id="desktop-menu" class="hidden md:flex items-center space-x-6">
-                <a href="#about" class="nav-link text-gray-300 hover:text-blue-500 transition duration-300" data-lang-key="nav_about">About Me</a>
-                <a href="#services" class="nav-link text-gray-300 hover:text-blue-500 transition duration-300" data-lang-key="nav_services">Services</a>
-                <a href="#portfolio" class="nav-link text-gray-300 hover:text-blue-500 transition duration-300" data-lang-key="nav_portfolio">Portfolio</a>
-                <a href="#gallery" class="nav-link text-gray-300 hover:text-blue-500 transition duration-300" data-lang-key="nav_gallery">Gallery</a>
+                <a href="#about" class="nav-link text-gray-300 hover:text-emerald-500 transition duration-300" data-lang-key="nav_about">About Me</a>
+                <a href="#services" class="nav-link text-gray-300 hover:text-emerald-500 transition duration-300" data-lang-key="nav_services">Services</a>
+                <a href="#my-design" class="nav-link text-gray-300 hover:text-emerald-500 transition duration-300" data-lang-key="nav_my_design">My Design</a>
+                <a href="#gallery" class="nav-link text-gray-300 hover:text-emerald-500 transition duration-300" data-lang-key="nav_gallery">Gallery</a>
                 
                 <label class="lang-switch">
                     <input type="checkbox" id="language-toggle">
                     <span class="slider"></span>
                 </label>
                 
-                <a href="#contact" class="nav-link bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition duration-300 shadow-lg shadow-blue-500/30" data-lang-key="nav_contact">
-                    Contact
+                <a href="#contact" class="nav-link bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg transition duration-300 shadow-lg shadow-emerald-500/30 font-medium">
+                    <span data-lang-key="nav_contact">Contact</span>
                 </a>
             </div>
 
@@ -231,14 +291,14 @@
             </button>
         </nav>
 
-        <div id="mobile-menu" class="hidden md:hidden bg-slate-900 shadow-lg border-t border-slate-800">
-            <a href="#about" class="nav-link block py-3 px-6 text-gray-300 hover:bg-slate-800" data-lang-key="nav_about_m">About Me</a>
-            <a href="#services" class="nav-link block py-3 px-6 text-gray-300 hover:bg-slate-800" data-lang-key="nav_services_m">Services</a>
-            <a href="#portfolio" class="nav-link block py-3 px-6 text-gray-300 hover:bg-slate-800" data-lang-key="nav_portfolio_m">Portfolio</a>
-            <a href="#gallery" class="nav-link block py-3 px-6 text-gray-300 hover:bg-slate-800" data-lang-key="nav_gallery_m">Gallery</a>
-            <a href="#contact" class="nav-link block py-3 px-6 text-gray-300 hover:bg-slate-800" data-lang-key="nav_contact_m">Contact</a>
+        <div id="mobile-menu" class="hidden md:hidden bg-gray-900 shadow-lg border-t border-gray-800">
+            <a href="#about" class="nav-link block py-3 px-6 text-gray-300 hover:bg-gray-800" data-lang-key="nav_about_m">About Me</a>
+            <a href="#services" class="nav-link block py-3 px-6 text-gray-300 hover:bg-gray-800" data-lang-key="nav_services_m">Services</a>
+            <a href="#my-design" class="nav-link block py-3 px-6 text-gray-300 hover:bg-gray-800" data-lang-key="nav_my_design_m">My Design</a>
+            <a href="#gallery" class="nav-link block py-3 px-6 text-gray-300 hover:bg-gray-800" data-lang-key="nav_gallery_m">Gallery</a>
+            <a href="#contact" class="nav-link block py-3 px-6 text-gray-300 hover:bg-gray-800" data-lang-key="nav_contact_m">Contact</a>
             
-            <div class="px-6 py-3">
+            <div class="px-6 py-3 border-t border-gray-800">
                 <span class="text-gray-400 text-sm" data-lang-key="nav_lang_m">Language:</span>
                 <label class="lang-switch ml-4">
                     <input type="checkbox" id="language-toggle-mobile">
@@ -249,42 +309,45 @@
     </header>
 
     <main>
-        <section id="home" class="relative pt-32 pb-28 md:pt-48 md:pb-40 bg-black text-white overflow-hidden">
-            <div class="absolute inset-0 z-0">
-                <img src="IMG_0786.webp" 
-                     alt="Sabbir Rahoman Bike Background" 
-                     class="w-full h-full object-cover opacity-30"
-                     onerror="this.style.opacity='0.1'">
-                <div class="absolute inset-0 bg-black opacity-50"></div>
-            </div>
-            
-            <div class="container mx-auto px-6 text-center relative z-10">
-                <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight animate-fadeInUp" style="animation-delay: 100ms;">
-                    <span class="block" data-lang-key="hero_title1">Digital Creator &</span>
-                    <span class="block text-blue-500" data-lang-key="hero_title2">Creative Designer</span>
-                </h1>
-                <p class="text-lg md:text-xl text-gray-300 mb-10 max-w-2xl mx-auto animate-fadeInUp" style="animation-delay: 300ms;" data-lang-key="hero_subtitle">
-                    Hello, I'm Sabbir Rahoman. I am a student and tech enthusiast. I transform your ideas into attractive designs and digital experiences.
-                </p>
-                <div class="flex flex-col sm:flex-row justify-center gap-4 animate-fadeInUp" style="animation-delay: 500ms;">
-                    <a href="#portfolio" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300 transform hover:scale-105 shadow-lg shadow-blue-500/40" data-lang-key="hero_btn_work">
-                        See My Work
-                    </a>
-                    <a href="https://shobkichuofficial.github.io/" target="_blank" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300 transform hover:scale-105 shadow-lg shadow-gray-800/40" data-lang-key="hero_btn_store">
-                        Visit My Store
-                    </a>
+        <section id="home" class="relative pt-40 pb-32 md:pt-56 md:pb-48 bg-gradient-to-br from-gray-900 to-gray-800 overflow-hidden">
+            <div class="container mx-auto px-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                    <div class="text-center md:text-left z-10">
+                        <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight font-heading animate-fadeInUp" style="animation-delay: 100ms;">
+                            <span class="block" data-lang-key="hero_title1">Digital Creator &</span>
+                            <span class="block text-emerald-500" id="typing-container">
+                                <span id="typing-text"></span>
+                                <span class="border-r-4 border-emerald-500 animate-blink" style="margin-bottom: -0.25rem; height: 1em;">&nbsp;</span>
+                            </span>
+                        </h1>
+                        <p class="text-lg md:text-xl text-gray-300 mb-10 max-w-xl mx-auto md:mx-0 animate-fadeInUp" style="animation-delay: 300ms;" data-lang-key="hero_subtitle">
+                            Hello, I'm Sabbir Rahoman. I am a student and tech enthusiast. I transform your ideas into attractive designs and digital experiences.
+                        </p>
+                        <div class="flex flex-col sm:flex-row justify-center md:justify-start gap-4 animate-fadeInUp" style="animation-delay: 500ms;">
+                            <a href="#my-design" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300 transform hover:scale-105 shadow-lg shadow-emerald-500/40" data-lang-key="hero_btn_work">
+                                See My Work
+                            </a>
+                            <a href="https://shobkichuofficial.github.io/" target="_blank" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300 transform hover:scale-105 shadow-lg shadow-gray-800/40" data-lang-key="hero_btn_store">
+                                Visit My Store
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="hidden md:flex justify-center items-center z-0 relative animate-fadeIn" style="animation-delay: 200ms;">
+                        <div class="absolute w-72 h-72 bg-emerald-500 rounded-full opacity-10 blur-3xl"></div>
+                        <svg class="w-full max-w-md h-auto text-gray-800" fill="none" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                            <path fill="currentColor" d="M38.1,-54.6C51.6,-48.5,66.3,-41.3,75.3,-30.2C84.3,-19.1,87.6,-4.1,84.5,9.6C81.4,23.4,71.9,36,60.8,45.8C49.7,55.5,37.1,62.5,23.6,67C10.1,71.5,-4.4,73.5,-18.2,69.9C-31.9,66.3,-44.9,57.1,-56.3,46.1C-67.6,35.1,-77.3,22.3,-79.8,8.2C-82.3,-5.9,-77.7,-21.3,-68.9,-33.1C-60.1,-45,-47.1,-53.4,-34.2,-59.1C-21.3,-64.8,-8.5,-67.8,4,-68.8C16.5,-69.8,32.9,-69,38.1,-54.6Z" transform="translate(100 100) scale(1.1)" />
+                        </svg>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section id="about" class="py-20 lg:py-28 bg-gray-900 overflow-hidden">
+        <section id="about" class="py-20 lg:py-28 bg-gray-800 overflow-hidden">
             <div class="container mx-auto px-6">
                 <div class="flex flex-col md:flex-row items-center gap-12 md:gap-16">
-                    <div class="md:w-1/3 fade-in-on-scroll fade-in-left">
-                        <img src="IMG_3068 edited.webp" alt="Sabbir Rahoman" class="protected-image rounded-2xl shadow-2xl w-full max-w-sm mx-auto shadow-blue-500/20">
-                    </div>
-                    <div class="md:w-2/3 text-center md:text-left fade-in-on-scroll fade-in-right" style="transition-delay: 150ms;">
-                        <h2 class="text-3xl lg:text-4xl font-bold text-white mb-6" data-lang-key="about_title">About Me</h2>
+                    <div class="md:w-2/3 text-center md:text-left fade-in-on-scroll fade-in-left" style="transition-delay: 150ms;">
+                        <h2 class="text-3xl lg:text-4xl font-bold text-white mb-6 font-heading" data-lang-key="about_title">About Me</h2>
                         
                         <p class="text-gray-300 leading-relaxed mb-4 text-lg" data-lang-key="about_p1">
                             As a passionate tech enthusiast and digital creator from Bangladesh, I'm driven by the power of technology to bring ideas to life. My focus is on learning and applying new skills to create engaging digital experiences.
@@ -292,20 +355,28 @@
                         <p class="text-gray-300 leading-relaxed mb-4 text-lg" data-lang-key="about_p2">
                             I am proficient in creating websites using AI, professional Logo Design, Banners, Posters, ID Cards, and CV (Resume) design. I believe in continuous learning and improvement.
                         </p>
-                        <p class="text-gray-300 leading-relaxed mb-6 text-lg" data-lang-key="about_p3">
-                            My motto: "FAIL" means "First Attempt In Learning". Failure is just the first step towards learning! 🌱✨
-                        </p>
-                        <a href="#contact" class="text-blue-500 hover:text-blue-400 font-semibold text-lg transition duration-300" data-lang-key="about_contact">
-                            Contact Me &rarr;
+                        
+                        <blockquote class="my-6 border-l-4 border-emerald-500 pl-4 py-2 text-lg italic text-gray-400">
+                            <span data-lang-key="about_p3">My motto: "FAIL" means "First Attempt In Learning". Failure is just the first step towards learning! 🌱✨</span>
+                        </blockquote>
+                        
+                        <a href="#contact" class="text-emerald-500 hover:text-emerald-400 font-semibold text-lg transition duration-300 group">
+                            <span data-lang-key="about_contact">Contact Me</span>
+                            <span class="inline-block transition-transform group-hover:translate-x-1">&rarr;</span>
                         </a>
+                    </div>
+                    <div class="md:w-1/3 fade-in-on-scroll fade-in-right">
+                        <div class="transform md:skew-y-3 transition duration-300 hover:skew-y-0">
+                            <img src="IMG_3068 edited.webp" alt="Sabbir Rahoman" class="protected-image rounded-2xl shadow-2xl w-full max-w-sm mx-auto shadow-emerald-500/20">
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="services" class="py-20 lg:py-28 bg-slate-900 overflow-hidden">
+        <section id="services" class="py-20 lg:py-28 bg-gray-900 overflow-hidden">
             <div class="container mx-auto px-6">
-                <h2 class="text-3xl lg:text-4xl font-bold text-center text-white mb-4 fade-in-on-scroll fade-in-up" data-lang-key="services_title">
+                <h2 class="text-3xl lg:text-4xl font-bold text-center text-white mb-4 font-heading fade-in-on-scroll fade-in-up" data-lang-key="services_title">
                     My Services
                 </h2>
                 <p class="text-center text-gray-400 text-lg mb-16 max-w-xl mx-auto fade-in-on-scroll fade-in-up" style="transition-delay: 100ms;" data-lang-key="services_subtitle">
@@ -314,95 +385,87 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     
-                    <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 transition duration-300 hover:shadow-2xl hover:border-blue-500/50 hover:-translate-y-1 hover:shadow-blue-600/20 fade-in-on-scroll fade-in-up" style="transition-delay: 200ms;">
-                        <div class="text-blue-500 mb-4">
-                            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                    <div class="bg-gray-800/60 backdrop-blur-md p-8 rounded-2xl border border-gray-700 transition duration-300 hover:shadow-2xl hover:border-emerald-500/50 hover:-translate-y-1 hover:shadow-emerald-600/20 fade-in-on-scroll fade-in-up" style="transition-delay: 200ms;">
+                        <div class="mb-4 w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                         </div>
-                        <h3 class="text-2xl font-bold text-white mb-3" data-lang-key="service1_title">Graphic Design</h3>
+                        <h3 class="text-2xl font-bold text-white mb-3 font-heading" data-lang-key="service1_title">Graphic Design</h3>
                         <p class="text-gray-400 mb-4" data-lang-key="service1_desc">
                             Attractive and professional designs that highlight your brand.
                         </p>
                         <ul class="space-y-2 text-gray-300">
-                            <li class="flex items-center"><span class="text-blue-500 mr-2">&#10003;</span> <span data-lang-key="service1_item1">Logo Design</span></li>
-                            <li class="flex items-center"><span class="text-blue-500 mr-2">&#10003;</span> <span data-lang-key="service1_item2">Banners & Posters</span></li>
-                            <li class="flex items-center"><span class="text-blue-500 mr-2">&#10003;</span> <span data-lang-key="service1_item3">Product Banners</span></li>
+                            <li class="flex items-center"><span class="text-emerald-500 mr-2">&#10003;</span> <span data-lang-key="service1_item1">Logo Design</span></li>
+                            <li class="flex items-center"><span class="text-emerald-500 mr-2">&#10003;</span> <span data-lang-key="service1_item2">Banners & Posters</span></li>
+                            <li class="flex items-center"><span class="text-emerald-500 mr-2">&#10003;</span> <span data-lang-key="service1_item3">Product Banners</span></li>
                         </ul>
                     </div>
 
-                    <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 transition duration-300 hover:shadow-2xl hover:border-blue-500/50 hover:-translate-y-1 hover:shadow-blue-600/20 fade-in-on-scroll fade-in-up" style="transition-delay: 300ms;">
-                        <div class="text-blue-500 mb-4">
-                           <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 21h7a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2zM10 21h-4v-4a2 2 0 012-2h2v6zM14 3v4a1 1 0 001 1h4"></path></svg>
+                    <div class="bg-gray-800/60 backdrop-blur-md p-8 rounded-2xl border border-gray-700 transition duration-300 hover:shadow-2xl hover:border-emerald-500/50 hover:-translate-y-1 hover:shadow-emerald-600/20 fade-in-on-scroll fade-in-up" style="transition-delay: 300ms;">
+                        <div class="mb-4 w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center">
+                           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 21h7a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2zM10 21h-4v-4a2 2 0 012-2h2v6zM14 3v4a1 1 0 001 1h4"></path></svg>
                         </div>
-                        <h3 class="text-2xl font-bold text-white mb-3" data-lang-key="service2_title">Documents & CV</h3>
+                        <h3 class="text-2xl font-bold text-white mb-3 font-heading" data-lang-key="service2_title">Documents & CV</h3>
                         <p class="text-gray-400 mb-4" data-lang-key="service2_desc">
                             Professional ID cards and modern CV (Resume) designs.
                         </p>
                         <ul class="space-y-2 text-gray-300">
-                            <li class="flex items-center"><span class="text-blue-500 mr-2">&#10003;</span> <span data-lang-key="service2_item1">Professional CV Design</span></li>
-                            <li class="flex items-center"><span class="text-blue-500 mr-2">&#10003;</span> <span data-lang-key="service2_item2">ID Card Design</span></li>
-                            <li class="flex items-center"><span class="text-blue-500 mr-2">&#10003;</span> <span data-lang-key="service2_item3">Business Cards</span></li>
+                            <li class="flex items-center"><span class="text-emerald-500 mr-2">&#10003;</span> <span data-lang-key="service2_item1">Professional CV Design</span></li>
+                            <li class="flex items-center"><span class="text-emerald-500 mr-2">&#10003;</span> <span data-lang-key="service2_item2">ID Card Design</span></li>
+                            <li class="flex items-center"><span class="text-emerald-500 mr-2">&#10003;</span> <span data-lang-key="service2_item3">Business Cards</span></li>
                         </ul>
                     </div>
 
-                    <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 transition duration-300 hover:shadow-2xl hover:border-blue-500/50 hover:-translate-y-1 hover:shadow-blue-600/20 fade-in-on-scroll fade-in-up" style="transition-delay: 400ms;">
-                         <div class="text-blue-500 mb-4">
-                            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    <div class="bg-gray-800/60 backdrop-blur-md p-8 rounded-2xl border border-gray-700 transition duration-300 hover:shadow-2xl hover:border-emerald-500/50 hover:-translate-y-1 hover:shadow-emerald-600/20 fade-in-on-scroll fade-in-up" style="transition-delay: 400ms;">
+                         <div class="mb-4 w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                         </div>
-                        <h3 class="text-2xl font-bold text-white mb-3" data-lang-key="service3_title">AI Web Solutions</h3>
+                        <h3 class="text-2xl font-bold text-white mb-3 font-heading" data-lang-key="service3_title">AI Web Solutions</h3>
                         <p class="text-gray-400 mb-4" data-lang-key="service3_desc">
                             Fast, responsive, and modern websites built using AI.
                         </p>
                         <ul class="space-y-2 text-gray-300">
-                            <li class="flex items-center"><span class="text-blue-500 mr-2">&#10003;</span> <span data-lang-key="service3_item1">Personal Portfolio</span></li>
-                            <li class="flex items-center"><span class="text-blue-500 mr-2">&#10003;</span> <span data-lang-key="service3_item2">Basic Business Website</span></li>
-                            <li class="flex items-center"><span class="text-blue-500 mr-2">&#10003;</span> <span data-lang-key="service3_item3">Computer Basics</span></li>
+                            <li class="flex items-center"><span class="text-emerald-500 mr-2">&#10003;</span> <span data-lang-key="service3_item1">Personal My Design</span></li>
+                            <li class="flex items-center"><span class="text-emerald-500 mr-2">&#10003;</span> <span data-lang-key="service3_item2">Basic Business Website</span></li>
+                            <li class="flex items-center"><span class="text-emerald-500 mr-2">&#10003;</span> <span data-lang-key="service3_item3">Computer Basics</span></li>
                         </ul>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="portfolio" class="py-20 lg:py-28 bg-gray-900 overflow-hidden">
+        <section id="my-design" class="py-20 lg:py-28 bg-gray-800 overflow-hidden">
             <div class="container mx-auto px-6">
-                <h2 class="text-3xl lg:text-4xl font-bold text-center text-white mb-16 fade-in-on-scroll fade-in-up" data-lang-key="portfolio_title">
-                    My Design Portfolio
+                <h2 class="text-3xl lg:text-4xl font-bold text-center text-white mb-16 font-heading fade-in-on-scroll fade-in-up" data-lang-key="my_design_title">
+                    My Design
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     
-                    <div class="bg-slate-800 rounded-lg shadow-lg overflow-hidden group transition duration-300 hover:shadow-2xl hover:shadow-blue-600/20 border border-slate-700 fade-in-on-scroll fade-in-up" style="transition-delay: 100ms;">
-                        <div class="h-64 overflow-hidden">
-                            <img src="logo1.webp" alt="Antor Hair Fashion Logo" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
-                        </div>
-                        <div class="p-5">
+                    <div class="relative rounded-lg shadow-lg overflow-hidden group transition duration-300 hover:shadow-2xl hover:shadow-emerald-600/20 border border-gray-700 fade-in-on-scroll fade-in-up" style="transition-delay: 100ms;">
+                        <img src="logo1.webp" alt="Antor Hair Fashion Logo" class="w-full h-64 object-cover transition duration-500 group-hover:scale-110">
+                        <div class="absolute bottom-0 left-0 w-full p-5 bg-gradient-to-t from-black/90 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out">
                             <h3 class="text-lg font-bold text-white">Antor Hair Fashion</h3>
-                            <p class="text-sm text-gray-400" data-lang-key="portfolio_tag">Logo Design</p>
+                            <p class="text-sm text-gray-300" data-lang-key="my_design_tag">Logo Design</p>
                         </div>
                     </div>
-                    <div class="bg-slate-800 rounded-lg shadow-lg overflow-hidden group transition duration-300 hover:shadow-2xl hover:shadow-blue-600/20 border border-slate-700 fade-in-on-scroll fade-in-up" style="transition-delay: 200ms;">
-                         <div class="h-64 overflow-hidden">
-                            <img src="logo2.webp" alt="Jannat's Bakery Logo" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
-                        </div>
-                        <div class="p-5">
+                    <div class="relative rounded-lg shadow-lg overflow-hidden group transition duration-300 hover:shadow-2xl hover:shadow-emerald-600/20 border border-gray-700 fade-in-on-scroll fade-in-up" style="transition-delay: 200ms;">
+                         <img src="logo2.webp" alt="Jannat's Bakery Logo" class="w-full h-64 object-cover transition duration-500 group-hover:scale-110">
+                        <div class="absolute bottom-0 left-0 w-full p-5 bg-gradient-to-t from-black/90 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out">
                             <h3 class="text-lg font-bold text-white">Jannat's Bakery</h3>
-                            <p class="text-sm text-gray-400" data-lang-key="portfolio_tag">Logo Design</p>
+                            <p class="text-sm text-gray-300" data-lang-key="my_design_tag">Logo Design</p>
                         </div>
                     </div>
-                    <div class="bg-slate-800 rounded-lg shadow-lg overflow-hidden group transition duration-300 hover:shadow-2xl hover:shadow-blue-600/20 border border-slate-700 fade-in-on-scroll fade-in-up" style="transition-delay: 300ms;">
-                         <div class="h-64 overflow-hidden">
-                            <img src="logo3.webp" alt="Shuddho Deal Logo" class="w-full h-full object-cover transition duration-500 group-hover:scale-110" onerror="this.src='https://placehold.co/400x400/1e293b/3b82f6?text=Missing%3A%0Alogo3.webp'">
-                        </div>
-                        <div class="p-5">
+                    <div class="relative rounded-lg shadow-lg overflow-hidden group transition duration-300 hover:shadow-2xl hover:shadow-emerald-600/20 border border-gray-700 fade-in-on-scroll fade-in-up" style="transition-delay: 300ms;">
+                         <img src="logo3.webp" alt="Shuddho Deal Logo" class="w-full h-64 object-cover transition duration-500 group-hover:scale-110" onerror="this.src='https://placehold.co/400x400/1e293b/3b82f6?text=Missing%3A%0Alogo3.webp'">
+                        <div class="absolute bottom-0 left-0 w-full p-5 bg-gradient-to-t from-black/90 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out">
                             <h3 class="text-lg font-bold text-white">Shuddho Deal</h3>
-                            <p class="text-sm text-gray-400" data-lang-key="portfolio_tag">Logo Design</p>
+                            <p class="text-sm text-gray-300" data-lang-key="my_design_tag">Logo Design</p>
                         </div>
                     </div>
-                    <div class="bg-slate-800 rounded-lg shadow-lg overflow-hidden group transition duration-300 hover:shadow-2xl hover:shadow-blue-600/20 border border-slate-700 fade-in-on-scroll fade-in-up" style="transition-delay: 400ms;">
-                         <div class="h-64 overflow-hidden">
-                            <img src="logo4.webp" alt="Shorbokichu.com Logo" class="w-full h-full object-cover transition duration-500 group-hover:scale-110" onerror="this.src='https://placehold.co/400x400/1e293b/3b82f6?text=Missing%3A%0Alogo4.webp'">
-                        </div>
-                        <div class="p-5">
+                    <div class="relative rounded-lg shadow-lg overflow-hidden group transition duration-300 hover:shadow-2xl hover:shadow-emerald-600/20 border border-gray-700 fade-in-on-scroll fade-in-up" style="transition-delay: 400ms;">
+                         <img src="logo4.webp" alt="Shorbokichu.com Logo" class="w-full h-64 object-cover transition duration-500 group-hover:scale-110" onerror="this.src='https://placehold.co/400x400/1e293b/3b82f6?text=Missing%3A%0Alogo4.webp'">
+                        <div class="absolute bottom-0 left-0 w-full p-5 bg-gradient-to-t from-black/90 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out">
                             <h3 class="text-lg font-bold text-white">Shorbokichu.com</h3>
-                            <p class="text-sm text-gray-400" data-lang-key="portfolio_tag">Logo Design</p>
+                            <p class="text-sm text-gray-300" data-lang-key="my_design_tag">Logo Design</p>
                         </div>
                     </div>
 
@@ -410,54 +473,54 @@
             </div>
         </section>
 
-        <section id="gallery" class="py-20 lg:py-28 bg-slate-900 overflow-hidden">
+        <section id="gallery" class="py-20 lg:py-28 bg-gray-900 overflow-hidden">
             <div class="container mx-auto px-6">
-                <h2 class="text-3xl lg:text-4xl font-bold text-center text-white mb-16 fade-in-on-scroll fade-in-up" data-lang-key="gallery_title">
+                <h2 class="text-3xl lg:text-4xl font-bold text-center text-white mb-16 font-heading fade-in-on-scroll fade-in-up" data-lang-key="gallery_title">
                     My Gallery
                 </h2>
                 
-                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
-                    <img src="1.webp" onerror="this.src='https://placehold.co/400x500/1e293b/3b82f6?text=1.webp'" alt="Gallery Photo 1" class="protected-image w-full h-80 object-cover rounded-lg shadow-lg transition duration-500 hover:scale-105 hover:shadow-2xl border-2 border-slate-700 hover:border-blue-500 fade-in-on-scroll fade-in-up" style="transition-delay: 100ms;">
-                    <img src="2.webp" onerror="this.src='https://placehold.co/400x500/1e293b/3b82f6?text=2.webp'" alt="Gallery Photo 2" class="protected-image w-full h-80 object-cover rounded-lg shadow-lg transition duration-500 hover:scale-105 hover:shadow-2xl border-2 border-slate-700 hover:border-blue-500 fade-in-on-scroll fade-in-up" style="transition-delay: 200ms;">
-                    <img src="3.webp" onerror="this.src='https://placehold.co/400x500/1e293b/3b82f6?text=3.webp'" alt="Gallery Photo 3" class="protected-image w-full h-80 object-cover rounded-lg shadow-lg transition duration-500 hover:scale-105 hover:shadow-2xl border-2 border-slate-700 hover:border-blue-500 fade-in-on-scroll fade-in-up" style="transition-delay: 300ms;">
-                    <img src="4.webp" onerror="this.src='https://placehold.co/400x500/1e293b/3b82f6?text=4.webp'" alt="Gallery Photo 4" class="protected-image w-full h-80 object-cover rounded-lg shadow-lg transition duration-500 hover:scale-105 hover:shadow-2xl border-2 border-slate-700 hover:border-blue-500 fade-in-on-scroll fade-in-up" style="transition-delay: 400ms;">
-                    <img src="5.webp" onerror="this.src='https://placehold.co/400x500/1e293b/3b82f6?text=5.webp'" alt="Gallery Photo 5" class="protected-image w-full h-80 object-cover rounded-lg shadow-lg transition duration-500 hover:scale-105 hover:shadow-2xl border-2 border-slate-700 hover:border-blue-500 fade-in-on-scroll fade-in-up" style="transition-delay: 500ms;">
+                <div class="gallery-grid">
+                    <img src="1.webp" onerror="this.src='https://placehold.co/400x500/1F2937/10B981?text=1.webp'" alt="Gallery Photo 1" class="gallery-item protected-image w-full object-cover rounded-lg shadow-lg transition duration-500 hover:scale-105 hover:shadow-2xl border-2 border-gray-700 hover:border-emerald-500 fade-in-on-scroll fade-in-up" style="transition-delay: 100ms;">
+                    <img src="2.webp" onerror="this.src='https://placehold.co/400x500/1F2937/10B981?text=2.webp'" alt="Gallery Photo 2" class="gallery-item protected-image w-full object-cover rounded-lg shadow-lg transition duration-500 hover:scale-105 hover:shadow-2xl border-2 border-gray-700 hover:border-emerald-500 fade-in-on-scroll fade-in-up" style="transition-delay: 200ms;">
+                    <img src="3.webp" onerror="this.src='https://placehold.co/400x500/1F2937/10B981?text=3.webp'" alt="Gallery Photo 3" class="gallery-item protected-image w-full object-cover rounded-lg shadow-lg transition duration-500 hover:scale-105 hover:shadow-2xl border-2 border-gray-700 hover:border-emerald-500 fade-in-on-scroll fade-in-up" style="transition-delay: 300ms;">
+                    <img src="4.webp" onerror="this.src='https://placehold.co/400x500/1F2937/10B981?text=4.webp'" alt="Gallery Photo 4" class="gallery-item protected-image w-full object-cover rounded-lg shadow-lg transition duration-500 hover:scale-105 hover:shadow-2xl border-2 border-gray-700 hover:border-emerald-500 fade-in-on-scroll fade-in-up" style="transition-delay: 400ms;">
+                    <img src="5.webp" onerror="this.src='https://placehold.co/400x500/1F2937/10B981?text=5.webp'" alt="Gallery Photo 5" class="gallery-item protected-image w-full object-cover rounded-lg shadow-lg transition duration-500 hover:scale-105 hover:shadow-2xl border-2 border-gray-700 hover:border-emerald-500 fade-in-on-scroll fade-in-up" style="transition-delay: 500ms;">
                 </div>
             </div>
         </section>
 
-        <section id="contact" class="py-20 lg:py-28 bg-gray-900 overflow-hidden">
+        <section id="contact" class="py-20 lg:py-28 bg-gray-800 overflow-hidden">
             <div class="container mx-auto px-6 max-w-3xl text-center">
-                <h2 class="text-3xl lg:text-4xl font-bold text-white mb-6 fade-in-on-scroll fade-in-up" data-lang-key="contact_title">
+                <h2 class="text-3xl lg:text-4xl font-bold text-white mb-6 font-heading fade-in-on-scroll fade-in-up" data-lang-key="contact_title">
                     Get In Touch
                 </h2>
                 <p class="text-lg text-gray-400 mb-12 fade-in-on-scroll fade-in-up" style="transition-delay: 100ms;" data-lang-key="contact_subtitle">
                     Interested in working with me? Or just want to say hi? Send me an email or follow me on social media.
                 </p>
 
-                <a href="mailto:sabbirrahoman217@gmail.com" class="inline-flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300 transform hover:scale-105 shadow-lg shadow-blue-500/40 mb-16 fade-in-on-scroll fade-in-up" style="transition-delay: 200ms;">
+                <a href="mailto:sabbirrahoman217@gmail.com" class="inline-flex items-center gap-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300 transform hover:scale-105 shadow-lg shadow-emerald-500/40 mb-16 fade-in-on-scroll fade-in-up" style="transition-delay: 200ms;">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                     <span>sabbirrahoman217@gmail.com</span>
                 </a>
                 
                 <div class="flex justify-center space-x-6 mb-6 fade-in-on-scroll fade-in-up" style="transition-delay: 300ms;">
-                    <a href="https://www.facebook.com/iamsabbirmolla/" target="_blank" class="text-gray-400 hover:text-white transition duration-300" title="Facebook">
+                    <a href="https://www.facebook.com/iamsabbirmolla/" target="_blank" class="text-gray-400 hover:text-emerald-500 transition-all duration-300 transform hover:-translate-y-1" title="Facebook">
                         <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3l-.5 3h-2.5v6.8c4.56-.93 8-4.96 8-9.8z"/></svg>
                     </a>
                     
-                    <a href="https://www.instagram.com/sabbir_rahoman85/" target="_blank" class="text-gray-400 hover:text-white transition duration-300" title="Instagram">
+                    <a href="https://www.instagram.com/sabbir_rahoman85/" target="_blank" class="text-gray-400 hover:text-emerald-500 transition-all duration-300 transform hover:-translate-y-1" title="Instagram">
                         <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.148 3.227-1.669 4.771-4.919 4.919-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.07-1.646-.07-4.85s.012-3.584.07-4.85c.148-3.227 1.669-4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163m0-2.163C8.74 0 8.333.011 7.053.069 2.73 1.22.525 3.31.069 7.053.011 8.333 0 8.74 0 12s.011 3.667.069 4.947c.457 3.742 2.618 5.821 6.358 6.98C8.333 23.989 8.74 24 12 24s3.667-.011 4.947-.069c3.742-.457 5.821-2.618 6.98-6.358C23.989 16.667 24 16.26 24 12s-.011-3.667-.069-4.947c-.457-3.742-2.618-5.821-6.358-6.98C15.667.011 15.26 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.88 1.44 1.44 0 000-2.88z"></path>
+                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.148 3.227-1.669 4.771-4.919 4.919-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.07-1.646-.07-4.85s.012-3.584.07-4.85c.148-3.227 1.669 4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163m0-2.163C8.74 0 8.333.011 7.053.069 2.73 1.22.525 3.31.069 7.053.011 8.333 0 8.74 0 12s.011 3.667.069 4.947c.457 3.742 2.618 5.821 6.358 6.98C8.333 23.989 8.74 24 12 24s3.667-.011 4.947-.069c3.742-.457 5.821-2.618 6.98-6.358C23.989 16.667 24 16.26 24 12s-.011-3.667-.069-4.947c-.457-3.742-2.618-5.821-6.358-6.98C15.667.011 15.26 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.88 1.44 1.44 0 000-2.88z"></path>
                         </svg>
                     </a>
                     
-                    <a href="https://www.tiktok.com/@sabbir_rahoman85" target="_blank" class="text-gray-400 hover:text-white transition duration-300" title="TikTok">
+                    <a href="https://www.tiktok.com/@sabbir_rahoman85" target="_blank" class="text-gray-400 hover:text-emerald-500 transition-all duration-300 transform hover:-translate-y-1" title="TikTok">
                          <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12.525.02c1.31-.02 2.61-.01 3.91.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-2.43.05-4.84-.6-6.62-2.31-1.74-1.66-2.61-3.89-2.62-6.23-.01-2.52.7-5.01 2.36-6.93 1.8-2.05 4.35-3.18 6.92-3.13 1.26.01 2.5.11 3.71.36.01 2.14-.01 4.28-.01 6.42-.53-.02-1.07-.1-1.61-.23-1.09-.26-2.17-.59-3.21-.93-1.03-.33-2.02-.75-2.96-1.25-.05-1.09.01-2.19.02-3.28.09-1.08.31-2.15.68-3.16.39-1.07.96-2.06 1.66-2.93.03 1.1.02 2.21.01 3.32z"></path>
                         </svg>
                     </a>
                     
-                    <a href="https://x.com/SabbirRahoman85" target="_blank" class="text-gray-400 hover:text-white transition duration-300" title="X (Twitter)">
+                    <a href="https://x.com/SabbirRahoman85" target="_blank" class="text-gray-400 hover:text-emerald-500 transition-all duration-300 transform hover:-translate-y-1" title="X (Twitter)">
                         <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                     </a>
                 </div>
@@ -466,7 +529,7 @@
         </section>
     </main>
 
-    <footer class="bg-slate-900 py-8 border-t border-slate-800">
+    <footer class="bg-gray-900 py-8 border-t border-gray-800">
         <div class="container mx-auto px-6 text-center">
             <p class="text-gray-500" data-lang-key="footer_text">
                 &copy; 2025 Sabbir Rahoman. All rights reserved.
@@ -506,21 +569,22 @@
         });
 
         // --- Language Switcher Logic ---
+        // (This logic remains the same, as it's perfectly functional)
         const translations = {
             en: {
                 nav_about: "About Me",
                 nav_services: "Services",
-                nav_portfolio: "Portfolio",
+                nav_my_design: "My Design", // *** FIXED KEY ***
                 nav_gallery: "Gallery",
                 nav_contact: "Contact",
                 nav_about_m: "About Me",
                 nav_services_m: "Services",
-                nav_portfolio_m: "Portfolio",
+                nav_my_design_m: "My Design", // *** FIXED KEY ***
                 nav_gallery_m: "Gallery",
                 nav_contact_m: "Contact",
                 nav_lang_m: "Language:",
                 hero_title1: "Digital Creator &",
-                hero_title2: "Creative Designer",
+                hero_title2: "Creative Designer", // This is now a base for typing
                 hero_subtitle: "Hello, I'm Sabbir Rahoman. I am a student and tech enthusiast. I transform your ideas into attractive designs and digital experiences.",
                 hero_btn_work: "See My Work",
                 hero_btn_store: "Visit My Store",
@@ -528,7 +592,7 @@
                 about_p1: "As a passionate tech enthusiast and digital creator from Bangladesh, I'm driven by the power of technology to bring ideas to life. My focus is on learning and applying new skills to create engaging digital experiences.",
                 about_p2: "I am proficient in creating websites using AI, professional Logo Design, Banners, Posters, ID Cards, and CV (Resume) design. I believe in continuous learning and improvement.",
                 about_p3: 'My motto: "FAIL" means "First Attempt In Learning". Failure is just the first step towards learning! 🌱✨',
-                about_contact: "Contact Me &rarr;",
+                about_contact: "Contact Me",
                 services_title: "My Services",
                 services_subtitle: "I offer a variety of creative and technical services for your projects.",
                 service1_title: "Graphic Design",
@@ -543,11 +607,11 @@
                 service2_item3: "Business Cards",
                 service3_title: "AI Web Solutions",
                 service3_desc: "Fast, responsive, and modern websites built using AI.",
-                service3_item1: "Personal Portfolio",
+                service3_item1: "Personal My Design",
                 service3_item2: "Basic Business Website",
                 service3_item3: "Computer Basics",
-                portfolio_title: "My Design Portfolio",
-                portfolio_tag: "Logo Design",
+                my_design_title: "My Design", // *** FIXED KEY ***
+                my_design_tag: "Logo Design", // *** FIXED KEY ***
                 gallery_title: "My Gallery",
                 contact_title: "Get In Touch",
                 contact_subtitle: "Interested in working with me? Or just want to say hi? Send me an email or follow me on social media.",
@@ -556,17 +620,17 @@
             bn: {
                 nav_about: "আমার সম্পর্কে",
                 nav_services: "সেবাসমূহ",
-                nav_portfolio: "পোর্টফোলিও",
+                nav_my_design: "পোর্টফোলিও", // *** FIXED KEY ***
                 nav_gallery: "গ্যালারি",
                 nav_contact: "যোগাযোগ",
                 nav_about_m: "আমার সম্পর্কে",
                 nav_services_m: "সেবাসমূহ",
-                nav_portfolio_m: "পোর্টফোলিও",
+                nav_my_design_m: "পোর্টফোলিও", // *** FIXED KEY ***
                 nav_gallery_m: "গ্যালারি",
                 nav_contact_m: "যোগাযোগ",
                 nav_lang_m: "ভাষা:",
                 hero_title1: "ডিজিটাল ক্রিয়েটর এবং",
-                hero_title2: "ক্রিয়েটিভ ডিজাইনার",
+                hero_title2: "ক্রিয়েটিভ ডিজাইনার", // This is now a base for typing
                 hero_subtitle: "হ্যালো, আমি সাব্বির রহমান। আমি একজন ছাত্র এবং প্রযুক্তি উৎসাহী। আমি আপনার ধারণাকে আকর্ষণীয় ডিজাইন এবং ডিজিটাল অভিজ্ঞতায় রূপান্তরিত করি।",
                 hero_btn_work: "আমার কাজ দেখুন",
                 hero_btn_store: "আমার স্টোর দেখুন",
@@ -574,7 +638,7 @@
                 about_p1: "বাংলাদেশ ভিত্তিক একজন কন্টেন্ট ক্রিয়েটর এবং ডিজিটাল ডিজাইনার হিসেবে, আমি নতুন নতুন টেকনোলজির প্রতি গভীরভাবে আগ্রহী। আমার লক্ষ্য হলো নতুন দক্ষতা শেখা এবং সেগুলোকে কাজে লাগিয়ে আকর্ষণীয় ডিজিটাল অভিজ্ঞতা তৈরি করা।",
                 about_p2: "আমি এআই (AI) ব্যবহার করে ওয়েবসাইট তৈরি, প্রফেশনাল লোগো ডিজাইন, ব্যানার, পোস্টার, আইডি কার্ড এবং সিভি (CV) ডিজাইনে পারদর্শী। আমি ক্রমাগত শেখা এবং উন্নতিতে বিশ্বাসী।",
                 about_p3: '"FAIL" মানে হচ্ছে "First Attempt In Learning" অর্থাৎ, ব্যর্থতা আসলে শেখার প্রথম ধাপ! 🌱✨',
-                about_contact: "যোগাযোগ করুন &rarr;",
+                about_contact: "যোগাযোগ করুন",
                 services_title: "আমার সেবাসমূহ",
                 services_subtitle: "আমি আপনার প্রজেক্টের জন্য বিভিন্ন সৃজনশীল এবং প্রযুক্তিগত সেবা প্রদান করি।",
                 service1_title: "গ্রাফিক ডিজাইন",
@@ -592,8 +656,8 @@
                 service3_item1: "পার্সোনাল পোর্টফোলিও",
                 service3_item2: "বেসিক বিজনেস ওয়েবসাইট",
                 service3_item3: "কম্পিউটার বেসিক",
-                portfolio_title: "আমার ডিজাইন পোর্টফোলিও",
-                portfolio_tag: "লোগো ডিজাইন",
+                my_design_title: "আমার ডিজাইন পোর্টফোলিও", // *** FIXED KEY ***
+                my_design_tag: "লোগো ডিজাইন", // *** FIXED KEY ***
                 gallery_title: "আমার গ্যালারি",
                 contact_title: "যোগাযোগ করুন",
                 contact_subtitle: "আমার সাথে কাজ করতে আগ্রহী? অথবা শুধু হাই বলতে চান? আমাকে ইমেইল করুন বা সোশ্যাল মিডিয়ায় ফলো করুন।",
@@ -603,16 +667,31 @@
 
         const toggleDesktop = document.getElementById('language-toggle');
         const toggleMobile = document.getElementById('language-toggle-mobile');
-        
+        let currentLang = 'en'; // Keep track of current language
+
+        // --- NEW: Moved Typing Animation variables BEFORE setLanguage call ---
+        const typingTextElement = document.getElementById('typing-text');
+        const typingWords = {
+            en: ["Creative Designer", "Tech Enthusiast", "Digital Creator"],
+            bn: ["ক্রিয়েটিভ ডিজাইনার", "টেক উৎসাহী", "ডিজিটাল ক্রিয়েটর"]
+        };
+
         function setLanguage(lang) {
+            currentLang = lang; // Update current language
             document.documentElement.lang = lang;
             const elements = document.querySelectorAll('[data-lang-key]');
             elements.forEach(el => {
                 const key = el.getAttribute('data-lang-key');
                 if (translations[lang] && translations[lang][key]) {
-                    el.innerText = translations[lang][key];
+                    // Don't update the typing text container
+                    if (key !== 'hero_title2') {
+                        el.innerText = translations[lang][key];
+                    }
                 }
             });
+            // Update typing animation text
+            typingWords.bn = [translations.bn.hero_title2, "টেক উৎসাহী", "ডিজিটাল ক্রিয়েটর"];
+            typingWords.en = [translations.en.hero_title2, "Tech Enthusiast", "Digital Creator"];
         }
 
         function handleToggle(event) {
@@ -630,7 +709,7 @@
         const initialCheck = savedLang === 'bn';
         toggleDesktop.checked = initialCheck;
         toggleMobile.checked = initialCheck;
-        setLanguage(savedLang);
+        setLanguage(savedLang); // Set initial language
 
 
         // --- Preloader Logic ---
@@ -658,7 +737,7 @@
             scrollObserver.observe(el);
         });
         
-        // --- NEW: Back to Top Button Logic ---
+        // --- Back to Top Button Logic ---
         const backToTopButton = document.getElementById('back-to-top');
         
         window.addEventListener('scroll', () => {
@@ -669,21 +748,19 @@
             }
         });
 
-        // --- NEW: Active Nav Link Highlighting Logic ---
-        const sections = document.querySelectorAll('section[id]'); // Get all sections that have an ID
-        const navLinks = document.querySelectorAll('.nav-link'); // Get all nav links
+        // --- Active Nav Link Highlighting Logic ---
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-link'); 
 
         const navObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const id = entry.target.getAttribute('id');
                     
-                    // Remove active class from all links
                     navLinks.forEach(link => {
                         link.classList.remove('active-link');
                     });
 
-                    // Add active class to the corresponding link(s)
                     const activeLinks = document.querySelectorAll(`.nav-link[href="#${id}"]`);
                     activeLinks.forEach(link => {
                         link.classList.add('active-link');
@@ -691,14 +768,50 @@
                 }
             });
         }, {
-            threshold: 0.4, // Section is 40% in view
-            rootMargin: '-50px 0px -50px 0px' // Adjust viewport (avoids highlighting header)
+            threshold: 0.4,
+            rootMargin: '-50px 0px -50px 0px'
         });
 
         sections.forEach(section => {
             navObserver.observe(section);
         });
 
+        // --- NEW: Typing Animation Logic ---
+        // const typingTextElement = document.getElementById('typing-text'); // Moved Up
+        // const typingWords = { ... }; // Moved Up
+        let wordIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        
+        function type() {
+            const currentWords = typingWords[currentLang];
+            const currentWord = currentWords[wordIndex];
+            
+            if (isDeleting) {
+                // Deleting
+                typingTextElement.textContent = currentWord.substring(0, charIndex - 1);
+                charIndex--;
+                if (charIndex === 0) {
+                    isDeleting = false;
+                    wordIndex = (wordIndex + 1) % currentWords.length;
+                }
+            } else {
+                // Typing
+                typingTextElement.textContent = currentWord.substring(0, charIndex + 1);
+                charIndex++;
+                if (charIndex === currentWord.length) {
+                    isDeleting = true;
+                    setTimeout(type, 2000); // Pause at end of word
+                    return;
+                }
+            }
+            
+            const typeSpeed = isDeleting ? 75 : 150;
+            setTimeout(type, typeSpeed);
+        }
+
+        // Start typing animation after initial fade-in
+        setTimeout(type, 1000); // Start after hero text animation
 
     </script>
 
