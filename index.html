@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sabbir Rahoman - Digital Creator & Designer</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         // Custom Tailwind Theme (Slate Dark Mode)
@@ -19,6 +18,21 @@
                     },
                     fontFamily: {
                         inter: ['Inter', 'sans-serif'],
+                    },
+                    /* NEW: Added keyframes for animations */
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                    },
+                    animation: {
+                        fadeIn: 'fadeIn 1s ease-out',
+                        fadeInUp: 'fadeInUp 1s ease-out',
                     },
                 },
             },
@@ -37,7 +51,7 @@
             user-select: none;
         }
 
-        /* Smooth scrolling */
+        /* Smooth scrolling (already enabled by Tailwind 'scroll-smooth') */
         html {
             scroll-behavior: smooth;
         }
@@ -98,38 +112,118 @@
             left: 30%;
         }
 
+        /* --- Preloader Styles --- */
+        #preloader {
+            position: fixed;
+            inset: 0;
+            background-color: #0f172a; /* bg-slate-900 */
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease-out;
+        }
+        #preloader.loaded {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #1e293b; /* slate-800 */
+            border-top-color: #3b82f6; /* blue-500 */
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* --- Scroll Animation Styles --- */
+        .fade-in-on-scroll {
+            opacity: 0;
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .fade-in-up {
+            transform: translateY(20px);
+        }
+        .fade-in-left {
+            transform: translateX(-20px);
+        }
+        .fade-in-right {
+            transform: translateX(20px);
+        }
+        .fade-in-on-scroll.is-visible {
+            opacity: 1;
+            transform: translateY(0) translateX(0);
+        }
+
+        /* --- NEW: Active Nav Link Style --- */
+        .nav-link.active-link {
+            color: #3B82F6; /* blue-500 */
+            font-weight: 600;
+        }
+        
+        /* --- NEW: Back to Top Button Styles --- */
+        #back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #3B82F6; /* blue-600 */
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+            transform: translateY(20px);
+            z-index: 1000;
+        }
+        #back-to-top.is-visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        #back-to-top:hover {
+            background-color: #2563EB; /* blue-700 */
+        }
+
     </style>
 </head>
-<!-- Switched to Slate Dark Mode -->
 <body class="bg-slate-900 text-gray-300 antialiased">
 
-    <!-- হেডার / নেভিগেশন বার -->
+    <div id="preloader">
+        <div class="spinner"></div>
+    </div>
+
     <header class="bg-slate-900/70 backdrop-blur-md sticky top-0 z-50 border-b border-slate-800">
         <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <!-- লোগো বা নাম -->
             <a href="#" class="text-2xl md:text-3xl font-bold text-white">
                 Sabbir <span class="text-blue-500">Rahoman</span>
             </a>
             
-            <!-- ডেক্সটপ মেন্যু -->
-            <div class="hidden md:flex items-center space-x-6">
-                <a href="#about" class="text-gray-300 hover:text-blue-500 transition duration-300" data-lang-key="nav_about">About Me</a>
-                <a href="#services" class="text-gray-300 hover:text-blue-500 transition duration-300" data-lang-key="nav_services">Services</a>
-                <a href="#portfolio" class="text-gray-300 hover:text-blue-500 transition duration-300" data-lang-key="nav_portfolio">Portfolio</a>
-                <a href="#gallery" class="text-gray-300 hover:text-blue-500 transition duration-300" data-lang-key="nav_gallery">Gallery</a>
+            <div id="desktop-menu" class="hidden md:flex items-center space-x-6">
+                <a href="#about" class="nav-link text-gray-300 hover:text-blue-500 transition duration-300" data-lang-key="nav_about">About Me</a>
+                <a href="#services" class="nav-link text-gray-300 hover:text-blue-500 transition duration-300" data-lang-key="nav_services">Services</a>
+                <a href="#portfolio" class="nav-link text-gray-300 hover:text-blue-500 transition duration-300" data-lang-key="nav_portfolio">Portfolio</a>
+                <a href="#gallery" class="nav-link text-gray-300 hover:text-blue-500 transition duration-300" data-lang-key="nav_gallery">Gallery</a>
                 
-                <!-- Language Switcher -->
                 <label class="lang-switch">
                     <input type="checkbox" id="language-toggle">
                     <span class="slider"></span>
                 </label>
                 
-                <a href="#contact" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition duration-300 shadow-lg shadow-blue-500/30" data-lang-key="nav_contact">
+                <a href="#contact" class="nav-link bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition duration-300 shadow-lg shadow-blue-500/30" data-lang-key="nav_contact">
                     Contact
                 </a>
             </div>
 
-            <!-- মোবাইল মেন্যু বাটন -->
             <button id="menu-btn" class="md:hidden focus:outline-none text-white">
                 <svg class="w-7 h-7" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
                     <path d="M4 6h16M4 12h16m-7 6h7"></path>
@@ -137,15 +231,13 @@
             </button>
         </nav>
 
-        <!-- মোবাইল মেন্যু (লুকানো থাকবে) -->
         <div id="mobile-menu" class="hidden md:hidden bg-slate-900 shadow-lg border-t border-slate-800">
-            <a href="#about" class="block py-3 px-6 text-gray-300 hover:bg-slate-800" data-lang-key="nav_about_m">About Me</a>
-            <a href="#services" class="block py-3 px-6 text-gray-300 hover:bg-slate-800" data-lang-key="nav_services_m">Services</a>
-            <a href="#portfolio" class="block py-3 px-6 text-gray-300 hover:bg-slate-800" data-lang-key="nav_portfolio_m">Portfolio</a>
-            <a href="#gallery" class="block py-3 px-6 text-gray-300 hover:bg-slate-800" data-lang-key="nav_gallery_m">Gallery</a>
-            <a href="#contact" class="block py-3 px-6 text-gray-300 hover:bg-slate-800" data-lang-key="nav_contact_m">Contact</a>
+            <a href="#about" class="nav-link block py-3 px-6 text-gray-300 hover:bg-slate-800" data-lang-key="nav_about_m">About Me</a>
+            <a href="#services" class="nav-link block py-3 px-6 text-gray-300 hover:bg-slate-800" data-lang-key="nav_services_m">Services</a>
+            <a href="#portfolio" class="nav-link block py-3 px-6 text-gray-300 hover:bg-slate-800" data-lang-key="nav_portfolio_m">Portfolio</a>
+            <a href="#gallery" class="nav-link block py-3 px-6 text-gray-300 hover:bg-slate-800" data-lang-key="nav_gallery_m">Gallery</a>
+            <a href="#contact" class="nav-link block py-3 px-6 text-gray-300 hover:bg-slate-800" data-lang-key="nav_contact_m">Contact</a>
             
-            <!-- Mobile Language Switch -->
             <div class="px-6 py-3">
                 <span class="text-gray-400 text-sm" data-lang-key="nav_lang_m">Language:</span>
                 <label class="lang-switch ml-4">
@@ -157,32 +249,27 @@
     </header>
 
     <main>
-        <!-- ১. হিরো সেকশন (স্বাগতম) -->
-        <!-- Background Image Added Here -->
         <section id="home" class="relative pt-32 pb-28 md:pt-48 md:pb-40 bg-black text-white overflow-hidden">
-            <!-- Background Image with Dark Overlay -->
             <div class="absolute inset-0 z-0">
-                <img src="IMG_0786.jpg" 
+                <img src="IMG_0786.webp" 
                      alt="Sabbir Rahoman Bike Background" 
                      class="w-full h-full object-cover opacity-30"
                      onerror="this.style.opacity='0.1'">
-                <!-- Dark overlay -->
                 <div class="absolute inset-0 bg-black opacity-50"></div>
             </div>
             
             <div class="container mx-auto px-6 text-center relative z-10">
-                <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight">
+                <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight animate-fadeInUp" style="animation-delay: 100ms;">
                     <span class="block" data-lang-key="hero_title1">Digital Creator &</span>
                     <span class="block text-blue-500" data-lang-key="hero_title2">Creative Designer</span>
                 </h1>
-                <p class="text-lg md:text-xl text-gray-300 mb-10 max-w-2xl mx-auto" data-lang-key="hero_subtitle">
+                <p class="text-lg md:text-xl text-gray-300 mb-10 max-w-2xl mx-auto animate-fadeInUp" style="animation-delay: 300ms;" data-lang-key="hero_subtitle">
                     Hello, I'm Sabbir Rahoman. I am a student and tech enthusiast. I transform your ideas into attractive designs and digital experiences.
                 </p>
-                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <div class="flex flex-col sm:flex-row justify-center gap-4 animate-fadeInUp" style="animation-delay: 500ms;">
                     <a href="#portfolio" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300 transform hover:scale-105 shadow-lg shadow-blue-500/40" data-lang-key="hero_btn_work">
                         See My Work
                     </a>
-                    <!-- আপনার ই-কমার্স সাইটের লিঙ্ক -->
                     <a href="https://shobkichuofficial.github.io/" target="_blank" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300 transform hover:scale-105 shadow-lg shadow-gray-800/40" data-lang-key="hero_btn_store">
                         Visit My Store
                     </a>
@@ -190,26 +277,21 @@
             </div>
         </section>
 
-        <!-- ২. আমার সম্পর্কে সেকশন -->
-        <section id="about" class="py-20 lg:py-28 bg-gray-900">
+        <section id="about" class="py-20 lg:py-28 bg-gray-900 overflow-hidden">
             <div class="container mx-auto px-6">
                 <div class="flex flex-col md:flex-row items-center gap-12 md:gap-16">
-                    <!-- Your Panjabi Photo Added Here -->
-                    <div class="md:w-1/3">
-                        <img src="IMG_3068 edited.jpg" alt="Sabbir Rahoman" class="protected-image rounded-2xl shadow-2xl w-full max-w-sm mx-auto shadow-blue-500/20">
+                    <div class="md:w-1/3 fade-in-on-scroll fade-in-left">
+                        <img src="IMG_3068 edited.webp" alt="Sabbir Rahoman" class="protected-image rounded-2xl shadow-2xl w-full max-w-sm mx-auto shadow-blue-500/20">
                     </div>
-                    <div class="md:w-2/3 text-center md:text-left">
+                    <div class="md:w-2/3 text-center md:text-left fade-in-on-scroll fade-in-right" style="transition-delay: 150ms;">
                         <h2 class="text-3xl lg:text-4xl font-bold text-white mb-6" data-lang-key="about_title">About Me</h2>
                         
-                        <!-- New Bio (English) -->
                         <p class="text-gray-300 leading-relaxed mb-4 text-lg" data-lang-key="about_p1">
                             As a passionate tech enthusiast and digital creator from Bangladesh, I'm driven by the power of technology to bring ideas to life. My focus is on learning and applying new skills to create engaging digital experiences.
                         </p>
-                        <!-- New Bio (Bangla "FAIL" Quote) -->
                         <p class="text-gray-300 leading-relaxed mb-4 text-lg" data-lang-key="about_p2">
                             I am proficient in creating websites using AI, professional Logo Design, Banners, Posters, ID Cards, and CV (Resume) design. I believe in continuous learning and improvement.
                         </p>
-                        <!-- Added your Bangla "FAIL" quote here -->
                         <p class="text-gray-300 leading-relaxed mb-6 text-lg" data-lang-key="about_p3">
                             My motto: "FAIL" means "First Attempt In Learning". Failure is just the first step towards learning! 🌱✨
                         </p>
@@ -221,20 +303,18 @@
             </div>
         </section>
 
-        <!-- ৩. সেবাসমূহ সেকশন -->
-        <section id="services" class="py-20 lg:py-28 bg-slate-900">
+        <section id="services" class="py-20 lg:py-28 bg-slate-900 overflow-hidden">
             <div class="container mx-auto px-6">
-                <h2 class="text-3xl lg:text-4xl font-bold text-center text-white mb-4" data-lang-key="services_title">
+                <h2 class="text-3xl lg:text-4xl font-bold text-center text-white mb-4 fade-in-on-scroll fade-in-up" data-lang-key="services_title">
                     My Services
                 </h2>
-                <p class="text-center text-gray-400 text-lg mb-16 max-w-xl mx-auto" data-lang-key="services_subtitle">
+                <p class="text-center text-gray-400 text-lg mb-16 max-w-xl mx-auto fade-in-on-scroll fade-in-up" style="transition-delay: 100ms;" data-lang-key="services_subtitle">
                     I offer a variety of creative and technical services for your projects.
                 </p>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     
-                    <!-- সেবা কার্ড ১: ডিজাইন -->
-                    <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 transition duration-300 hover:shadow-2xl hover:border-blue-500/50 hover:-translate-y-1 hover:shadow-blue-600/20">
+                    <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 transition duration-300 hover:shadow-2xl hover:border-blue-500/50 hover:-translate-y-1 hover:shadow-blue-600/20 fade-in-on-scroll fade-in-up" style="transition-delay: 200ms;">
                         <div class="text-blue-500 mb-4">
                             <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                         </div>
@@ -249,8 +329,7 @@
                         </ul>
                     </div>
 
-                    <!-- সেবা কার্ড ২: ডকুমেন্ট ডিজাইন -->
-                    <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 transition duration-300 hover:shadow-2xl hover:border-blue-500/50 hover:-translate-y-1 hover:shadow-blue-600/20">
+                    <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 transition duration-300 hover:shadow-2xl hover:border-blue-500/50 hover:-translate-y-1 hover:shadow-blue-600/20 fade-in-on-scroll fade-in-up" style="transition-delay: 300ms;">
                         <div class="text-blue-500 mb-4">
                            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 21h7a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2zM10 21h-4v-4a2 2 0 012-2h2v6zM14 3v4a1 1 0 001 1h4"></path></svg>
                         </div>
@@ -265,8 +344,7 @@
                         </ul>
                     </div>
 
-                    <!-- সেবা কার্ড ৩: ওয়েব -->
-                    <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 transition duration-300 hover:shadow-2xl hover:border-blue-500/50 hover:-translate-y-1 hover:shadow-blue-600/20">
+                    <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 transition duration-300 hover:shadow-2xl hover:border-blue-500/50 hover:-translate-y-1 hover:shadow-blue-600/20 fade-in-on-scroll fade-in-up" style="transition-delay: 400ms;">
                          <div class="text-blue-500 mb-4">
                             <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                         </div>
@@ -284,44 +362,43 @@
             </div>
         </section>
 
-        <!-- ৪. পোর্টফোলিও সেকশন (আপনার লোগোগুলো) -->
-        <section id="portfolio" class="py-20 lg:py-28 bg-gray-900">
+        <section id="portfolio" class="py-20 lg:py-28 bg-gray-900 overflow-hidden">
             <div class="container mx-auto px-6">
-                <h2 class="text-3xl lg:text-4xl font-bold text-center text-white mb-16" data-lang-key="portfolio_title">
+                <h2 class="text-3xl lg:text-4xl font-bold text-center text-white mb-16 fade-in-on-scroll fade-in-up" data-lang-key="portfolio_title">
                     My Design Portfolio
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     
-                    <div class="bg-slate-800 rounded-lg shadow-lg overflow-hidden group transition duration-300 hover:shadow-2xl hover:shadow-blue-600/20 border border-slate-700">
+                    <div class="bg-slate-800 rounded-lg shadow-lg overflow-hidden group transition duration-300 hover:shadow-2xl hover:shadow-blue-600/20 border border-slate-700 fade-in-on-scroll fade-in-up" style="transition-delay: 100ms;">
                         <div class="h-64 overflow-hidden">
-                            <img src="logo1.jpg" alt="Antor Hair Fashion Logo" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                            <img src="logo1.webp" alt="Antor Hair Fashion Logo" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
                         </div>
                         <div class="p-5">
                             <h3 class="text-lg font-bold text-white">Antor Hair Fashion</h3>
                             <p class="text-sm text-gray-400" data-lang-key="portfolio_tag">Logo Design</p>
                         </div>
                     </div>
-                    <div class="bg-slate-800 rounded-lg shadow-lg overflow-hidden group transition duration-300 hover:shadow-2xl hover:shadow-blue-600/20 border border-slate-700">
+                    <div class="bg-slate-800 rounded-lg shadow-lg overflow-hidden group transition duration-300 hover:shadow-2xl hover:shadow-blue-600/20 border border-slate-700 fade-in-on-scroll fade-in-up" style="transition-delay: 200ms;">
                          <div class="h-64 overflow-hidden">
-                            <img src="logo2.jpg" alt="Jannat's Bakery Logo" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                            <img src="logo2.webp" alt="Jannat's Bakery Logo" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
                         </div>
                         <div class="p-5">
                             <h3 class="text-lg font-bold text-white">Jannat's Bakery</h3>
                             <p class="text-sm text-gray-400" data-lang-key="portfolio_tag">Logo Design</p>
                         </div>
                     </div>
-                    <div class="bg-slate-800 rounded-lg shadow-lg overflow-hidden group transition duration-300 hover:shadow-2xl hover:shadow-blue-600/20 border border-slate-700">
+                    <div class="bg-slate-800 rounded-lg shadow-lg overflow-hidden group transition duration-300 hover:shadow-2xl hover:shadow-blue-600/20 border border-slate-700 fade-in-on-scroll fade-in-up" style="transition-delay: 300ms;">
                          <div class="h-64 overflow-hidden">
-                            <img src="logo3.webp" alt="Shuddho Deal Logo" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                            <img src="logo3.webp" alt="Shuddho Deal Logo" class="w-full h-full object-cover transition duration-500 group-hover:scale-110" onerror="this.src='https://placehold.co/400x400/1e293b/3b82f6?text=Missing%3A%0Alogo3.webp'">
                         </div>
                         <div class="p-5">
                             <h3 class="text-lg font-bold text-white">Shuddho Deal</h3>
                             <p class="text-sm text-gray-400" data-lang-key="portfolio_tag">Logo Design</p>
                         </div>
                     </div>
-                    <div class="bg-slate-800 rounded-lg shadow-lg overflow-hidden group transition duration-300 hover:shadow-2xl hover:shadow-blue-600/20 border border-slate-700">
+                    <div class="bg-slate-800 rounded-lg shadow-lg overflow-hidden group transition duration-300 hover:shadow-2xl hover:shadow-blue-600/20 border border-slate-700 fade-in-on-scroll fade-in-up" style="transition-delay: 400ms;">
                          <div class="h-64 overflow-hidden">
-                            <img src="logo4.webp" alt="Shorbokichu.com Logo" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                            <img src="logo4.webp" alt="Shorbokichu.com Logo" class="w-full h-full object-cover transition duration-500 group-hover:scale-110" onerror="this.src='https://placehold.co/400x400/1e293b/3b82f6?text=Missing%3A%0Alogo4.webp'">
                         </div>
                         <div class="p-5">
                             <h3 class="text-lg font-bold text-white">Shorbokichu.com</h3>
@@ -333,66 +410,53 @@
             </div>
         </section>
 
-        <!-- ৫. গ্যালারি সেকশন (আপনার ৫টি ছবি) -->
-        <section id="gallery" class="py-20 lg:py-28 bg-slate-900">
+        <section id="gallery" class="py-20 lg:py-28 bg-slate-900 overflow-hidden">
             <div class="container mx-auto px-6">
-                <h2 class="text-3xl lg:text-4xl font-bold text-center text-white mb-16" data-lang-key="gallery_title">
+                <h2 class="text-3xl lg:text-4xl font-bold text-center text-white mb-16 fade-in-on-scroll fade-in-up" data-lang-key="gallery_title">
                     My Gallery
                 </h2>
                 
-                <!-- 
-                    গুরুত্বপূর্ণ নোট: 
-                    নিচের 'src' ATTRIBUTE-এ "1.webp", "2.webp" ইত্যাদি জায়গায় আপনার আসল ছবির ফাইল নামগুলো বসিয়ে দিন।
-                    এই ছবিগুলো ডাউনলোড করা যাবে না (Right-click disabled)।
-                -->
                 <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
-                    <img src="1.webp" onerror="this.src='https://placehold.co/400x500/1e293b/3b82f6?text=1.webp'" alt="Gallery Photo 1" class="protected-image w-full h-80 object-cover rounded-lg shadow-lg transition duration-500 hover:scale-105 hover:shadow-2xl border-2 border-slate-700 hover:border-blue-500">
-                    <img src="2.webp" onerror="this.src='https://placehold.co/400x500/1e293b/3b82f6?text=2.webp'" alt="Gallery Photo 2" class="protected-image w-full h-80 object-cover rounded-lg shadow-lg transition duration-500 hover:scale-105 hover:shadow-2xl border-2 border-slate-700 hover:border-blue-500">
-                    <img src="3.webp" onerror="this.src='https://placehold.co/400x500/1e293b/3b82f6?text=3.webp'" alt="Gallery Photo 3" class="protected-image w-full h-80 object-cover rounded-lg shadow-lg transition duration-500 hover:scale-105 hover:shadow-2xl border-2 border-slate-700 hover:border-blue-500">
-                    <img src="4.webp" onerror="this.src='https://placehold.co/400x500/1e293b/3b82f6?text=4.webp'" alt="Gallery Photo 4" class="protected-image w-full h-80 object-cover rounded-lg shadow-lg transition duration-500 hover:scale-105 hover:shadow-2xl border-2 border-slate-700 hover:border-blue-500">
-                    <img src="5.webp" onerror="this.src='https://placehold.co/400x500/1e293b/3b82f6?text=5.webp'" alt="Gallery Photo 5" class="protected-image w-full h-80 object-cover rounded-lg shadow-lg transition duration-500 hover:scale-105 hover:shadow-2xl border-2 border-slate-700 hover:border-blue-500">
+                    <img src="1.webp" onerror="this.src='https://placehold.co/400x500/1e293b/3b82f6?text=1.webp'" alt="Gallery Photo 1" class="protected-image w-full h-80 object-cover rounded-lg shadow-lg transition duration-500 hover:scale-105 hover:shadow-2xl border-2 border-slate-700 hover:border-blue-500 fade-in-on-scroll fade-in-up" style="transition-delay: 100ms;">
+                    <img src="2.webp" onerror="this.src='https://placehold.co/400x500/1e293b/3b82f6?text=2.webp'" alt="Gallery Photo 2" class="protected-image w-full h-80 object-cover rounded-lg shadow-lg transition duration-500 hover:scale-105 hover:shadow-2xl border-2 border-slate-700 hover:border-blue-500 fade-in-on-scroll fade-in-up" style="transition-delay: 200ms;">
+                    <img src="3.webp" onerror="this.src='https://placehold.co/400x500/1e293b/3b82f6?text=3.webp'" alt="Gallery Photo 3" class="protected-image w-full h-80 object-cover rounded-lg shadow-lg transition duration-500 hover:scale-105 hover:shadow-2xl border-2 border-slate-700 hover:border-blue-500 fade-in-on-scroll fade-in-up" style="transition-delay: 300ms;">
+                    <img src="4.webp" onerror="this.src='https://placehold.co/400x500/1e293b/3b82f6?text=4.webp'" alt="Gallery Photo 4" class="protected-image w-full h-80 object-cover rounded-lg shadow-lg transition duration-500 hover:scale-105 hover:shadow-2xl border-2 border-slate-700 hover:border-blue-500 fade-in-on-scroll fade-in-up" style="transition-delay: 400ms;">
+                    <img src="5.webp" onerror="this.src='https://placehold.co/400x500/1e293b/3b82f6?text=5.webp'" alt="Gallery Photo 5" class="protected-image w-full h-80 object-cover rounded-lg shadow-lg transition duration-500 hover:scale-105 hover:shadow-2xl border-2 border-slate-700 hover:border-blue-500 fade-in-on-scroll fade-in-up" style="transition-delay: 500ms;">
                 </div>
             </div>
         </section>
 
-        <!-- ৬. যোগাযোগ সেকশন -->
-        <section id="contact" class="py-20 lg:py-28 bg-gray-900">
+        <section id="contact" class="py-20 lg:py-28 bg-gray-900 overflow-hidden">
             <div class="container mx-auto px-6 max-w-3xl text-center">
-                <h2 class="text-3xl lg:text-4xl font-bold text-white mb-6" data-lang-key="contact_title">
+                <h2 class="text-3xl lg:text-4xl font-bold text-white mb-6 fade-in-on-scroll fade-in-up" data-lang-key="contact_title">
                     Get In Touch
                 </h2>
-                <p class="text-lg text-gray-400 mb-12" data-lang-key="contact_subtitle">
+                <p class="text-lg text-gray-400 mb-12 fade-in-on-scroll fade-in-up" style="transition-delay: 100ms;" data-lang-key="contact_subtitle">
                     Interested in working with me? Or just want to say hi? Send me an email or follow me on social media.
                 </p>
 
-                <!-- Clickable Email Button with Icon -->
-                <a href="mailto:sabbirrahoman217@gmail.com" class="inline-flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300 transform hover:scale-105 shadow-lg shadow-blue-500/40 mb-16">
+                <a href="mailto:sabbirrahoman217@gmail.com" class="inline-flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300 transform hover:scale-105 shadow-lg shadow-blue-500/40 mb-16 fade-in-on-scroll fade-in-up" style="transition-delay: 200ms;">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                     <span>sabbirrahoman217@gmail.com</span>
                 </a>
                 
-                <!-- সোশ্যাল মিডিয়া আইকন -->
-                <div class="flex justify-center space-x-6 mb-6">
-                    <!-- Facebook -->
+                <div class="flex justify-center space-x-6 mb-6 fade-in-on-scroll fade-in-up" style="transition-delay: 300ms;">
                     <a href="https://www.facebook.com/iamsabbirmolla/" target="_blank" class="text-gray-400 hover:text-white transition duration-300" title="Facebook">
                         <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3l-.5 3h-2.5v6.8c4.56-.93 8-4.96 8-9.8z"/></svg>
                     </a>
                     
-                    <!-- New Instagram Icon -->
                     <a href="https://www.instagram.com/sabbir_rahoman85/" target="_blank" class="text-gray-400 hover:text-white transition duration-300" title="Instagram">
                         <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.148 3.227-1.669 4.771-4.919 4.919-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.07-1.646-.07-4.85s.012-3.584.07-4.85c.148-3.227 1.669-4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163m0-2.163C8.74 0 8.333.011 7.053.069 2.73 1.22.525 3.31.069 7.053.011 8.333 0 8.74 0 12s.011 3.667.069 4.947c.457 3.742 2.618 5.821 6.358 6.98C8.333 23.989 8.74 24 12 24s3.667-.011 4.947-.069c3.742-.457 5.821-2.618 6.98-6.358C23.989 16.667 24 16.26 24 12s-.011-3.667-.069-4.947c-.457-3.742-2.618-5.821-6.358-6.98C15.667.011 15.26 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.88 1.44 1.44 0 000-2.88z"></path>
                         </svg>
                     </a>
                     
-                    <!-- New TikTok Icon -->
                     <a href="https://www.tiktok.com/@sabbir_rahoman85" target="_blank" class="text-gray-400 hover:text-white transition duration-300" title="TikTok">
                          <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12.525.02c1.31-.02 2.61-.01 3.91.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-2.43.05-4.84-.6-6.62-2.31-1.74-1.66-2.61-3.89-2.62-6.23-.01-2.52.7-5.01 2.36-6.93 1.8-2.05 4.35-3.18 6.92-3.13 1.26.01 2.5.11 3.71.36.01 2.14-.01 4.28-.01 6.42-.53-.02-1.07-.1-1.61-.23-1.09-.26-2.17-.59-3.21-.93-1.03-.33-2.02-.75-2.96-1.25-.05-1.09.01-2.19.02-3.28.09-1.08.31-2.15.68-3.16.39-1.07.96-2.06 1.66-2.93.03 1.1.02 2.21.01 3.32z"></path>
                         </svg>
                     </a>
                     
-                    <!-- X (Twitter) -->
                     <a href="https://x.com/SabbirRahoman85" target="_blank" class="text-gray-400 hover:text-white transition duration-300" title="X (Twitter)">
                         <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                     </a>
@@ -402,7 +466,6 @@
         </section>
     </main>
 
-    <!-- ফুটার -->
     <footer class="bg-slate-900 py-8 border-t border-slate-800">
         <div class="container mx-auto px-6 text-center">
             <p class="text-gray-500" data-lang-key="footer_text">
@@ -411,18 +474,25 @@
         </div>
     </footer>
 
-    <!-- জাভাস্ক্রিপ্ট -->
+    <a href="#home" id="back-to-top" aria-label="Back to top">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+        </svg>
+    </a>
+
+
     <script>
         // --- মোবাইল মেন্যু টগল ---
         const menuBtn = document.getElementById('menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
+        const allNavLinks = document.querySelectorAll('#desktop-menu a, #mobile-menu a');
 
         menuBtn.addEventListener('click', () => {
             mobileMenu.classList.toggle('hidden');
         });
 
-        const mobileLinks = mobileMenu.querySelectorAll('a');
-        mobileLinks.forEach(link => {
+        // Close mobile menu when a link is clicked
+        mobileMenu.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
                 mobileMenu.classList.add('hidden');
             });
@@ -436,8 +506,6 @@
         });
 
         // --- Language Switcher Logic ---
-
-        // Text content for translation
         const translations = {
             en: {
                 nav_about: "About Me",
@@ -459,7 +527,7 @@
                 about_title: "About Me",
                 about_p1: "As a passionate tech enthusiast and digital creator from Bangladesh, I'm driven by the power of technology to bring ideas to life. My focus is on learning and applying new skills to create engaging digital experiences.",
                 about_p2: "I am proficient in creating websites using AI, professional Logo Design, Banners, Posters, ID Cards, and CV (Resume) design. I believe in continuous learning and improvement.",
-                about_p3: 'My motto: "FAIL" means "First Attempt In Learning". Failure is just the first step towards learning! 🌱✨', // English version of the quote
+                about_p3: 'My motto: "FAIL" means "First Attempt In Learning". Failure is just the first step towards learning! 🌱✨',
                 about_contact: "Contact Me &rarr;",
                 services_title: "My Services",
                 services_subtitle: "I offer a variety of creative and technical services for your projects.",
@@ -505,7 +573,7 @@
                 about_title: "আমার সম্পর্কে",
                 about_p1: "বাংলাদেশ ভিত্তিক একজন কন্টেন্ট ক্রিয়েটর এবং ডিজিটাল ডিজাইনার হিসেবে, আমি নতুন নতুন টেকনোলজির প্রতি গভীরভাবে আগ্রহী। আমার লক্ষ্য হলো নতুন দক্ষতা শেখা এবং সেগুলোকে কাজে লাগিয়ে আকর্ষণীয় ডিজিটাল অভিজ্ঞতা তৈরি করা।",
                 about_p2: "আমি এআই (AI) ব্যবহার করে ওয়েবসাইট তৈরি, প্রফেশনাল লোগো ডিজাইন, ব্যানার, পোস্টার, আইডি কার্ড এবং সিভি (CV) ডিজাইনে পারদর্শী। আমি ক্রমাগত শেখা এবং উন্নতিতে বিশ্বাসী।",
-                about_p3: '"FAIL" মানে হচ্ছে "First Attempt In Learning" অর্থাৎ, ব্যর্থতা আসলে শেখার প্রথম ধাপ! 🌱✨', // Your Bangla quote
+                about_p3: '"FAIL" মানে হচ্ছে "First Attempt In Learning" অর্থাৎ, ব্যর্থতা আসলে শেখার প্রথম ধাপ! 🌱✨',
                 about_contact: "যোগাযোগ করুন &rarr;",
                 services_title: "আমার সেবাসমূহ",
                 services_subtitle: "আমি আপনার প্রজেক্টের জন্য বিভিন্ন সৃজনশীল এবং প্রযুক্তিগত সেবা প্রদান করি।",
@@ -536,9 +604,8 @@
         const toggleDesktop = document.getElementById('language-toggle');
         const toggleMobile = document.getElementById('language-toggle-mobile');
         
-        // Function to set language
         function setLanguage(lang) {
-            document.documentElement.lang = lang; // Set HTML lang attribute
+            document.documentElement.lang = lang;
             const elements = document.querySelectorAll('[data-lang-key]');
             elements.forEach(el => {
                 const key = el.getAttribute('data-lang-key');
@@ -548,35 +615,92 @@
             });
         }
 
-        // Function to handle toggle change
         function handleToggle(event) {
             const isChecked = event.target.checked;
             const lang = isChecked ? 'bn' : 'en';
-            
-            // Sync both toggles
             toggleDesktop.checked = isChecked;
             toggleMobile.checked = isChecked;
-
             setLanguage(lang);
-            // Optionally save preference in localStorage
-            // localStorage.setItem('language', lang);
         }
 
         toggleDesktop.addEventListener('change', handleToggle);
         toggleMobile.addEventListener('change', handleToggle);
 
-        // --- Set initial language ---
-        // Optionally check localStorage first
-        // const savedLang = localStorage.getItem('language') || 'en';
         const savedLang = 'en'; // Default to English
-        
         const initialCheck = savedLang === 'bn';
         toggleDesktop.checked = initialCheck;
         toggleMobile.checked = initialCheck;
         setLanguage(savedLang);
 
+
+        // --- Preloader Logic ---
+        const preloader = document.getElementById('preloader');
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                preloader.classList.add('loaded');
+            }, 300); // Small delay for effect
+        });
+
+        // --- Scroll Animation Logic (Intersection Observer) ---
+        const scrollObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    scrollObserver.unobserve(entry.target); // Animate only once
+                }
+            });
+        }, {
+            threshold: 0.1 // Trigger when 10% of the element is visible
+        });
+
+        const elementsToAnimate = document.querySelectorAll('.fade-in-on-scroll');
+        elementsToAnimate.forEach(el => {
+            scrollObserver.observe(el);
+        });
+        
+        // --- NEW: Back to Top Button Logic ---
+        const backToTopButton = document.getElementById('back-to-top');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) { // Show button after scrolling 300px
+                backToTopButton.classList.add('is-visible');
+            } else {
+                backToTopButton.classList.remove('is-visible');
+            }
+        });
+
+        // --- NEW: Active Nav Link Highlighting Logic ---
+        const sections = document.querySelectorAll('section[id]'); // Get all sections that have an ID
+        const navLinks = document.querySelectorAll('.nav-link'); // Get all nav links
+
+        const navObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    
+                    // Remove active class from all links
+                    navLinks.forEach(link => {
+                        link.classList.remove('active-link');
+                    });
+
+                    // Add active class to the corresponding link(s)
+                    const activeLinks = document.querySelectorAll(`.nav-link[href="#${id}"]`);
+                    activeLinks.forEach(link => {
+                        link.classList.add('active-link');
+                    });
+                }
+            });
+        }, {
+            threshold: 0.4, // Section is 40% in view
+            rootMargin: '-50px 0px -50px 0px' // Adjust viewport (avoids highlighting header)
+        });
+
+        sections.forEach(section => {
+            navObserver.observe(section);
+        });
+
+
     </script>
 
 </body>
 </html>
-
