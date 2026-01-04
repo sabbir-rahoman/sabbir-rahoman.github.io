@@ -3,793 +3,609 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sabbir Rahoman - Digital Creator & Designer</title>
+    <title>Sabbir Rahoman - Digital Creator</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <script>
-        // --- NEW: Custom Tailwind Theme (Emerald Dark Mode) ---
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {
-                        // New Accent Color
-                        emerald: {
-                            500: '#10B981',
-                            600: '#059669',
-                            700: '#047857',
-                        },
-                        // Softer Dark Palette
-                        gray: {
-                            700: '#374151',
-                            800: '#1F2937',
-                            900: '#111827',
-                        }
-                    },
                     fontFamily: {
-                        // New Font Family
-                        sans: ['Roboto', 'sans-serif'], // Default body font
-                        heading: ['Poppins', 'sans-serif'], // For headings
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        heading: ['"Outfit"', 'sans-serif'],
                     },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
-                        },
-                        fadeInUp: {
-                            '0%': { opacity: '0', transform: 'translateY(20px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
-                        },
-                        // NEW: Typing cursor animation
-                        blink: {
-                            '0%, 100%': { borderColor: 'transparent' },
-                            '50%': { borderColor: '#10B981' }, // Emerald-500
-                        }
+                    colors: {
+                        primary: '#6366f1',   // Indigo
+                        secondary: '#ec4899', // Pink
+                        accent: '#8b5cf6',    // Violet
+                        dark: '#0f172a',
                     },
                     animation: {
-                        fadeIn: 'fadeIn 1s ease-out',
-                        fadeInUp: 'fadeInUp 1s ease-out',
-                        // NEW: Typing cursor animation
-                        blink: 'blink 1s step-end infinite',
+                        'blob': 'blob 10s infinite',
+                        'float': 'float 6s ease-in-out infinite',
                     },
+                    keyframes: {
+                        blob: {
+                            "0%": { transform: "translate(0px, 0px) scale(1)" },
+                            "33%": { transform: "translate(30px, -50px) scale(1.1)" },
+                            "66%": { transform: "translate(-20px, 20px) scale(0.9)" },
+                            "100%": { transform: "translate(0px, 0px) scale(1)" }
+                        },
+                        float: {
+                            "0%, 100%": { transform: "translateY(0)" },
+                            "50%": { transform: "translateY(-20px)" }
+                        }
+                    }
                 },
             },
         };
     </script>
     
     <style>
-        /* Base font settings */
         body {
-            font-family: 'Roboto', sans-serif;
-        }
-        h1, h2, h3, h4, h5, h6 {
-            font-family: 'Poppins', sans-serif;
-        }
-
-        /* Chobi Download Protection */
-        img.protected-image {
-            pointer-events: none;
-            -webkit-user-drag: none;
-            user-select: none;
+            background-color: #f3f4f6;
+            overflow-x: hidden;
+            color: #1e293b;
         }
 
-        /* Language Switcher Styles (Updated Colors) */
-        .lang-switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 34px;
-        }
-        .lang-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #374151; /* gray-700 */
-            transition: .4s;
-            border-radius: 34px;
-        }
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        input:checked + .slider {
-            background-color: #059669; /* emerald-600 */
-        }
-        input:checked + .slider:before {
-            transform: translateX(26px);
-        }
-        .slider:after {
-            content: 'EN';
-            color: white;
-            display: block;
-            position: absolute;
-            transform: translate(-50%,-50%);
-            top: 50%;
-            left: 70%;
-            font-size: 10px;
-            font-weight: bold;
-        }
-        input:checked + .slider:after {
-            content: 'BN';
-            left: 30%;
-        }
-
-        /* --- Preloader Styles (Updated Colors) --- */
-        #preloader {
+        /* --- MIND BLOWING BACKGROUND --- */
+        .animated-bg-wrapper {
             position: fixed;
-            inset: 0;
-            background-color: #111827; /* bg-gray-900 */
-            z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.5s ease-out;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            background: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
         }
-        #preloader.loaded {
-            opacity: 0;
-            pointer-events: none;
-        }
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #1F2937; /* gray-800 */
-            border-top-color: #10B981; /* emerald-500 */
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* --- Scroll Animation Styles (Updated animation) --- */
-        .fade-in-on-scroll {
-            opacity: 0;
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-        }
-        .fade-in-up {
-            transform: translateY(30px) scale(0.98);
-        }
-        .fade-in-left {
-            transform: translateX(-30px) scale(0.98);
-        }
-        .fade-in-right {
-            transform: translateX(30px) scale(0.98);
-        }
-        .fade-in-on-scroll.is-visible {
-            opacity: 1;
-            transform: translateY(0) translateX(0) scale(1);
-        }
-
-        /* --- NEW: Active Nav Link Style (Underline) --- */
-        .nav-link.active-link {
-            color: #10B981; /* emerald-500 */
-            font-weight: 600;
-            position: relative;
-        }
-        .nav-link.active-link:after {
-            content: '';
+        .blob-1, .blob-2, .blob-3 {
             position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background-color: #10B981; /* emerald-500 */
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.6;
+            animation: blob 15s infinite alternate;
         }
-        /* Mobile active link */
-        #mobile-menu .nav-link.active-link {
-            background-color: #1F2937; /* gray-800 */
-            color: #10B981;
-        }
-        #mobile-menu .nav-link.active-link:after {
-            display: none; /* No underline on mobile */
+        .blob-1 { top: -10%; left: -10%; width: 500px; height: 500px; background: #a78bfa; animation-delay: 0s; }
+        .blob-2 { top: 40%; right: -10%; width: 400px; height: 400px; background: #f472b6; animation-delay: 2s; }
+        .blob-3 { bottom: -10%; left: 20%; width: 600px; height: 600px; background: #60a5fa; animation-delay: 4s; }
+
+        /* --- GLASSMORPHISM --- */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         
-
-        /* --- NEW: Back to Top Button Styles (Updated Colors) --- */
-        #back-to-top {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #059669; /* emerald-600 */
-            color: white;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        /* --- 3D TILT & HOVER EFFECTS --- */
+        .tilt-card {
+            transform-style: preserve-3d;
+            transform: perspective(1000px);
+        }
+        .tilt-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            border-color: #fff;
+        }
+        
+        /* --- SCROLL ANIMATIONS --- */
+        .reveal {
             opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
-            transform: translateY(20px);
-            z-index: 1000;
+            transform: translateY(50px) scale(0.95);
+            transition: all 1s cubic-bezier(0.5, 0, 0, 1);
         }
-        #back-to-top.is-visible {
+        .reveal.active {
             opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
         }
-        #back-to-top:hover {
-            background-color: #047857; /* emerald-700 */
-        }
+        
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
 
-        /* --- NEW: Gallery Masonry Grid --- */
-        .gallery-grid {
-            column-gap: 1.5rem; /* gap-6 */
-            columns: 2; /* 2 columns for mobile */
+        /* --- TYPING CURSOR --- */
+        .typing-cursor {
+            display: inline-block;
+            width: 3px;
+            background-color: #6366f1;
+            animation: blink 1s infinite;
         }
-        @media (min-width: 768px) {
-            .gallery-grid {
-                columns: 3;
-            }
-        }
-        @media (min-width: 1024px) {
-            .gallery-grid {
-                columns: 5;
-            }
-        }
-        .gallery-item {
-            break-inside: avoid-column;
-            margin-bottom: 1.5rem; /* space-y-6 equivalent */
-        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
+        /* --- LANGUAGE SWITCHER --- */
+        .lang-switch { position: relative; width: 60px; height: 30px; }
+        .lang-switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.8);
+            transition: .4s; border-radius: 34px; backdrop-filter: blur(4px);
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 22px; width: 22px; left: 4px; bottom: 3px;
+            background-color: #6366f1; transition: .4s; border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        input:checked + .slider:before { transform: translateX(28px); background-color: #ec4899; }
+        .slider:after { content: 'EN'; position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 10px; font-weight: bold; color: #6366f1; }
+        input:checked + .slider:after { content: 'BN'; left: 8px; color: #ec4899; right: auto; }
+
+        /* --- IMAGE PROTECTION --- */
+        img.protected-image { pointer-events: none; -webkit-user-drag: none; user-select: none; }
+        
+        /* --- NAV ACTIVE LINK --- */
+        .nav-link { position: relative; }
+        .nav-link::after {
+            content: ''; position: absolute; width: 0; height: 2px; bottom: -2px; left: 50%;
+            background: linear-gradient(90deg, #6366f1, #ec4899);
+            transition: all 0.3s ease; transform: translateX(-50%);
+        }
+        .nav-link:hover::after, .nav-link.active-link::after { width: 100%; }
+        .nav-link.active-link { color: #6366f1; font-weight: 700; }
+
+        /* --- PRELOADER --- */
+        #preloader {
+            position: fixed; inset: 0; background: #fff; z-index: 99999;
+            display: flex; justify-content: center; align-items: center; transition: opacity 0.5s;
+        }
+        #preloader.loaded { opacity: 0; pointer-events: none; }
+        .loader-spin {
+            width: 50px; height: 50px; border: 5px solid #f3f3f3;
+            border-top: 5px solid #6366f1; border-radius: 50%; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="bg-gray-900 text-gray-300 antialiased font-sans">
+<body class="antialiased font-sans selection:bg-pink-500 selection:text-white">
 
-    <div id="preloader">
-        <div class="spinner"></div>
+    <div id="preloader"><div class="loader-spin"></div></div>
+
+    <div class="animated-bg-wrapper">
+        <div class="blob-1"></div>
+        <div class="blob-2"></div>
+        <div class="blob-3"></div>
     </div>
 
-    <header class="bg-gray-900/70 backdrop-blur-md sticky top-0 z-50 border-b border-gray-800">
-        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="#" class="text-2xl md:text-3xl font-bold text-white font-heading">
-                Sabbir <span class="text-emerald-500">Rahoman</span>
+    <header class="fixed w-full top-0 z-50 transition-all duration-300" id="navbar">
+        <div class="absolute inset-0 bg-white/70 backdrop-blur-md border-b border-white/50 shadow-sm"></div>
+        <nav class="container mx-auto px-6 py-4 relative flex justify-between items-center">
+            <a href="#" class="text-2xl md:text-3xl font-extrabold font-heading tracking-tight text-slate-800">
+                Sabbir <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Rahoman</span>
             </a>
             
-            <div id="desktop-menu" class="hidden md:flex items-center space-x-6">
-                <a href="#about" class="nav-link text-gray-300 hover:text-emerald-500 transition duration-300" data-lang-key="nav_about">About Me</a>
-                <a href="#services" class="nav-link text-gray-300 hover:text-emerald-500 transition duration-300" data-lang-key="nav_services">Services</a>
-                <a href="#my-design" class="nav-link text-gray-300 hover:text-emerald-500 transition duration-300" data-lang-key="nav_my_design">My Design</a>
+            <div id="desktop-menu" class="hidden md:flex items-center space-x-8">
+                <a href="#about" class="nav-link text-slate-600 hover:text-primary font-medium transition" data-lang-key="nav_about">About Me</a>
+                <a href="#services" class="nav-link text-slate-600 hover:text-primary font-medium transition" data-lang-key="nav_services">Services</a>
+                <a href="#my-design" class="nav-link text-slate-600 hover:text-primary font-medium transition" data-lang-key="nav_my_design">My Design</a>
                 
                 <label class="lang-switch">
                     <input type="checkbox" id="language-toggle">
                     <span class="slider"></span>
                 </label>
                 
-                <a href="#contact" class="nav-link bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg transition duration-300 shadow-lg shadow-emerald-500/30 font-medium">
+                <a href="#contact" class="px-6 py-2.5 rounded-full bg-slate-900 text-white font-medium hover:bg-gradient-to-r hover:from-primary hover:to-secondary transition-all transform hover:scale-105 shadow-lg">
                     <span data-lang-key="nav_contact">Contact</span>
                 </a>
             </div>
 
-            <button id="menu-btn" class="md:hidden focus:outline-none text-white">
-                <svg class="w-7 h-7" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
-                    <path d="M4 6h16M4 12h16m-7 6h7"></path>
-                </svg>
+            <button id="menu-btn" class="md:hidden text-slate-800 focus:outline-none">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
             </button>
         </nav>
 
-        <div id="mobile-menu" class="hidden md:hidden bg-gray-900 shadow-lg border-t border-gray-800">
-            <a href="#about" class="nav-link block py-3 px-6 text-gray-300 hover:bg-gray-800" data-lang-key="nav_about_m">About Me</a>
-            <a href="#services" class="nav-link block py-3 px-6 text-gray-300 hover:bg-gray-800" data-lang-key="nav_services_m">Services</a>
-            <a href="#my-design" class="nav-link block py-3 px-6 text-gray-300 hover:bg-gray-800" data-lang-key="nav_my_design_m">My Design</a>
-            <a href="#contact" class="nav-link block py-3 px-6 text-gray-300 hover:bg-gray-800" data-lang-key="nav_contact_m">Contact</a>
-            
-            <div class="px-6 py-3 border-t border-gray-800">
-                <span class="text-gray-400 text-sm" data-lang-key="nav_lang_m">Language:</span>
-                <label class="lang-switch ml-4">
-                    <input type="checkbox" id="language-toggle-mobile">
-                    <span class="slider"></span>
-                </label>
+        <div id="mobile-menu" class="hidden md:hidden absolute w-full bg-white/95 backdrop-blur-xl border-t border-gray-100 shadow-xl">
+            <div class="flex flex-col p-6 space-y-4">
+                <a href="#about" class="block text-lg font-medium text-slate-700" data-lang-key="nav_about_m">About Me</a>
+                <a href="#services" class="block text-lg font-medium text-slate-700" data-lang-key="nav_services_m">Services</a>
+                <a href="#my-design" class="block text-lg font-medium text-slate-700" data-lang-key="nav_my_design_m">My Design</a>
+                <a href="#contact" class="block text-lg font-medium text-slate-700" data-lang-key="nav_contact_m">Contact</a>
+                <div class="pt-4 border-t border-gray-200 flex justify-between items-center">
+                    <span class="text-slate-500" data-lang-key="nav_lang_m">Language</span>
+                    <label class="lang-switch">
+                        <input type="checkbox" id="language-toggle-mobile">
+                        <span class="slider"></span>
+                    </label>
+                </div>
             </div>
         </div>
     </header>
 
     <main>
-        <section id="home" class="relative pt-40 pb-32 md:pt-56 md:pb-48 bg-gradient-to-br from-gray-900 to-gray-800 overflow-hidden">
-            <div class="container mx-auto px-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-                    <div class="text-center md:text-left z-10">
-                        <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight font-heading animate-fadeInUp" style="animation-delay: 100ms;">
-                            <span class="block" data-lang-key="hero_title1">Digital Creator &</span>
-                            <span class="block text-emerald-500" id="typing-container">
-                                <span id="typing-text"></span>
-                                <span class="border-r-4 border-emerald-500 animate-blink" style="margin-bottom: -0.25rem; height: 1em;">&nbsp;</span>
-                            </span>
-                        </h1>
-                        <p class="text-lg md:text-xl text-gray-300 mb-10 max-w-xl mx-auto md:mx-0 animate-fadeInUp" style="animation-delay: 300ms;" data-lang-key="hero_subtitle">
-                            Hello, I'm Sabbir Rahoman. I am a student and tech enthusiast. I transform your ideas into attractive designs and digital experiences.
-                        </p>
-                        <div class="flex flex-col sm:flex-row justify-center md:justify-start gap-4 animate-fadeInUp" style="animation-delay: 500ms;">
-                            <a href="#my-design" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300 transform hover:scale-105 shadow-lg shadow-emerald-500/40" data-lang-key="hero_btn_work">
-                                See My Work
-                            </a>
-                            <a href="https://shobkichuofficial.github.io/" target="_blank" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300 transform hover:scale-105 shadow-lg shadow-gray-800/40" data-lang-key="hero_btn_store">
-                                Visit My Store
-                            </a>
-                        </div>
+        <section id="home" class="min-h-screen flex items-center pt-20 relative overflow-hidden">
+            <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="z-10 reveal active">
+                    <div class="inline-block px-4 py-1.5 rounded-full bg-white/60 border border-white/50 backdrop-blur-sm text-sm font-bold text-primary mb-6 shadow-sm animate-float">
+                        👋 Welcome to my creative world
                     </div>
-                    
-                    <div class="hidden md:flex justify-center items-center z-0 relative animate-fadeIn" style="animation-delay: 200ms;">
-                        <div class="absolute w-72 h-72 bg-emerald-500 rounded-full opacity-10 blur-3xl"></div>
-                        <svg class="w-full max-w-md h-auto text-gray-800" fill="none" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                            <path fill="currentColor" d="M38.1,-54.6C51.6,-48.5,66.3,-41.3,75.3,-30.2C84.3,-19.1,87.6,-4.1,84.5,9.6C81.4,23.4,71.9,36,60.8,45.8C49.7,55.5,37.1,62.5,23.6,67C10.1,71.5,-4.4,73.5,-18.2,69.9C-31.9,66.3,-44.9,57.1,-56.3,46.1C-67.6,35.1,-77.3,22.3,-79.8,8.2C-82.3,-5.9,-77.7,-21.3,-68.9,-33.1C-60.1,-45,-47.1,-53.4,-34.2,-59.1C-21.3,-64.8,-8.5,-67.8,4,-68.8C16.5,-69.8,32.9,-69,38.1,-54.6Z" transform="translate(100 100) scale(1.1)" />
-                        </svg>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="about" class="py-20 lg:py-28 bg-gray-800 overflow-hidden">
-            <div class="container mx-auto px-6">
-                <div class="flex flex-col md:flex-row items-center gap-12 md:gap-16">
-                    <div class="md:w-2/3 text-center md:text-left fade-in-on-scroll fade-in-left" style="transition-delay: 150ms;">
-                        <h2 class="text-3xl lg:text-4xl font-bold text-white mb-6 font-heading" data-lang-key="about_title">About Me</h2>
-                        
-                        <p class="text-gray-300 leading-relaxed mb-4 text-lg" data-lang-key="about_p1">
-                            As a passionate tech enthusiast and digital creator from Bangladesh, I'm driven by the power of technology to bring ideas to life. My focus is on learning and applying new skills to create engaging digital experiences.
-                        </p>
-                        <p class="text-gray-300 leading-relaxed mb-4 text-lg" data-lang-key="about_p2">
-                            I am proficient in creating websites using AI, professional Logo Design, Banners, Posters, ID Cards, and CV (Resume) design. I believe in continuous learning and improvement.
-                        </p>
-                        
-                        <blockquote class="my-6 border-l-4 border-emerald-500 pl-4 py-2 text-lg italic text-gray-400">
-                            <span data-lang-key="about_p3">My motto: "FAIL" means "First Attempt In Learning". Failure is just the first step towards learning! 🌱✨</span>
-                        </blockquote>
-                        
-                        <a href="#contact" class="text-emerald-500 hover:text-emerald-400 font-semibold text-lg transition duration-300 group">
-                            <span data-lang-key="about_contact">Contact Me</span>
-                            <span class="inline-block transition-transform group-hover:translate-x-1">&rarr;</span>
+                    <h1 class="text-5xl md:text-7xl font-bold text-slate-900 leading-tight mb-6 font-heading">
+                        <span data-lang-key="hero_title1">Digital Creator &</span> <br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent" id="typing-container">
+                            <span id="typing-text"></span><span class="typing-cursor">&nbsp;</span>
+                        </span>
+                    </h1>
+                    <p class="text-xl text-slate-600 mb-8 leading-relaxed max-w-lg" data-lang-key="hero_subtitle">
+                        Hello, I'm Sabbir Rahoman. I am a student and tech enthusiast. I transform your ideas into attractive designs and digital experiences.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#my-design" class="px-8 py-4 rounded-full bg-slate-900 text-white font-bold text-lg hover:bg-primary transition-all shadow-xl hover:shadow-primary/40 transform hover:-translate-y-1" data-lang-key="hero_btn_work">
+                            See My Work
+                        </a>
+                        <a href="https://shobkichuofficial.github.io/" target="_blank" class="px-8 py-4 rounded-full bg-white text-slate-900 font-bold text-lg border border-white/50 hover:bg-white/80 transition-all shadow-lg transform hover:-translate-y-1" data-lang-key="hero_btn_store">
+                            Visit My Store
                         </a>
                     </div>
-                    <div class="md:w-1/3 fade-in-on-scroll fade-in-right">
-                        <div class="transform md:skew-y-3 transition duration-300 hover:skew-y-0">
-                            <img src="IMG_3068 edited.webp" alt="Sabbir Rahoman" class="protected-image rounded-2xl shadow-2xl w-full max-w-sm mx-auto shadow-emerald-500/20">
-                        </div>
-                    </div>
                 </div>
-            </div>
-        </section>
-
-        <section id="services" class="py-20 lg:py-28 bg-gray-900 overflow-hidden">
-            <div class="container mx-auto px-6">
-                <h2 class="text-3xl lg:text-4xl font-bold text-center text-white mb-4 font-heading fade-in-on-scroll fade-in-up" data-lang-key="services_title">
-                    My Services
-                </h2>
-                <p class="text-center text-gray-400 text-lg mb-16 max-w-xl mx-auto fade-in-on-scroll fade-in-up" style="transition-delay: 100ms;" data-lang-key="services_subtitle">
-                    I offer a variety of creative and technical services for your projects.
-                </p>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    
-                    <div class="bg-gray-800/60 backdrop-blur-md p-8 rounded-2xl border border-gray-700 transition duration-300 hover:shadow-2xl hover:border-emerald-500/50 hover:-translate-y-1 hover:shadow-emerald-600/20 fade-in-on-scroll fade-in-up" style="transition-delay: 200ms;">
-                        <div class="mb-4 w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                        </div>
-                        <h3 class="text-2xl font-bold text-white mb-3 font-heading" data-lang-key="service1_title">Graphic Design</h3>
-                        <p class="text-gray-400 mb-4" data-lang-key="service1_desc">
-                            Attractive and professional designs that highlight your brand.
-                        </p>
-                        <ul class="space-y-2 text-gray-300">
-                            <li class="flex items-center"><span class="text-emerald-500 mr-2">&#10003;</span> <span data-lang-key="service1_item1">Logo Design</span></li>
-                            <li class="flex items-center"><span class="text-emerald-500 mr-2">&#10003;</span> <span data-lang-key="service1_item2">Banners & Posters</span></li>
-                            <li class="flex items-center"><span class="text-emerald-500 mr-2">&#10003;</span> <span data-lang-key="service1_item3">Product Banners</span></li>
-                        </ul>
-                    </div>
-
-                    <div class="bg-gray-800/60 backdrop-blur-md p-8 rounded-2xl border border-gray-700 transition duration-300 hover:shadow-2xl hover:border-emerald-500/50 hover:-translate-y-1 hover:shadow-emerald-600/20 fade-in-on-scroll fade-in-up" style="transition-delay: 300ms;">
-                        <div class="mb-4 w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center">
-                           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 21h7a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2zM10 21h-4v-4a2 2 0 012-2h2v6zM14 3v4a1 1 0 001 1h4"></path></svg>
-                        </div>
-                        <h3 class="text-2xl font-bold text-white mb-3 font-heading" data-lang-key="service2_title">Documents & CV</h3>
-                        <p class="text-gray-400 mb-4" data-lang-key="service2_desc">
-                            Professional ID cards and modern CV (Resume) designs.
-                        </p>
-                        <ul class="space-y-2 text-gray-300">
-                            <li class="flex items-center"><span class="text-emerald-500 mr-2">&#10003;</span> <span data-lang-key="service2_item1">Professional CV Design</span></li>
-                            <li class="flex items-center"><span class="text-emerald-500 mr-2">&#10003;</span> <span data-lang-key="service2_item2">ID Card Design</span></li>
-                            <li class="flex items-center"><span class="text-emerald-500 mr-2">&#10003;</span> <span data-lang-key="service2_item3">Business Cards</span></li>
-                        </ul>
-                    </div>
-
-                    <div class="bg-gray-800/60 backdrop-blur-md p-8 rounded-2xl border border-gray-700 transition duration-300 hover:shadow-2xl hover:border-emerald-500/50 hover:-translate-y-1 hover:shadow-emerald-600/20 fade-in-on-scroll fade-in-up" style="transition-delay: 400ms;">
-                         <div class="mb-4 w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                        </div>
-                        <h3 class="text-2xl font-bold text-white mb-3 font-heading" data-lang-key="service3_title">AI Web Solutions</h3>
-                        <p class="text-gray-400 mb-4" data-lang-key="service3_desc">
-                            Fast, responsive, and modern websites built using AI.
-                        </p>
-                        <ul class="space-y-2 text-gray-300">
-                            <li class="flex items-center"><span class="text-emerald-500 mr-2">&#10003;</span> <span data-lang-key="service3_item1">Personal My Design</span></li>
-                            <li class="flex items-center"><span class="text-emerald-500 mr-2">&#10003;</span> <span data-lang-key="service3_item2">Basic Business Website</span></li>
-                            <li class="flex items-center"><span class="text-emerald-500 mr-2">&#10003;</span> <span data-lang-key="service3_item3">Computer Basics</span></li>
-                        </ul>
+                <div class="relative z-10 flex justify-center reveal reveal-delay-2">
+                    <div class="relative w-80 h-80 md:w-[500px] md:h-[500px]">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-primary to-secondary rounded-full opacity-30 blur-3xl animate-pulse"></div>
+                        <img src="IMG_3068 edited.webp" alt="Sabbir Rahoman" class="protected-image relative w-full h-full object-cover rounded-[3rem] shadow-2xl rotate-3 hover:rotate-0 transition-all duration-700 border-4 border-white/40">
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="my-design" class="py-20 lg:py-28 bg-gray-800 overflow-hidden">
+        <section id="about" class="py-24 relative">
             <div class="container mx-auto px-6">
-                <h2 class="text-3xl lg:text-4xl font-bold text-center text-white mb-16 font-heading fade-in-on-scroll fade-in-up" data-lang-key="my_design_title">
-                    My Design
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    
-                    <div class="relative rounded-lg shadow-lg overflow-hidden group transition duration-300 hover:shadow-2xl hover:shadow-emerald-600/20 border border-gray-700 fade-in-on-scroll fade-in-up" style="transition-delay: 100ms;">
-                        <img src="logo1.webp" alt="Antor Hair Fashion Logo" class="w-full h-64 object-cover transition duration-500 group-hover:scale-110">
-                        <div class="absolute bottom-0 left-0 w-full p-5 bg-gradient-to-t from-black/90 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out">
-                            <h3 class="text-lg font-bold text-white">Antor Hair Fashion</h3>
-                            <p class="text-sm text-gray-300" data-lang-key="my_design_tag">Logo Design</p>
+                <div class="glass-card rounded-3xl p-8 md:p-12 reveal">
+                    <div class="flex flex-col md:flex-row items-center gap-12">
+                        <div class="md:w-1/2">
+                            <h2 class="text-4xl font-bold mb-6 font-heading flex items-center gap-3">
+                                <span class="w-12 h-1 bg-gradient-to-r from-primary to-secondary rounded-full"></span>
+                                <span data-lang-key="about_title" class="text-slate-800">About Me</span>
+                            </h2>
+                            <p class="text-lg text-slate-600 mb-6 leading-relaxed" data-lang-key="about_p1">
+                                As a passionate tech enthusiast and digital creator from Bangladesh, I'm driven by the power of technology to bring ideas to life.
+                            </p>
+                            <p class="text-lg text-slate-600 mb-6 leading-relaxed" data-lang-key="about_p2">
+                                I am proficient in creating websites using AI, professional Logo Design, Banners, Posters, ID Cards, and CV (Resume) design.
+                            </p>
+                            <div class="bg-gradient-to-r from-primary/10 to-secondary/10 p-6 rounded-xl border-l-4 border-primary mb-8">
+                                <p class="text-slate-700 italic font-medium text-lg" data-lang-key="about_p3">
+                                    "FAIL" means "First Attempt In Learning". Failure is just the first step towards learning! 🌱✨
+                                </p>
+                            </div>
+                            <a href="#contact" class="text-primary font-bold text-lg hover:text-secondary transition flex items-center gap-2 group">
+                                <span data-lang-key="about_contact">Contact Me</span>
+                                <svg class="w-5 h-5 transform group-hover:translate-x-2 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </a>
+                        </div>
+                        <div class="md:w-1/2 grid grid-cols-2 gap-4">
+                            <div class="glass-card p-6 rounded-2xl text-center hover:scale-105 transition duration-300">
+                                <span class="text-4xl">🎨</span>
+                                <h3 class="font-bold mt-2 text-slate-800">Creative</h3>
+                            </div>
+                            <div class="glass-card p-6 rounded-2xl text-center hover:scale-105 transition duration-300 translate-y-8">
+                                <span class="text-4xl">🚀</span>
+                                <h3 class="font-bold mt-2 text-slate-800">Fast</h3>
+                            </div>
+                            <div class="glass-card p-6 rounded-2xl text-center hover:scale-105 transition duration-300">
+                                <span class="text-4xl">💡</span>
+                                <h3 class="font-bold mt-2 text-slate-800">Smart</h3>
+                            </div>
+                            <div class="glass-card p-6 rounded-2xl text-center hover:scale-105 transition duration-300 translate-y-8">
+                                <span class="text-4xl">💻</span>
+                                <h3 class="font-bold mt-2 text-slate-800">Tech</h3>
+                            </div>
                         </div>
                     </div>
-                    <div class="relative rounded-lg shadow-lg overflow-hidden group transition duration-300 hover:shadow-2xl hover:shadow-emerald-600/20 border border-gray-700 fade-in-on-scroll fade-in-up" style="transition-delay: 200ms;">
-                         <img src="logo2.webp" alt="Jannat's Bakery Logo" class="w-full h-64 object-cover transition duration-500 group-hover:scale-110">
-                        <div class="absolute bottom-0 left-0 w-full p-5 bg-gradient-to-t from-black/90 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out">
-                            <h3 class="text-lg font-bold text-white">Jannat's Bakery</h3>
-                            <p class="text-sm text-gray-300" data-lang-key="my_design_tag">Logo Design</p>
-                        </div>
-                    </div>
-                    <div class="relative rounded-lg shadow-lg overflow-hidden group transition duration-300 hover:shadow-2xl hover:shadow-emerald-600/20 border border-gray-700 fade-in-on-scroll fade-in-up" style="transition-delay: 300ms;">
-                         <img src="logo3.webp" alt="Shuddho Deal Logo" class="w-full h-64 object-cover transition duration-500 group-hover:scale-110" onerror="this.src='https://placehold.co/400x400/1e293b/3b82f6?text=Missing%3A%0Alogo3.webp'">
-                        <div class="absolute bottom-0 left-0 w-full p-5 bg-gradient-to-t from-black/90 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out">
-                            <h3 class="text-lg font-bold text-white">Shuddho Deal</h3>
-                            <p class="text-sm text-gray-300" data-lang-key="my_design_tag">Logo Design</p>
-                        </div>
-                    </div>
-                    <div class="relative rounded-lg shadow-lg overflow-hidden group transition duration-300 hover:shadow-2xl hover:shadow-emerald-600/20 border border-gray-700 fade-in-on-scroll fade-in-up" style="transition-delay: 400ms;">
-                         <img src="logo4.webp" alt="Shorbokichu.com Logo" class="w-full h-64 object-cover transition duration-500 group-hover:scale-110" onerror="this.src='https://placehold.co/400x400/1e293b/3b82f6?text=Missing%3A%0Alogo4.webp'">
-                        <div class="absolute bottom-0 left-0 w-full p-5 bg-gradient-to-t from-black/90 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out">
-                            <h3 class="text-lg font-bold text-white">Shorbokichu.com</h3>
-                            <p class="text-sm text-gray-300" data-lang-key="my_design_tag">Logo Design</p>
-                        </div>
-                    </div>
-
                 </div>
             </div>
         </section>
 
-        <section id="contact" class="py-20 lg:py-28 bg-gray-800 overflow-hidden">
-            <div class="container mx-auto px-6 max-w-3xl text-center">
-                <h2 class="text-3xl lg:text-4xl font-bold text-white mb-6 font-heading fade-in-on-scroll fade-in-up" data-lang-key="contact_title">
-                    Get In Touch
-                </h2>
-                <p class="text-lg text-gray-400 mb-12 fade-in-on-scroll fade-in-up" style="transition-delay: 100ms;" data-lang-key="contact_subtitle">
-                    Interested in working with me? Or just want to say hi? Send me an email or follow me on social media.
-                </p>
-
-                <a href="mailto:sabbirrahoman217@gmail.com" class="inline-flex items-center gap-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300 transform hover:scale-105 shadow-lg shadow-emerald-500/40 mb-16 fade-in-on-scroll fade-in-up" style="transition-delay: 200ms;">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                    <span>sabbirrahoman217@gmail.com</span>
-                </a>
+        <section id="services" class="py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16 reveal">
+                    <span class="text-secondary font-bold tracking-wider uppercase text-sm">What I Do</span>
+                    <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mt-2 font-heading" data-lang-key="services_title">My Services</h2>
+                </div>
                 
-                <div class="flex justify-center space-x-6 mb-6 fade-in-on-scroll fade-in-up" style="transition-delay: 300ms;">
-                    <a href="https://www.facebook.com/iamsabbirmolla/" target="_blank" class="text-gray-400 hover:text-emerald-500 transition-all duration-300 transform hover:-translate-y-1" title="Facebook">
-                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3l-.5 3h-2.5v6.8c4.56-.93 8-4.96 8-9.8z"/></svg>
-                    </a>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="glass-card p-8 rounded-3xl tilt-card reveal reveal-delay-1 group">
+                        <div class="w-16 h-16 bg-gradient-to-br from-primary to-blue-500 rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg group-hover:scale-110 transition">
+                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-bold text-slate-800 mb-3" data-lang-key="service1_title">Graphic Design</h3>
+                        <p class="text-slate-600 mb-6" data-lang-key="service1_desc">Attractive and professional designs that highlight your brand.</p>
+                        <ul class="space-y-3">
+                            <li class="flex items-center text-slate-700"><span class="text-primary mr-2">✓</span> <span data-lang-key="service1_item1">Logo Design</span></li>
+                            <li class="flex items-center text-slate-700"><span class="text-primary mr-2">✓</span> <span data-lang-key="service1_item2">Banners & Posters</span></li>
+                            <li class="flex items-center text-slate-700"><span class="text-primary mr-2">✓</span> <span data-lang-key="service1_item3">Product Banners</span></li>
+                        </ul>
+                    </div>
                     
-                    <a href="https://www.instagram.com/sabbir_rahoman85/" target="_blank" class="text-gray-400 hover:text-emerald-500 transition-all duration-300 transform hover:-translate-y-1" title="Instagram">
-                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.148 3.227-1.669 4.771-4.919 4.919-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.07-1.646-.07-4.85s.012-3.584.07-4.85c.148-3.227 1.669 4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163m0-2.163C8.74 0 8.333.011 7.053.069 2.73 1.22.525 3.31.069 7.053.011 8.333 0 8.74 0 12s.011 3.667.069 4.947c.457 3.742 2.618 5.821 6.358 6.98C8.333 23.989 8.74 24 12 24s3.667-.011 4.947-.069c3.742-.457 5.821-2.618 6.98-6.358C23.989 16.667 24 16.26 24 12s-.011-3.667-.069-4.947c-.457-3.742-2.618-5.821-6.358-6.98C15.667.011 15.26 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.88 1.44 1.44 0 000-2.88z"></path>
-                        </svg>
-                    </a>
-                    
-                    <a href="https://www.tiktok.com/@sabbir_rahoman85" target="_blank" class="text-gray-400 hover:text-emerald-500 transition-all duration-300 transform hover:-translate-y-1" title="TikTok">
-                         <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12.525.02c1.31-.02 2.61-.01 3.91.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-2.43.05-4.84-.6-6.62-2.31-1.74-1.66-2.61-3.89-2.62-6.23-.01-2.52.7-5.01 2.36-6.93 1.8-2.05 4.35-3.18 6.92-3.13 1.26.01 2.5.11 3.71.36.01 2.14-.01 4.28-.01 6.42-.53-.02-1.07-.1-1.61-.23-1.09-.26-2.17-.59-3.21-.93-1.03-.33-2.02-.75-2.96-1.25-.05-1.09.01-2.19.02-3.28.09-1.08.31-2.15.68-3.16.39-1.07.96-2.06 1.66-2.93.03 1.1.02 2.21.01 3.32z"></path>
-                        </svg>
-                    </a>
-                    
-                    <a href="https://x.com/SabbirRahoman85" target="_blank" class="text-gray-400 hover:text-emerald-500 transition-all duration-300 transform hover:-translate-y-1" title="X (Twitter)">
-                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                    </a>
-                </div>
+                    <div class="glass-card p-8 rounded-3xl tilt-card reveal reveal-delay-2 group">
+                        <div class="w-16 h-16 bg-gradient-to-br from-secondary to-pink-600 rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg group-hover:scale-110 transition">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 21h7a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2zM10 21h-4v-4a2 2 0 012-2h2v6zM14 3v4a1 1 0 001 1h4"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-bold text-slate-800 mb-3" data-lang-key="service2_title">Documents & CV</h3>
+                        <p class="text-slate-600 mb-6" data-lang-key="service2_desc">Professional ID cards and modern CV (Resume) designs.</p>
+                        <ul class="space-y-3">
+                            <li class="flex items-center text-slate-700"><span class="text-secondary mr-2">✓</span> <span data-lang-key="service2_item1">Professional CV Design</span></li>
+                            <li class="flex items-center text-slate-700"><span class="text-secondary mr-2">✓</span> <span data-lang-key="service2_item2">ID Card Design</span></li>
+                            <li class="flex items-center text-slate-700"><span class="text-secondary mr-2">✓</span> <span data-lang-key="service2_item3">Business Cards</span></li>
+                        </ul>
+                    </div>
 
+                    <div class="glass-card p-8 rounded-3xl tilt-card reveal reveal-delay-3 group">
+                        <div class="w-16 h-16 bg-gradient-to-br from-accent to-purple-600 rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg group-hover:scale-110 transition">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-bold text-slate-800 mb-3" data-lang-key="service3_title">AI Web Solutions</h3>
+                        <p class="text-slate-600 mb-6" data-lang-key="service3_desc">Fast, responsive, and modern websites built using AI.</p>
+                        <ul class="space-y-3">
+                            <li class="flex items-center text-slate-700"><span class="text-accent mr-2">✓</span> <span data-lang-key="service3_item1">Personal My Design</span></li>
+                            <li class="flex items-center text-slate-700"><span class="text-accent mr-2">✓</span> <span data-lang-key="service3_item2">Basic Business Website</span></li>
+                            <li class="flex items-center text-slate-700"><span class="text-accent mr-2">✓</span> <span data-lang-key="service3_item3">Computer Basics</span></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </section>
+
+        <section id="my-design" class="py-24">
+            <div class="container mx-auto px-6">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-12 reveal">
+                    <div>
+                        <span class="text-primary font-bold tracking-wider uppercase text-sm">Portfolio</span>
+                        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 font-heading" data-lang-key="my_design_title">My Design</h2>
+                    </div>
+                    <div class="h-1 w-full md:w-1/3 bg-gradient-to-r from-primary to-transparent mt-4 md:mt-0 rounded-full"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="group relative rounded-3xl overflow-hidden shadow-xl reveal reveal-delay-1 border-4 border-white">
+                        <img src="logo1.webp" alt="Design 1" class="w-full h-72 object-cover transform transition duration-700 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-end p-6">
+                            <h3 class="text-white font-bold text-xl translate-y-4 group-hover:translate-y-0 transition duration-300">Antor Hair Fashion</h3>
+                            <p class="text-primary-300 text-sm translate-y-4 group-hover:translate-y-0 transition duration-300 delay-75" data-lang-key="my_design_tag">Logo Design</p>
+                        </div>
+                    </div>
+                    <div class="group relative rounded-3xl overflow-hidden shadow-xl reveal reveal-delay-2 border-4 border-white">
+                        <img src="logo2.webp" alt="Design 2" class="w-full h-72 object-cover transform transition duration-700 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-end p-6">
+                            <h3 class="text-white font-bold text-xl translate-y-4 group-hover:translate-y-0 transition duration-300">Jannat's Bakery</h3>
+                            <p class="text-primary-300 text-sm translate-y-4 group-hover:translate-y-0 transition duration-300 delay-75" data-lang-key="my_design_tag">Logo Design</p>
+                        </div>
+                    </div>
+                    <div class="group relative rounded-3xl overflow-hidden shadow-xl reveal reveal-delay-3 border-4 border-white">
+                        <img src="logo3.webp" alt="Design 3" class="w-full h-72 object-cover transform transition duration-700 group-hover:scale-110" onerror="this.src='https://placehold.co/400x400/fff/6366f1?text=Logo+3'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-end p-6">
+                            <h3 class="text-white font-bold text-xl translate-y-4 group-hover:translate-y-0 transition duration-300">Shuddho Deal</h3>
+                            <p class="text-primary-300 text-sm translate-y-4 group-hover:translate-y-0 transition duration-300 delay-75" data-lang-key="my_design_tag">Logo Design</p>
+                        </div>
+                    </div>
+                    <div class="group relative rounded-3xl overflow-hidden shadow-xl reveal reveal-delay-3 border-4 border-white">
+                         <img src="logo4.webp" alt="Design 4" class="w-full h-72 object-cover transform transition duration-700 group-hover:scale-110" onerror="this.src='https://placehold.co/400x400/fff/6366f1?text=Logo+4'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-end p-6">
+                            <h3 class="text-white font-bold text-xl translate-y-4 group-hover:translate-y-0 transition duration-300">Shorbokichu.com</h3>
+                            <p class="text-primary-300 text-sm translate-y-4 group-hover:translate-y-0 transition duration-300 delay-75" data-lang-key="my_design_tag">Logo Design</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="py-24 relative overflow-hidden">
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/20 rounded-full blur-3xl -z-10"></div>
+            
+            <div class="container mx-auto px-6 text-center relative z-10">
+                <div class="glass-card max-w-4xl mx-auto rounded-[3rem] p-10 md:p-16 border border-white/60 shadow-2xl reveal">
+                    
+                    <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-6 font-heading" data-lang-key="contact_title">Get In Touch</h2>
+                    <p class="text-lg text-slate-600 mb-10 max-w-2xl mx-auto" data-lang-key="contact_subtitle">
+                        Interested in working with me? Or just want to say hi? Send me an email or follow me on social media.
+                    </p>
+
+                    <a href="mailto:sabbirrahoman217@gmail.com" class="inline-flex items-center gap-3 bg-gradient-to-r from-primary to-secondary text-white font-bold py-4 px-10 rounded-full text-lg transition duration-300 transform hover:scale-110 shadow-xl shadow-primary/30 mb-12">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        <span>sabbirrahoman217@gmail.com</span>
+                    </a>
+
+                    <div class="flex flex-wrap justify-center gap-4 md:gap-8 mt-4">
+                         <a href="https://www.facebook.com/itzsabbirrahoman/" target="_blank" class="w-14 h-14 bg-white/50 backdrop-blur-sm rounded-full flex items-center justify-center text-slate-600 hover:text-white hover:bg-[#1877F2] transition-all transform hover:-translate-y-2 hover:rotate-12 shadow-lg" title="Facebook">
+                            <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3l-.5 3h-2.5v6.8c4.56-.93 8-4.96 8-9.8z"/></svg>
+                        </a>
+                        <a href="https://www.instagram.com/itz_sabbir_rahoman/" target="_blank" class="w-14 h-14 bg-white/50 backdrop-blur-sm rounded-full flex items-center justify-center text-slate-600 hover:text-white hover:bg-[#E1306C] transition-all transform hover:-translate-y-2 hover:rotate-12 shadow-lg" title="Instagram">
+                            <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.148 3.227-1.669 4.771-4.919 4.919-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.07-1.646-.07-4.85s.012-3.584.07-4.85c.148-3.227 1.669 4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163m0-2.163C8.74 0 8.333.011 7.053.069 2.73 1.22.525 3.31.069 7.053.011 8.333 0 8.74 0 12s.011 3.667.069 4.947c.457 3.742 2.618 5.821 6.358 6.98C8.333 23.989 8.74 24 12 24s3.667-.011 4.947-.069c3.742-.457 5.821-2.618 6.98-6.358C23.989 16.667 24 16.26 24 12s-.011-3.667-.069-4.947c-.457-3.742-2.618-5.821-6.358-6.98C15.667.011 15.26 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.88 1.44 1.44 0 000-2.88z"></path></svg>
+                        </a>
+                        <a href="https://www.threads.com/@itz_sabbir_rahoman" target="_blank" class="w-14 h-14 bg-white/50 backdrop-blur-sm rounded-full flex items-center justify-center text-slate-600 hover:text-white hover:bg-black transition-all transform hover:-translate-y-2 hover:rotate-12 shadow-lg" title="Threads">
+                             <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M12.024 2c-5.526 0-10.005 4.479-10.005 10.005 0 5.526 4.479 10.005 10.005 10.005 5.526 0 10.005-4.479 10.005-10.005 0-5.526-4.479-10.005-10.005-10.005zm0 18.256c-4.555 0-8.251-3.696-8.251-8.251 0-4.555 3.696-8.251 8.251-8.251 4.555 0 8.251 3.696 8.251 8.251 0 1.933-.668 3.71-1.792 5.127l-.026.033c-.092.115-.246.165-.386.126-.14-.04-.242-.162-.255-.308l-.16-1.841c.849-1.298 1.349-2.836 1.349-4.489 0-3.35-2.029-6.191-4.992-7.394l-.031-.012c-.106-.042-.224-.012-.296.075-.072.087-.076.211-.009.302.946 1.284 1.507 2.859 1.507 4.564 0 1.294-.321 2.513-.889 3.587l-.234-.145c-.244-.151-.555-.074-.706.171-.151.244-.074.555.171.706l1.249.773c-.091.228-.188.452-.293.672-1.258 2.651-3.957 4.497-7.078 4.497zM16.14 12c0 2.287-1.854 4.14-4.14 4.14s-4.14-1.854-4.14-4.14 1.854-4.14 4.14-4.14 4.14 1.854 4.14 4.14zm-6.526 0c0 1.317 1.069 2.386 2.386 2.386s2.386-1.069 2.386-2.386-1.069-2.386-2.386-2.386-2.386 1.069-2.386 2.386z"/></svg>
+                        </a>
+                        <a href="https://www.tiktok.com/@itz_sabbir_rahoman" target="_blank" class="w-14 h-14 bg-white/50 backdrop-blur-sm rounded-full flex items-center justify-center text-slate-600 hover:text-white hover:bg-black transition-all transform hover:-translate-y-2 hover:rotate-12 shadow-lg" title="TikTok">
+                             <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 1 0-1 13.6 6.1 6.1 0 0 0 5.28-3.11v3.08h3.41v-10.4a8.28 8.28 0 0 0 4.96 1.76V10.2a4.85 4.85 0 0 1-3.42-3.51Z"/></svg>
+                        </a>
+                        <a href="https://x.com/sabbir_rahoman_" target="_blank" class="w-14 h-14 bg-white/50 backdrop-blur-sm rounded-full flex items-center justify-center text-slate-600 hover:text-white hover:bg-slate-900 transition-all transform hover:-translate-y-2 hover:rotate-12 shadow-lg" title="X">
+                            <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
 
-    <footer class="bg-gray-900 py-8 border-t border-gray-800">
+    <footer class="bg-white/50 backdrop-blur-md border-t border-white/50 py-8">
         <div class="container mx-auto px-6 text-center">
-            <p class="text-gray-500" data-lang-key="footer_text">
+            <p class="text-slate-500 font-medium" data-lang-key="footer_text">
                 &copy; 2025 Sabbir Rahoman. All rights reserved.
             </p>
         </div>
     </footer>
 
-    <a href="#home" id="back-to-top" aria-label="Back to top">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
-        </svg>
+    <a href="#home" id="back-to-top" class="fixed bottom-8 right-8 bg-slate-900 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-2xl opacity-0 invisible transition-all duration-300 hover:bg-primary hover:-translate-y-2 z-50">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
     </a>
 
-
     <script>
-        // --- মোবাইল মেন্যু টগল ---
+        // --- MOBILE MENU ---
         const menuBtn = document.getElementById('menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
-        const allNavLinks = document.querySelectorAll('#desktop-menu a, #mobile-menu a');
+        menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        mobileMenu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => mobileMenu.classList.add('hidden')));
 
-        menuBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
+        // --- IMAGE PROTECTION ---
+        document.addEventListener('contextmenu', e => {
+            if (e.target.tagName === 'IMG' && e.target.classList.contains('protected-image')) e.preventDefault();
         });
 
-        // Close mobile menu when a link is clicked
-        mobileMenu.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                mobileMenu.classList.add('hidden');
+        // --- SCROLL ANIMATIONS ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
             });
-        });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-        // --- ছবি ডাউনলোড প্রোটেকশন (Right-click disable) ---
-        document.addEventListener('contextmenu', event => {
-            if (event.target.tagName === 'IMG' && event.target.classList.contains('protected-image')) {
-                event.preventDefault();
+        // --- ACTIVE LINK & SCROLL SPY ---
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const navObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    navLinks.forEach(l => l.classList.remove('active-link'));
+                    document.querySelectorAll(`.nav-link[href="#${id}"]`).forEach(l => l.classList.add('active-link'));
+                }
+            });
+        }, { threshold: 0.4 });
+        sections.forEach(s => navObserver.observe(s));
+
+        // --- BACK TO TOP ---
+        window.addEventListener('scroll', () => {
+            const btn = document.getElementById('back-to-top');
+            const nav = document.getElementById('navbar');
+            if(window.scrollY > 300) {
+                btn.classList.remove('opacity-0', 'invisible');
+                nav.classList.add('shadow-md');
+            } else {
+                btn.classList.add('opacity-0', 'invisible');
+                nav.classList.remove('shadow-md');
             }
         });
 
-        // --- Language Switcher Logic ---
-        // (This logic remains the same, as it's perfectly functional)
+        // --- TILT EFFECT ON HOVER ---
+        document.querySelectorAll('.tilt-card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = ((y - centerY) / centerY) * -10; 
+                const rotateY = ((x - centerX) / centerX) * 10;
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+            });
+        });
+
+        // --- LANGUAGE & TYPING ---
         const translations = {
             en: {
-                nav_about: "About Me",
-                nav_services: "Services",
-                nav_my_design: "My Design", // *** FIXED KEY ***
-                nav_contact: "Contact",
-                nav_about_m: "About Me",
-                nav_services_m: "Services",
-                nav_my_design_m: "My Design", // *** FIXED KEY ***
-                nav_contact_m: "Contact",
-                nav_lang_m: "Language:",
-                hero_title1: "Digital Creator &",
-                hero_title2: "Creative Designer", // This is now a base for typing
+                nav_about: "About Me", nav_services: "Services", nav_my_design: "My Design", nav_contact: "Contact",
+                nav_about_m: "About Me", nav_services_m: "Services", nav_my_design_m: "My Design", nav_contact_m: "Contact", nav_lang_m: "Language",
+                hero_title1: "Digital Creator &", hero_title2: "Creative Designer",
                 hero_subtitle: "Hello, I'm Sabbir Rahoman. I am a student and tech enthusiast. I transform your ideas into attractive designs and digital experiences.",
-                hero_btn_work: "See My Work",
-                hero_btn_store: "Visit My Store",
+                hero_btn_work: "See My Work", hero_btn_store: "Visit My Store",
                 about_title: "About Me",
-                about_p1: "As a passionate tech enthusiast and digital creator from Bangladesh, I'm driven by the power of technology to bring ideas to life. My focus is on learning and applying new skills to create engaging digital experiences.",
-                about_p2: "I am proficient in creating websites using AI, professional Logo Design, Banners, Posters, ID Cards, and CV (Resume) design. I believe in continuous learning and improvement.",
+                about_p1: "As a passionate tech enthusiast and digital creator from Bangladesh, I'm driven by the power of technology to bring ideas to life.",
+                about_p2: "I am proficient in creating websites using AI, professional Logo Design, Banners, Posters, ID Cards, and CV (Resume) design.",
                 about_p3: 'My motto: "FAIL" means "First Attempt In Learning". Failure is just the first step towards learning! 🌱✨',
                 about_contact: "Contact Me",
                 services_title: "My Services",
-                services_subtitle: "I offer a variety of creative and technical services for your projects.",
-                service1_title: "Graphic Design",
-                service1_desc: "Attractive and professional designs that highlight your brand.",
-                service1_item1: "Logo Design",
-                service1_item2: "Banners & Posters",
-                service1_item3: "Product Banners",
-                service2_title: "Documents & CV",
-                service2_desc: "Professional ID cards and modern CV (Resume) designs.",
-                service2_item1: "Professional CV Design",
-                service2_item2: "ID Card Design",
-                service2_item3: "Business Cards",
-                service3_title: "AI Web Solutions",
-                service3_desc: "Fast, responsive, and modern websites built using AI.",
-                service3_item1: "Personal My Design",
-                service3_item2: "Basic Business Website",
-                service3_item3: "Computer Basics",
-                my_design_title: "My Design", // *** FIXED KEY ***
-                my_design_tag: "Logo Design", // *** FIXED KEY ***
-                contact_title: "Get In Touch",
-                contact_subtitle: "Interested in working with me? Or just want to say hi? Send me an email or follow me on social media.",
+                service1_title: "Graphic Design", service1_desc: "Attractive and professional designs that highlight your brand.",
+                service1_item1: "Logo Design", service1_item2: "Banners & Posters", service1_item3: "Product Banners",
+                service2_title: "Documents & CV", service2_desc: "Professional ID cards and modern CV (Resume) designs.",
+                service2_item1: "Professional CV Design", service2_item2: "ID Card Design", service2_item3: "Business Cards",
+                service3_title: "AI Web Solutions", service3_desc: "Fast, responsive, and modern websites built using AI.",
+                service3_item1: "Personal My Design", service3_item2: "Basic Business Website", service3_item3: "Computer Basics",
+                my_design_title: "My Design", my_design_tag: "Logo Design",
+                contact_title: "Get In Touch", contact_subtitle: "Interested in working with me? Or just want to say hi? Send me an email or follow me on social media.",
                 footer_text: "&copy; 2025 Sabbir Rahoman. All rights reserved."
             },
             bn: {
-                nav_about: "আমার সম্পর্কে",
-                nav_services: "সেবাসমূহ",
-                nav_my_design: "পোর্টফোলিও", // *** FIXED KEY ***
-                nav_contact: "যোগাযোগ",
-                nav_about_m: "আমার সম্পর্কে",
-                nav_services_m: "সেবাসমূহ",
-                nav_my_design_m: "পোর্টফোলিও", // *** FIXED KEY ***
-                nav_contact_m: "যোগাযোগ",
-                nav_lang_m: "ভাষা:",
-                hero_title1: "ডিজিটাল ক্রিয়েটর এবং",
-                hero_title2: "ক্রিয়েটিভ ডিজাইনার", // This is now a base for typing
-                hero_subtitle: "হ্যালো, আমি সাব্বির রহমান। আমি একজন ছাত্র এবং প্রযুক্তি উৎসাহী। আমি আপনার ধারণাকে আকর্ষণীয় ডিজাইন এবং ডিজিটাল অভিজ্ঞতায় রূপান্তরিত করি।",
-                hero_btn_work: "আমার কাজ দেখুন",
-                hero_btn_store: "আমার স্টোর দেখুন",
+                nav_about: "আমার সম্পর্কে", nav_services: "সেবাসমূহ", nav_my_design: "পোর্টফোলিও", nav_contact: "যোগাযোগ",
+                nav_about_m: "আমার সম্পর্কে", nav_services_m: "সেবাসমূহ", nav_my_design_m: "পোর্টফোলিও", nav_contact_m: "যোগাযোগ", nav_lang_m: "ভাষা",
+                hero_title1: "ডিজিটাল ক্রিয়েটর এবং", hero_title2: "ক্রিয়েটিভ ডিজাইনার",
+                hero_subtitle: "হ্যালো, আমি সাব্বির রহমান। আমি একজন ছাত্র এবং প্রযুক্তি উৎসাহী। আমি আপনার ধারণাকে আকর্ষণীয় ডিজাইন এবং ডিজিটাল অভিজ্ঞতায় রূপান্তরিত করি।",
+                hero_btn_work: "আমার কাজ দেখুন", hero_btn_store: "আমার স্টোর দেখুন",
                 about_title: "আমার সম্পর্কে",
-                about_p1: "বাংলাদেশ ভিত্তিক একজন কন্টেন্ট ক্রিয়েটর এবং ডিজিটাল ডিজাইনার হিসেবে, আমি নতুন নতুন টেকনোলজির প্রতি গভীরভাবে আগ্রহী। আমার লক্ষ্য হলো নতুন দক্ষতা শেখা এবং সেগুলোকে কাজে লাগিয়ে আকর্ষণীয় ডিজিটাল অভিজ্ঞতা তৈরি করা।",
-                about_p2: "আমি এআই (AI) ব্যবহার করে ওয়েবসাইট তৈরি, প্রফেশনাল লোগো ডিজাইন, ব্যানার, পোস্টার, আইডি কার্ড এবং সিভি (CV) ডিজাইনে পারদর্শী। আমি ক্রমাগত শেখা এবং উন্নতিতে বিশ্বাসী।",
+                about_p1: "বাংলাদেশ ভিত্তিক একজন কন্টেন্ট ক্রিয়েটর এবং ডিজিটাল ডিজাইনার হিসেবে, আমি নতুন নতুন টেকনোলজির প্রতি গভীরভাবে আগ্রহী।",
+                about_p2: "আমি এআই (AI) ব্যবহার করে ওয়েবসাইট তৈরি, প্রফেশনাল লোগো ডিজাইন, ব্যানার, পোস্টার, আইডি কার্ড এবং সিভি (CV) ডিজাইনে পারদর্শী।",
                 about_p3: '"FAIL" মানে হচ্ছে "First Attempt In Learning" অর্থাৎ, ব্যর্থতা আসলে শেখার প্রথম ধাপ! 🌱✨',
                 about_contact: "যোগাযোগ করুন",
                 services_title: "আমার সেবাসমূহ",
-                services_subtitle: "আমি আপনার প্রজেক্টের জন্য বিভিন্ন সৃজনশীল এবং প্রযুক্তিগত সেবা প্রদান করি।",
-                service1_title: "গ্রাফিক ডিজাইন",
-                service1_desc: "আকর্ষণীয় এবং প্রফেশনাল ডিজাইন যা আপনার ব্র্যান্ডকে ফুটিয়ে তোলে।",
-                service1_item1: "লোগো ডিজাইন",
-                service1_item2: "ব্যানার ও পোস্টার",
-                service1_item3: "প্রোডাক্ট ব্যানার",
-                service2_title: "ডকুমেন্ট ও সিভি",
-                service2_desc: "প্রফেশনাল আইডি কার্ড এবং আধুনিক সিভি (রিজিউম) ডিজাইন।",
-                service2_item1: "প্রফেশনাল সিভি ডিজাইন",
-                service2_item2: "আইডি কার্ড ডিজাইন",
-                service2_item3: "বিজনেস কার্ড",
-                service3_title: "এআই ওয়েব সলিউশন",
-                service3_desc: "এআই ব্যবহার করে দ্রুত, রেসপন্সিভ এবং আধুনিক ওয়েবসাইট তৈরি।",
-                service3_item1: "পার্সোনাল পোর্টফোলিও",
-                service3_item2: "বেসিক বিজনেস ওয়েবসাইট",
-                service3_item3: "কম্পিউটার বেসিক",
-                my_design_title: "আমার ডিজাইন পোর্টফোলিও", // *** FIXED KEY ***
-                my_design_tag: "লোগো ডিজাইন", // *** FIXED KEY ***
-                contact_title: "যোগাযোগ করুন",
-                contact_subtitle: "আমার সাথে কাজ করতে আগ্রহী? অথবা শুধু হাই বলতে চান? আমাকে ইমেইল করুন বা সোশ্যাল মিডিয়ায় ফলো করুন।",
+                service1_title: "গ্রাফিক ডিজাইন", service1_desc: "আকর্ষণীয় এবং প্রফেশনাল ডিজাইন যা আপনার ব্র্যান্ডকে ফুটিয়ে তোলে।",
+                service1_item1: "লোগো ডিজাইন", service1_item2: "ব্যানার ও পোস্টার", service1_item3: "প্রোডাক্ট ব্যানার",
+                service2_title: "ডকুমেন্ট ও সিভি", service2_desc: "প্রফেশনাল আইডি কার্ড এবং আধুনিক সিভি (রিজিউম) ডিজাইন।",
+                service2_item1: "প্রফেশনাল সিভি ডিজাইন", service2_item2: "আইডি কার্ড", service2_item3: "বিজনেস কার্ড",
+                service3_title: "এআই ওয়েব সলিউশন", service3_desc: "এআই ব্যবহার করে দ্রুত, রেসপন্সিভ এবং আধুনিক ওয়েবসাইট তৈরি।",
+                service3_item1: "পার্সোনাল পোর্টফোলিও", service3_item2: "বেসিক বিজনেস ওয়েবসাইট", service3_item3: "কম্পিউটার বেসিক",
+                my_design_title: "আমার ডিজাইন", my_design_tag: "লোগো ডিজাইন",
+                contact_title: "যোগাযোগ করুন", contact_subtitle: "আমার সাথে কাজ করতে আগ্রহী? অথবা শুধু হাই বলতে চান? আমাকে ইমেইল করুন বা সোশ্যাল মিডিয়ায় ফলো করুন।",
                 footer_text: "&copy; 2025 সাব্বির রহমান। সর্বস্বত্ব সংরক্ষিত।"
             }
         };
 
         const toggleDesktop = document.getElementById('language-toggle');
         const toggleMobile = document.getElementById('language-toggle-mobile');
-        let currentLang = 'en'; // Keep track of current language
-
-        // --- NEW: Moved Typing Animation variables BEFORE setLanguage call ---
+        let currentLang = 'en';
         const typingTextElement = document.getElementById('typing-text');
         const typingWords = {
             en: ["Creative Designer", "Tech Enthusiast", "Digital Creator"],
-            bn: ["ক্রিয়েটিভ ডিজাইনার", "টেক উৎসাহী", "ডিজিটাল ক্রিয়েটর"]
+            bn: ["ক্রিয়েটিভ ডিজাইনার", "টেক উৎসাহী", "ডিজিটাল ক্রিয়েটর"]
         };
 
         function setLanguage(lang) {
-            currentLang = lang; // Update current language
+            currentLang = lang;
             document.documentElement.lang = lang;
-            const elements = document.querySelectorAll('[data-lang-key]');
-            elements.forEach(el => {
+            document.querySelectorAll('[data-lang-key]').forEach(el => {
                 const key = el.getAttribute('data-lang-key');
-                if (translations[lang] && translations[lang][key]) {
-                    // Don't update the typing text container
-                    if (key !== 'hero_title2') {
-                        el.innerText = translations[lang][key];
-                    }
-                }
+                if (translations[lang][key] && key !== 'hero_title2') el.innerText = translations[lang][key];
             });
-            // Update typing animation text
-            typingWords.bn = [translations.bn.hero_title2, "টেক উৎসাহী", "ডিজিটাল ক্রিয়েটর"];
+            typingWords.bn = [translations.bn.hero_title2, "টেক উৎসাহী", "ডিজিটাল ক্রিয়েটর"];
             typingWords.en = [translations.en.hero_title2, "Tech Enthusiast", "Digital Creator"];
         }
 
-        function handleToggle(event) {
-            const isChecked = event.target.checked;
-            const lang = isChecked ? 'bn' : 'en';
-            toggleDesktop.checked = isChecked;
-            toggleMobile.checked = isChecked;
+        function handleToggle(e) {
+            const lang = e.target.checked ? 'bn' : 'en';
+            toggleDesktop.checked = e.target.checked;
+            toggleMobile.checked = e.target.checked;
             setLanguage(lang);
         }
 
         toggleDesktop.addEventListener('change', handleToggle);
         toggleMobile.addEventListener('change', handleToggle);
 
-        const savedLang = 'en'; // Default to English
-        const initialCheck = savedLang === 'bn';
-        toggleDesktop.checked = initialCheck;
-        toggleMobile.checked = initialCheck;
-        setLanguage(savedLang); // Set initial language
-
-
-        // --- Preloader Logic ---
-        const preloader = document.getElementById('preloader');
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                preloader.classList.add('loaded');
-            }, 300); // Small delay for effect
-        });
-
-        // --- Scroll Animation Logic (Intersection Observer) ---
-        const scrollObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('is-visible');
-                    scrollObserver.unobserve(entry.target); // Animate only once
-                }
-            });
-        }, {
-            threshold: 0.1 // Trigger when 10% of the element is visible
-        });
-
-        const elementsToAnimate = document.querySelectorAll('.fade-in-on-scroll');
-        elementsToAnimate.forEach(el => {
-            scrollObserver.observe(el);
-        });
-        
-        // --- Back to Top Button Logic ---
-        const backToTopButton = document.getElementById('back-to-top');
-        
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) { // Show button after scrolling 300px
-                backToTopButton.classList.add('is-visible');
-            } else {
-                backToTopButton.classList.remove('is-visible');
-            }
-        });
-
-        // --- Active Nav Link Highlighting Logic ---
-        const sections = document.querySelectorAll('section[id]');
-        const navLinks = document.querySelectorAll('.nav-link'); 
-
-        const navObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const id = entry.target.getAttribute('id');
-                    
-                    navLinks.forEach(link => {
-                        link.classList.remove('active-link');
-                    });
-
-                    const activeLinks = document.querySelectorAll(`.nav-link[href="#${id}"]`);
-                    activeLinks.forEach(link => {
-                        link.classList.add('active-link');
-                    });
-                }
-            });
-        }, {
-            threshold: 0.4,
-            rootMargin: '-50px 0px -50px 0px'
-        });
-
-        sections.forEach(section => {
-            navObserver.observe(section);
-        });
-
-        // --- NEW: Typing Animation Logic ---
-        // const typingTextElement = document.getElementById('typing-text'); // Moved Up
-        // const typingWords = { ... }; // Moved Up
-        let wordIndex = 0;
-        let charIndex = 0;
-        let isDeleting = false;
-        
+        // Typing Loop
+        let wordIndex = 0, charIndex = 0, isDeleting = false;
         function type() {
             const currentWords = typingWords[currentLang];
             const currentWord = currentWords[wordIndex];
-            
             if (isDeleting) {
-                // Deleting
                 typingTextElement.textContent = currentWord.substring(0, charIndex - 1);
                 charIndex--;
-                if (charIndex === 0) {
-                    isDeleting = false;
-                    wordIndex = (wordIndex + 1) % currentWords.length;
-                }
+                if (charIndex === 0) { isDeleting = false; wordIndex = (wordIndex + 1) % currentWords.length; }
             } else {
-                // Typing
                 typingTextElement.textContent = currentWord.substring(0, charIndex + 1);
                 charIndex++;
-                if (charIndex === currentWord.length) {
-                    isDeleting = true;
-                    setTimeout(type, 2000); // Pause at end of word
-                    return;
-                }
+                if (charIndex === currentWord.length) { isDeleting = true; setTimeout(type, 2000); return; }
             }
-            
-            const typeSpeed = isDeleting ? 75 : 150;
-            setTimeout(type, typeSpeed);
+            setTimeout(type, isDeleting ? 75 : 150);
         }
+        setTimeout(type, 1000);
 
-        // Start typing animation after initial fade-in
-        setTimeout(type, 1000); // Start after hero text animation
-
+        // Preloader fadeout
+        window.addEventListener('load', () => document.getElementById('preloader').classList.add('loaded'));
     </script>
-
 </body>
 </html>
