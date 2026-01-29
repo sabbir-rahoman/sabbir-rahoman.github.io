@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="no-scrollbar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +10,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
     
     <script>
         tailwind.config = {
@@ -25,22 +34,6 @@
                         accent: '#8b5cf6',    // Violet
                         dark: '#0f172a',
                     },
-                    animation: {
-                        'blob': 'blob 10s infinite',
-                        'float': 'float 6s ease-in-out infinite',
-                    },
-                    keyframes: {
-                        blob: {
-                            "0%": { transform: "translate(0px, 0px) scale(1)" },
-                            "33%": { transform: "translate(30px, -50px) scale(1.1)" },
-                            "66%": { transform: "translate(-20px, 20px) scale(0.9)" },
-                            "100%": { transform: "translate(0px, 0px) scale(1)" }
-                        },
-                        float: {
-                            "0%, 100%": { transform: "translateY(0)" },
-                            "50%": { transform: "translateY(-20px)" }
-                        }
-                    }
                 },
             },
         };
@@ -48,66 +41,42 @@
     
     <style>
         body {
-            background-color: #f3f4f6;
+            background-color: #050505; /* Deep dark background for 3D contrast */
+            color: #e2e8f0;
             overflow-x: hidden;
-            color: #1e293b;
         }
 
-        /* --- MIND BLOWING BACKGROUND --- */
-        .animated-bg-wrapper {
+        /* --- 3D CANVAS --- */
+        #canvas-container {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
             z-index: -1;
-            overflow: hidden;
-            background: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
+            opacity: 0; /* Hidden until loaded */
+            transition: opacity 1.5s ease;
         }
-        .blob-1, .blob-2, .blob-3 {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.6;
-            animation: blob 15s infinite alternate;
-        }
-        .blob-1 { top: -10%; left: -10%; width: 500px; height: 500px; background: #a78bfa; animation-delay: 0s; }
-        .blob-2 { top: 40%; right: -10%; width: 400px; height: 400px; background: #f472b6; animation-delay: 2s; }
-        .blob-3 { bottom: -10%; left: 20%; width: 600px; height: 600px; background: #60a5fa; animation-delay: 4s; }
-
-        /* --- GLASSMORPHISM --- */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.65);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        
-        /* --- 3D TILT & HOVER EFFECTS --- */
-        .tilt-card {
-            transform-style: preserve-3d;
-            transform: perspective(1000px);
-        }
-        .tilt-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-            border-color: #fff;
-        }
-        
-        /* --- SCROLL ANIMATIONS --- */
-        .reveal {
-            opacity: 0;
-            transform: translateY(50px) scale(0.95);
-            transition: all 1s cubic-bezier(0.5, 0, 0, 1);
-        }
-        .reveal.active {
+        #canvas-container.loaded {
             opacity: 1;
-            transform: translateY(0) scale(1);
+        }
+
+        /* --- GLASSMORPHISM PRO --- */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.5s ease;
         }
         
-        .reveal-delay-1 { transition-delay: 0.1s; }
-        .reveal-delay-2 { transition-delay: 0.2s; }
-        .reveal-delay-3 { transition-delay: 0.3s; }
-
         /* --- TYPING CURSOR --- */
         .typing-cursor {
             display: inline-block;
@@ -122,128 +91,129 @@
         .lang-switch input { opacity: 0; width: 0; height: 0; }
         .slider {
             position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.8);
+            background-color: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
             transition: .4s; border-radius: 34px; backdrop-filter: blur(4px);
         }
         .slider:before {
             position: absolute; content: ""; height: 22px; width: 22px; left: 4px; bottom: 3px;
             background-color: #6366f1; transition: .4s; border-radius: 50%;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 0 10px #6366f1;
         }
-        input:checked + .slider:before { transform: translateX(28px); background-color: #ec4899; }
-        .slider:after { content: 'EN'; position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 10px; font-weight: bold; color: #6366f1; }
-        input:checked + .slider:after { content: 'BN'; left: 8px; color: #ec4899; right: auto; }
+        input:checked + .slider:before { transform: translateX(28px); background-color: #ec4899; box-shadow: 0 0 10px #ec4899; }
+        .slider:after { content: 'EN'; position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 10px; font-weight: bold; color: #fff; }
+        input:checked + .slider:after { content: 'BN'; left: 8px; color: #fff; right: auto; }
 
-        /* --- IMAGE PROTECTION --- */
+        /* --- UTILS --- */
         img.protected-image { pointer-events: none; -webkit-user-drag: none; user-select: none; }
+        .text-glow { text-shadow: 0 0 20px rgba(99, 102, 241, 0.5); }
         
-        /* --- NAV ACTIVE LINK --- */
-        .nav-link { position: relative; }
-        .nav-link::after {
-            content: ''; position: absolute; width: 0; height: 2px; bottom: -2px; left: 50%;
-            background: linear-gradient(90deg, #6366f1, #ec4899);
-            transition: all 0.3s ease; transform: translateX(-50%);
-        }
-        .nav-link:hover::after, .nav-link.active-link::after { width: 100%; }
-        .nav-link.active-link { color: #6366f1; font-weight: 700; }
-
-        /* --- PRELOADER --- */
+        /* Scrollbar Hide (Lenis handles it) */
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+        
+        /* Preloader */
         #preloader {
-            position: fixed; inset: 0; background: #fff; z-index: 99999;
-            display: flex; justify-content: center; align-items: center; transition: opacity 0.5s;
+            position: fixed; inset: 0; background: #000; z-index: 99999;
+            display: flex; justify-content: center; align-items: center; transition: opacity 0.8s ease;
         }
-        #preloader.loaded { opacity: 0; pointer-events: none; }
-        .loader-spin {
-            width: 50px; height: 50px; border: 5px solid #f3f3f3;
-            border-top: 5px solid #6366f1; border-radius: 50%; animation: spin 1s linear infinite;
+        .loader-ring {
+            width: 60px; height: 60px; border-radius: 50%;
+            border: 4px solid transparent; border-top-color: #6366f1; border-right-color: #ec4899;
+            animation: spin 0.8s linear infinite;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Image Profile Glow */
+        .profile-glow {
+            box-shadow: 0 0 40px rgba(99, 102, 241, 0.3), inset 0 0 20px rgba(236, 72, 153, 0.3);
+        }
     </style>
 </head>
-<body class="antialiased font-sans selection:bg-pink-500 selection:text-white">
+<body class="antialiased font-sans selection:bg-indigo-500 selection:text-white">
 
-    <div id="preloader"><div class="loader-spin"></div></div>
+    <div id="preloader"><div class="loader-ring"></div></div>
 
-    <div class="animated-bg-wrapper">
-        <div class="blob-1"></div>
-        <div class="blob-2"></div>
-        <div class="blob-3"></div>
-    </div>
+    <div id="canvas-container"></div>
 
     <header class="fixed w-full top-0 z-50 transition-all duration-300" id="navbar">
-        <div class="absolute inset-0 bg-white/70 backdrop-blur-md border-b border-white/50 shadow-sm"></div>
+        <div class="absolute inset-0 bg-dark/70 backdrop-blur-md border-b border-white/10 shadow-lg"></div>
         <nav class="container mx-auto px-6 py-4 relative flex justify-between items-center">
-            <a href="#" class="text-2xl md:text-3xl font-extrabold font-heading tracking-tight text-slate-800">
+            <a href="#" class="text-2xl md:text-3xl font-extrabold font-heading tracking-tight text-white z-50">
                 Sabbir <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Rahoman</span>
             </a>
             
             <div id="desktop-menu" class="hidden md:flex items-center space-x-8">
-                <a href="#about" class="nav-link text-slate-600 hover:text-primary font-medium transition" data-lang-key="nav_about">About Me</a>
-                <a href="#services" class="nav-link text-slate-600 hover:text-primary font-medium transition" data-lang-key="nav_services">Services</a>
-                <a href="#my-design" class="nav-link text-slate-600 hover:text-primary font-medium transition" data-lang-key="nav_my_design">My Design</a>
+                <a href="#about" class="text-slate-300 hover:text-white hover:text-glow font-medium transition duration-300" data-lang-key="nav_about">About Me</a>
+                <a href="#services" class="text-slate-300 hover:text-white hover:text-glow font-medium transition duration-300" data-lang-key="nav_services">Services</a>
+                <a href="#my-design" class="text-slate-300 hover:text-white hover:text-glow font-medium transition duration-300" data-lang-key="nav_my_design">My Design</a>
                 
                 <label class="lang-switch">
                     <input type="checkbox" id="language-toggle">
                     <span class="slider"></span>
                 </label>
                 
-                <a href="#contact" class="px-6 py-2.5 rounded-full bg-slate-900 text-white font-medium hover:bg-gradient-to-r hover:from-primary hover:to-secondary transition-all transform hover:scale-105 shadow-lg">
+                <a href="#contact" class="px-6 py-2.5 rounded-full bg-white text-dark font-bold hover:bg-gradient-to-r hover:from-primary hover:to-secondary hover:text-white transition-all transform hover:scale-105 shadow-[0_0_15px_rgba(255,255,255,0.3)]">
                     <span data-lang-key="nav_contact">Contact</span>
                 </a>
             </div>
 
-            <button id="menu-btn" class="md:hidden text-slate-800 focus:outline-none">
+            <button id="menu-btn" class="md:hidden text-white focus:outline-none z-50">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
             </button>
         </nav>
 
-        <div id="mobile-menu" class="hidden md:hidden absolute w-full bg-white/95 backdrop-blur-xl border-t border-gray-100 shadow-xl">
-            <div class="flex flex-col p-6 space-y-4">
-                <a href="#about" class="block text-lg font-medium text-slate-700" data-lang-key="nav_about_m">About Me</a>
-                <a href="#services" class="block text-lg font-medium text-slate-700" data-lang-key="nav_services_m">Services</a>
-                <a href="#my-design" class="block text-lg font-medium text-slate-700" data-lang-key="nav_my_design_m">My Design</a>
-                <a href="#contact" class="block text-lg font-medium text-slate-700" data-lang-key="nav_contact_m">Contact</a>
-                <div class="pt-4 border-t border-gray-200 flex justify-between items-center">
-                    <span class="text-slate-500" data-lang-key="nav_lang_m">Language</span>
-                    <label class="lang-switch">
-                        <input type="checkbox" id="language-toggle-mobile">
-                        <span class="slider"></span>
-                    </label>
-                </div>
+        <div id="mobile-menu" class="fixed inset-0 bg-dark/95 backdrop-blur-xl z-40 transform translate-x-full transition-transform duration-300 flex flex-col justify-center items-center space-y-8">
+            <a href="#about" class="text-2xl font-bold text-white" data-lang-key="nav_about_m">About Me</a>
+            <a href="#services" class="text-2xl font-bold text-white" data-lang-key="nav_services_m">Services</a>
+            <a href="#my-design" class="text-2xl font-bold text-white" data-lang-key="nav_my_design_m">My Design</a>
+            <a href="#contact" class="text-2xl font-bold text-white" data-lang-key="nav_contact_m">Contact</a>
+            
+            <div class="flex items-center gap-4 mt-4">
+                <span class="text-slate-400" data-lang-key="nav_lang_m">Language</span>
+                <label class="lang-switch">
+                    <input type="checkbox" id="language-toggle-mobile">
+                    <span class="slider"></span>
+                </label>
             </div>
+            
+            <button id="close-menu" class="absolute top-6 right-6 text-white p-2">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
         </div>
     </header>
 
     <main>
         <section id="home" class="min-h-screen flex items-center pt-20 relative overflow-hidden">
             <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                <div class="z-10 reveal active">
-                    <div class="inline-block px-4 py-1.5 rounded-full bg-white/60 border border-white/50 backdrop-blur-sm text-sm font-bold text-primary mb-6 shadow-sm animate-float">
+                <div class="z-10 order-2 md:order-1 hero-content">
+                    <div class="inline-block px-4 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm text-sm font-bold text-primary mb-6 shadow-sm gs-reveal">
                         👋 Welcome to my creative world
                     </div>
-                    <h1 class="text-5xl md:text-7xl font-bold text-slate-900 leading-tight mb-6 font-heading">
+                    <h1 class="text-5xl md:text-7xl font-bold text-white leading-tight mb-6 font-heading gs-reveal">
                         <span data-lang-key="hero_title1">Digital Creator &</span> <br>
                         <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent" id="typing-container">
                             <span id="typing-text"></span><span class="typing-cursor">&nbsp;</span>
                         </span>
                     </h1>
-                    <p class="text-xl text-slate-600 mb-8 leading-relaxed max-w-lg" data-lang-key="hero_subtitle">
+                    <p class="text-xl text-slate-400 mb-8 leading-relaxed max-w-lg gs-reveal" data-lang-key="hero_subtitle">
                         Hello, I'm Sabbir Rahoman. I am a student and tech enthusiast. I transform your ideas into attractive designs and digital experiences.
                     </p>
-                    <div class="flex flex-wrap gap-4">
-                        <a href="#my-design" class="px-8 py-4 rounded-full bg-slate-900 text-white font-bold text-lg hover:bg-primary transition-all shadow-xl hover:shadow-primary/40 transform hover:-translate-y-1" data-lang-key="hero_btn_work">
+                    <div class="flex flex-wrap gap-4 gs-reveal">
+                        <a href="#my-design" class="px-8 py-4 rounded-full bg-white text-dark font-bold text-lg hover:bg-primary hover:text-white transition-all shadow-lg hover:shadow-primary/50 transform hover:-translate-y-1" data-lang-key="hero_btn_work">
                             See My Work
                         </a>
-                        <a href="https://shobkichuofficial.github.io/" target="_blank" class="px-8 py-4 rounded-full bg-white text-slate-900 font-bold text-lg border border-white/50 hover:bg-white/80 transition-all shadow-lg transform hover:-translate-y-1" data-lang-key="hero_btn_store">
+                        <a href="https://shobkichuofficial.github.io/" target="_blank" class="px-8 py-4 rounded-full bg-transparent border border-white/30 text-white font-bold text-lg hover:bg-white/10 transition-all shadow-lg transform hover:-translate-y-1" data-lang-key="hero_btn_store">
                             Visit My Store
                         </a>
                     </div>
                 </div>
                 
-                <div class="relative z-10 flex justify-center reveal reveal-delay-2">
-                    <div class="relative w-80 h-80 md:w-[500px] md:h-[500px]">
-                        <div class="absolute inset-0 bg-gradient-to-tr from-primary to-secondary rounded-full opacity-30 blur-3xl animate-pulse"></div>
-                        <img src="IMG_3068 edited.webp" alt="Sabbir Rahoman" class="protected-image relative w-full h-full object-cover rounded-[3rem] shadow-2xl rotate-3 hover:rotate-0 transition-all duration-700 border-4 border-white/40">
+                <div class="relative z-10 flex justify-center order-1 md:order-2 gs-reveal-img" data-tilt data-tilt-max="15" data-tilt-speed="400">
+                    <div class="relative w-72 h-72 md:w-[450px] md:h-[450px]">
+                        <div class="absolute inset-0 border border-primary/30 rounded-full animate-[spin_10s_linear_infinite] scale-110"></div>
+                        <div class="absolute inset-0 border border-secondary/30 rounded-full animate-[spin_15s_linear_infinite_reverse] scale-125"></div>
+                        <div class="absolute inset-0 bg-gradient-to-tr from-primary to-secondary rounded-full opacity-20 blur-3xl animate-pulse"></div>
+                        
+                        <img src="IMG_3068 edited.webp" alt="Sabbir Rahoman" class="protected-image relative w-full h-full object-cover rounded-full profile-glow border-4 border-white/10">
                     </div>
                 </div>
             </div>
@@ -251,21 +221,21 @@
 
         <section id="about" class="py-24 relative">
             <div class="container mx-auto px-6">
-                <div class="glass-card rounded-3xl p-8 md:p-12 reveal">
+                <div class="glass-panel rounded-3xl p-8 md:p-12 gs-section">
                     <div class="flex flex-col md:flex-row items-center gap-12">
                         <div class="md:w-1/2">
                             <h2 class="text-4xl font-bold mb-6 font-heading flex items-center gap-3">
                                 <span class="w-12 h-1 bg-gradient-to-r from-primary to-secondary rounded-full"></span>
-                                <span data-lang-key="about_title" class="text-slate-800">About Me</span>
+                                <span data-lang-key="about_title" class="text-white">About Me</span>
                             </h2>
-                            <p class="text-lg text-slate-600 mb-6 leading-relaxed" data-lang-key="about_p1">
+                            <p class="text-lg text-slate-300 mb-6 leading-relaxed" data-lang-key="about_p1">
                                 As a passionate tech enthusiast and digital creator from Bangladesh, I'm driven by the power of technology to bring ideas to life.
                             </p>
-                            <p class="text-lg text-slate-600 mb-6 leading-relaxed" data-lang-key="about_p2">
+                            <p class="text-lg text-slate-300 mb-6 leading-relaxed" data-lang-key="about_p2">
                                 I am proficient in creating websites using AI, professional Logo Design, Banners, Posters, ID Cards, and CV (Resume) design.
                             </p>
-                            <div class="bg-gradient-to-r from-primary/10 to-secondary/10 p-6 rounded-xl border-l-4 border-primary mb-8">
-                                <p class="text-slate-700 italic font-medium text-lg" data-lang-key="about_p3">
+                            <div class="bg-gradient-to-r from-primary/10 to-secondary/10 p-6 rounded-xl border-l-4 border-primary mb-8 backdrop-blur-md">
+                                <p class="text-white italic font-medium text-lg" data-lang-key="about_p3">
                                     "FAIL" means "First Attempt In Learning". Failure is just the first step towards learning! 🌱✨
                                 </p>
                             </div>
@@ -275,21 +245,21 @@
                             </a>
                         </div>
                         <div class="md:w-1/2 grid grid-cols-2 gap-4">
-                            <div class="glass-card p-6 rounded-2xl text-center hover:scale-105 transition duration-300">
+                            <div class="glass-card p-6 rounded-2xl text-center cursor-pointer" data-tilt data-tilt-glare data-tilt-max-glare="0.5">
                                 <span class="text-4xl">🎨</span>
-                                <h3 class="font-bold mt-2 text-slate-800">Creative</h3>
+                                <h3 class="font-bold mt-2 text-white">Creative</h3>
                             </div>
-                            <div class="glass-card p-6 rounded-2xl text-center hover:scale-105 transition duration-300 translate-y-8">
+                            <div class="glass-card p-6 rounded-2xl text-center cursor-pointer translate-y-8" data-tilt data-tilt-glare data-tilt-max-glare="0.5">
                                 <span class="text-4xl">🚀</span>
-                                <h3 class="font-bold mt-2 text-slate-800">Fast</h3>
+                                <h3 class="font-bold mt-2 text-white">Fast</h3>
                             </div>
-                            <div class="glass-card p-6 rounded-2xl text-center hover:scale-105 transition duration-300">
+                            <div class="glass-card p-6 rounded-2xl text-center cursor-pointer" data-tilt data-tilt-glare data-tilt-max-glare="0.5">
                                 <span class="text-4xl">💡</span>
-                                <h3 class="font-bold mt-2 text-slate-800">Smart</h3>
+                                <h3 class="font-bold mt-2 text-white">Smart</h3>
                             </div>
-                            <div class="glass-card p-6 rounded-2xl text-center hover:scale-105 transition duration-300 translate-y-8">
+                            <div class="glass-card p-6 rounded-2xl text-center cursor-pointer translate-y-8" data-tilt data-tilt-glare data-tilt-max-glare="0.5">
                                 <span class="text-4xl">💻</span>
-                                <h3 class="font-bold mt-2 text-slate-800">Tech</h3>
+                                <h3 class="font-bold mt-2 text-white">Tech</h3>
                             </div>
                         </div>
                     </div>
@@ -299,48 +269,48 @@
 
         <section id="services" class="py-24">
             <div class="container mx-auto px-6">
-                <div class="text-center mb-16 reveal">
+                <div class="text-center mb-16 gs-fade-up">
                     <span class="text-secondary font-bold tracking-wider uppercase text-sm">What I Do</span>
-                    <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mt-2 font-heading" data-lang-key="services_title">My Services</h2>
+                    <h2 class="text-4xl md:text-5xl font-bold text-white mt-2 font-heading" data-lang-key="services_title">My Services</h2>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="glass-card p-8 rounded-3xl tilt-card reveal reveal-delay-1 group">
-                        <div class="w-16 h-16 bg-gradient-to-br from-primary to-blue-500 rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg group-hover:scale-110 transition">
+                    <div class="glass-card p-8 rounded-3xl gs-card-stagger group hover:bg-white/5" data-tilt data-tilt-max="10">
+                        <div class="w-16 h-16 bg-gradient-to-br from-primary to-blue-500 rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg shadow-primary/20 group-hover:scale-110 transition duration-500">
                              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                         </div>
-                        <h3 class="text-2xl font-bold text-slate-800 mb-3" data-lang-key="service1_title">Graphic Design</h3>
-                        <p class="text-slate-600 mb-6" data-lang-key="service1_desc">Attractive and professional designs that highlight your brand.</p>
+                        <h3 class="text-2xl font-bold text-white mb-3" data-lang-key="service1_title">Graphic Design</h3>
+                        <p class="text-slate-400 mb-6" data-lang-key="service1_desc">Attractive and professional designs that highlight your brand.</p>
                         <ul class="space-y-3">
-                            <li class="flex items-center text-slate-700"><span class="text-primary mr-2">✓</span> <span data-lang-key="service1_item1">Logo Design</span></li>
-                            <li class="flex items-center text-slate-700"><span class="text-primary mr-2">✓</span> <span data-lang-key="service1_item2">Banners & Posters</span></li>
-                            <li class="flex items-center text-slate-700"><span class="text-primary mr-2">✓</span> <span data-lang-key="service1_item3">Product Banners</span></li>
+                            <li class="flex items-center text-slate-300"><span class="text-primary mr-2">✓</span> <span data-lang-key="service1_item1">Logo Design</span></li>
+                            <li class="flex items-center text-slate-300"><span class="text-primary mr-2">✓</span> <span data-lang-key="service1_item2">Banners & Posters</span></li>
+                            <li class="flex items-center text-slate-300"><span class="text-primary mr-2">✓</span> <span data-lang-key="service1_item3">Product Banners</span></li>
                         </ul>
                     </div>
                     
-                    <div class="glass-card p-8 rounded-3xl tilt-card reveal reveal-delay-2 group">
-                        <div class="w-16 h-16 bg-gradient-to-br from-secondary to-pink-600 rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg group-hover:scale-110 transition">
+                    <div class="glass-card p-8 rounded-3xl gs-card-stagger group hover:bg-white/5" data-tilt data-tilt-max="10">
+                        <div class="w-16 h-16 bg-gradient-to-br from-secondary to-pink-600 rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg shadow-secondary/20 group-hover:scale-110 transition duration-500">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 21h7a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2zM10 21h-4v-4a2 2 0 012-2h2v6zM14 3v4a1 1 0 001 1h4"></path></svg>
                         </div>
-                        <h3 class="text-2xl font-bold text-slate-800 mb-3" data-lang-key="service2_title">Documents & CV</h3>
-                        <p class="text-slate-600 mb-6" data-lang-key="service2_desc">Professional ID cards and modern CV (Resume) designs.</p>
+                        <h3 class="text-2xl font-bold text-white mb-3" data-lang-key="service2_title">Documents & CV</h3>
+                        <p class="text-slate-400 mb-6" data-lang-key="service2_desc">Professional ID cards and modern CV (Resume) designs.</p>
                         <ul class="space-y-3">
-                            <li class="flex items-center text-slate-700"><span class="text-secondary mr-2">✓</span> <span data-lang-key="service2_item1">Professional CV Design</span></li>
-                            <li class="flex items-center text-slate-700"><span class="text-secondary mr-2">✓</span> <span data-lang-key="service2_item2">ID Card Design</span></li>
-                            <li class="flex items-center text-slate-700"><span class="text-secondary mr-2">✓</span> <span data-lang-key="service2_item3">Business Cards</span></li>
+                            <li class="flex items-center text-slate-300"><span class="text-secondary mr-2">✓</span> <span data-lang-key="service2_item1">Professional CV Design</span></li>
+                            <li class="flex items-center text-slate-300"><span class="text-secondary mr-2">✓</span> <span data-lang-key="service2_item2">ID Card Design</span></li>
+                            <li class="flex items-center text-slate-300"><span class="text-secondary mr-2">✓</span> <span data-lang-key="service2_item3">Business Cards</span></li>
                         </ul>
                     </div>
 
-                    <div class="glass-card p-8 rounded-3xl tilt-card reveal reveal-delay-3 group">
-                        <div class="w-16 h-16 bg-gradient-to-br from-accent to-purple-600 rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg group-hover:scale-110 transition">
+                    <div class="glass-card p-8 rounded-3xl gs-card-stagger group hover:bg-white/5" data-tilt data-tilt-max="10">
+                        <div class="w-16 h-16 bg-gradient-to-br from-accent to-purple-600 rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg shadow-accent/20 group-hover:scale-110 transition duration-500">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                         </div>
-                        <h3 class="text-2xl font-bold text-slate-800 mb-3" data-lang-key="service3_title">AI Web Solutions</h3>
-                        <p class="text-slate-600 mb-6" data-lang-key="service3_desc">Fast, responsive, and modern websites built using AI.</p>
+                        <h3 class="text-2xl font-bold text-white mb-3" data-lang-key="service3_title">AI Web Solutions</h3>
+                        <p class="text-slate-400 mb-6" data-lang-key="service3_desc">Fast, responsive, and modern websites built using AI.</p>
                         <ul class="space-y-3">
-                            <li class="flex items-center text-slate-700"><span class="text-accent mr-2">✓</span> <span data-lang-key="service3_item1">Personal My Design</span></li>
-                            <li class="flex items-center text-slate-700"><span class="text-accent mr-2">✓</span> <span data-lang-key="service3_item2">Basic Business Website</span></li>
-                            <li class="flex items-center text-slate-700"><span class="text-accent mr-2">✓</span> <span data-lang-key="service3_item3">Computer Basics</span></li>
+                            <li class="flex items-center text-slate-300"><span class="text-accent mr-2">✓</span> <span data-lang-key="service3_item1">Personal Portfolio</span></li>
+                            <li class="flex items-center text-slate-300"><span class="text-accent mr-2">✓</span> <span data-lang-key="service3_item2">Basic Business Website</span></li>
+                            <li class="flex items-center text-slate-300"><span class="text-accent mr-2">✓</span> <span data-lang-key="service3_item3">Computer Basics</span></li>
                         </ul>
                     </div>
                 </div>
@@ -349,41 +319,44 @@
 
         <section id="my-design" class="py-24">
             <div class="container mx-auto px-6">
-                <div class="flex flex-col md:flex-row justify-between items-end mb-12 reveal">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-12 gs-fade-up">
                     <div>
                         <span class="text-primary font-bold tracking-wider uppercase text-sm">Portfolio</span>
-                        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 font-heading" data-lang-key="my_design_title">My Design</h2>
+                        <h2 class="text-4xl md:text-5xl font-bold text-white font-heading" data-lang-key="my_design_title">My Design</h2>
                     </div>
                     <div class="h-1 w-full md:w-1/3 bg-gradient-to-r from-primary to-transparent mt-4 md:mt-0 rounded-full"></div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="group relative rounded-3xl overflow-hidden shadow-xl reveal reveal-delay-1 border-4 border-white">
-                        <img src="logo1.webp" alt="Design 1" class="w-full h-72 object-cover transform transition duration-700 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-end p-6">
+                    <div class="group relative rounded-3xl overflow-hidden shadow-2xl gs-portfolio-item border-2 border-white/10" data-tilt data-tilt-scale="1.05">
+                        <img src="logo1.webp" alt="Design 1" class="w-full h-80 object-cover transform transition duration-700 group-hover:scale-110" onerror="this.src='https://placehold.co/400x500/1e293b/6366f1?text=Logo+Design'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-end p-6">
                             <h3 class="text-white font-bold text-xl translate-y-4 group-hover:translate-y-0 transition duration-300">Antor Hair Fashion</h3>
-                            <p class="text-primary-300 text-sm translate-y-4 group-hover:translate-y-0 transition duration-300 delay-75" data-lang-key="my_design_tag">Logo Design</p>
+                            <p class="text-primary text-sm translate-y-4 group-hover:translate-y-0 transition duration-300 delay-75" data-lang-key="my_design_tag">Logo Design</p>
                         </div>
                     </div>
-                    <div class="group relative rounded-3xl overflow-hidden shadow-xl reveal reveal-delay-2 border-4 border-white">
-                        <img src="logo2.webp" alt="Design 2" class="w-full h-72 object-cover transform transition duration-700 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-end p-6">
+                    
+                    <div class="group relative rounded-3xl overflow-hidden shadow-2xl gs-portfolio-item border-2 border-white/10" data-tilt data-tilt-scale="1.05">
+                        <img src="logo2.webp" alt="Design 2" class="w-full h-80 object-cover transform transition duration-700 group-hover:scale-110" onerror="this.src='https://placehold.co/400x500/1e293b/ec4899?text=Logo+Design'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-end p-6">
                             <h3 class="text-white font-bold text-xl translate-y-4 group-hover:translate-y-0 transition duration-300">Jannat's Bakery</h3>
-                            <p class="text-primary-300 text-sm translate-y-4 group-hover:translate-y-0 transition duration-300 delay-75" data-lang-key="my_design_tag">Logo Design</p>
+                            <p class="text-primary text-sm translate-y-4 group-hover:translate-y-0 transition duration-300 delay-75" data-lang-key="my_design_tag">Logo Design</p>
                         </div>
                     </div>
-                    <div class="group relative rounded-3xl overflow-hidden shadow-xl reveal reveal-delay-3 border-4 border-white">
-                        <img src="logo3.webp" alt="Design 3" class="w-full h-72 object-cover transform transition duration-700 group-hover:scale-110" onerror="this.src='https://placehold.co/400x400/fff/6366f1?text=Logo+3'">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-end p-6">
+                    
+                    <div class="group relative rounded-3xl overflow-hidden shadow-2xl gs-portfolio-item border-2 border-white/10" data-tilt data-tilt-scale="1.05">
+                        <img src="logo3.webp" alt="Design 3" class="w-full h-80 object-cover transform transition duration-700 group-hover:scale-110" onerror="this.src='https://placehold.co/400x500/1e293b/8b5cf6?text=Logo+Design'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-end p-6">
                             <h3 class="text-white font-bold text-xl translate-y-4 group-hover:translate-y-0 transition duration-300">Shuddho Deal</h3>
-                            <p class="text-primary-300 text-sm translate-y-4 group-hover:translate-y-0 transition duration-300 delay-75" data-lang-key="my_design_tag">Logo Design</p>
+                            <p class="text-primary text-sm translate-y-4 group-hover:translate-y-0 transition duration-300 delay-75" data-lang-key="my_design_tag">Logo Design</p>
                         </div>
                     </div>
-                    <div class="group relative rounded-3xl overflow-hidden shadow-xl reveal reveal-delay-3 border-4 border-white">
-                         <img src="logo4.webp" alt="Design 4" class="w-full h-72 object-cover transform transition duration-700 group-hover:scale-110" onerror="this.src='https://placehold.co/400x400/fff/6366f1?text=Logo+4'">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-end p-6">
+                    
+                    <div class="group relative rounded-3xl overflow-hidden shadow-2xl gs-portfolio-item border-2 border-white/10" data-tilt data-tilt-scale="1.05">
+                         <img src="logo4.webp" alt="Design 4" class="w-full h-80 object-cover transform transition duration-700 group-hover:scale-110" onerror="this.src='https://placehold.co/400x500/1e293b/6366f1?text=Logo+Design'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-end p-6">
                             <h3 class="text-white font-bold text-xl translate-y-4 group-hover:translate-y-0 transition duration-300">Shorbokichu.com</h3>
-                            <p class="text-primary-300 text-sm translate-y-4 group-hover:translate-y-0 transition duration-300 delay-75" data-lang-key="my_design_tag">Logo Design</p>
+                            <p class="text-primary text-sm translate-y-4 group-hover:translate-y-0 transition duration-300 delay-75" data-lang-key="my_design_tag">Logo Design</p>
                         </div>
                     </div>
                 </div>
@@ -391,35 +364,35 @@
         </section>
 
         <section id="contact" class="py-24 relative overflow-hidden">
-            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/20 rounded-full blur-3xl -z-10"></div>
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[100px] -z-10"></div>
             
             <div class="container mx-auto px-6 text-center relative z-10">
-                <div class="glass-card max-w-4xl mx-auto rounded-[3rem] p-10 md:p-16 border border-white/60 shadow-2xl reveal">
+                <div class="glass-panel max-w-4xl mx-auto rounded-[3rem] p-10 md:p-16 border border-white/20 shadow-2xl gs-zoom-in">
                     
-                    <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-6 font-heading" data-lang-key="contact_title">Get In Touch</h2>
-                    <p class="text-lg text-slate-600 mb-10 max-w-2xl mx-auto" data-lang-key="contact_subtitle">
+                    <h2 class="text-4xl md:text-5xl font-bold text-white mb-6 font-heading" data-lang-key="contact_title">Get In Touch</h2>
+                    <p class="text-lg text-slate-300 mb-10 max-w-2xl mx-auto" data-lang-key="contact_subtitle">
                         Interested in working with me? Or just want to say hi? Send me an email or follow me on social media.
                     </p>
 
-                    <a href="mailto:sabbirrahoman217@gmail.com" class="inline-flex items-center gap-3 bg-gradient-to-r from-primary to-secondary text-white font-bold py-4 px-10 rounded-full text-lg transition duration-300 transform hover:scale-110 shadow-xl shadow-primary/30 mb-12">
+                    <a href="mailto:sabbirrahoman217@gmail.com" class="inline-flex items-center gap-3 bg-gradient-to-r from-primary to-secondary text-white font-bold py-4 px-10 rounded-full text-lg transition duration-300 transform hover:scale-110 shadow-lg shadow-primary/40 mb-12">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                         <span>sabbirrahoman217@gmail.com</span>
                     </a>
 
-                    <div class="flex flex-wrap justify-center gap-4 md:gap-8 mt-4">
-                         <a href="https://www.facebook.com/itzsabbirrahoman/" target="_blank" class="w-14 h-14 bg-white/50 backdrop-blur-sm rounded-full flex items-center justify-center text-slate-600 hover:text-white hover:bg-[#1877F2] transition-all transform hover:-translate-y-2 hover:rotate-12 shadow-lg" title="Facebook">
+                    <div class="flex flex-wrap justify-center gap-6 mt-4">
+                         <a href="https://www.facebook.com/itzsabbirrahoman/" target="_blank" class="w-16 h-16 bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-[#1877F2] transition-all transform hover:-translate-y-2 hover:rotate-12 shadow-lg" title="Facebook">
                             <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3l-.5 3h-2.5v6.8c4.56-.93 8-4.96 8-9.8z"/></svg>
                         </a>
-                        <a href="https://www.instagram.com/itz_sabbir_rahoman/" target="_blank" class="w-14 h-14 bg-white/50 backdrop-blur-sm rounded-full flex items-center justify-center text-slate-600 hover:text-white hover:bg-[#E1306C] transition-all transform hover:-translate-y-2 hover:rotate-12 shadow-lg" title="Instagram">
+                        <a href="https://www.instagram.com/itz_sabbir_rahoman/" target="_blank" class="w-16 h-16 bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-[#E1306C] transition-all transform hover:-translate-y-2 hover:rotate-12 shadow-lg" title="Instagram">
                             <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.148 3.227-1.669 4.771-4.919 4.919-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.07-1.646-.07-4.85s.012-3.584.07-4.85c.148-3.227 1.669 4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163m0-2.163C8.74 0 8.333.011 7.053.069 2.73 1.22.525 3.31.069 7.053.011 8.333 0 8.74 0 12s.011 3.667.069 4.947c.457 3.742 2.618 5.821 6.358 6.98C8.333 23.989 8.74 24 12 24s3.667-.011 4.947-.069c3.742-.457 5.821-2.618 6.98-6.358C23.989 16.667 24 16.26 24 12s-.011-3.667-.069-4.947c-.457-3.742-2.618-5.821-6.358-6.98C15.667.011 15.26 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.88 1.44 1.44 0 000-2.88z"></path></svg>
                         </a>
-                        <a href="https://www.threads.com/@itz_sabbir_rahoman" target="_blank" class="w-14 h-14 bg-white/50 backdrop-blur-sm rounded-full flex items-center justify-center text-slate-600 hover:text-white hover:bg-black transition-all transform hover:-translate-y-2 hover:rotate-12 shadow-lg" title="Threads">
+                        <a href="https://www.threads.com/@itz_sabbir_rahoman" target="_blank" class="w-16 h-16 bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-black transition-all transform hover:-translate-y-2 hover:rotate-12 shadow-lg" title="Threads">
                              <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M12.024 2c-5.526 0-10.005 4.479-10.005 10.005 0 5.526 4.479 10.005 10.005 10.005 5.526 0 10.005-4.479 10.005-10.005 0-5.526-4.479-10.005-10.005-10.005zm0 18.256c-4.555 0-8.251-3.696-8.251-8.251 0-4.555 3.696-8.251 8.251-8.251 4.555 0 8.251 3.696 8.251 8.251 0 1.933-.668 3.71-1.792 5.127l-.026.033c-.092.115-.246.165-.386.126-.14-.04-.242-.162-.255-.308l-.16-1.841c.849-1.298 1.349-2.836 1.349-4.489 0-3.35-2.029-6.191-4.992-7.394l-.031-.012c-.106-.042-.224-.012-.296.075-.072.087-.076.211-.009.302.946 1.284 1.507 2.859 1.507 4.564 0 1.294-.321 2.513-.889 3.587l-.234-.145c-.244-.151-.555-.074-.706.171-.151.244-.074.555.171.706l1.249.773c-.091.228-.188.452-.293.672-1.258 2.651-3.957 4.497-7.078 4.497zM16.14 12c0 2.287-1.854 4.14-4.14 4.14s-4.14-1.854-4.14-4.14 1.854-4.14 4.14-4.14 4.14 1.854 4.14 4.14zm-6.526 0c0 1.317 1.069 2.386 2.386 2.386s2.386-1.069 2.386-2.386-1.069-2.386-2.386-2.386-2.386 1.069-2.386 2.386z"/></svg>
                         </a>
-                        <a href="https://www.tiktok.com/@itz_sabbir_rahoman" target="_blank" class="w-14 h-14 bg-white/50 backdrop-blur-sm rounded-full flex items-center justify-center text-slate-600 hover:text-white hover:bg-black transition-all transform hover:-translate-y-2 hover:rotate-12 shadow-lg" title="TikTok">
+                        <a href="https://www.tiktok.com/@itz_sabbir_rahoman" target="_blank" class="w-16 h-16 bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-black transition-all transform hover:-translate-y-2 hover:rotate-12 shadow-lg" title="TikTok">
                              <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 1 0-1 13.6 6.1 6.1 0 0 0 5.28-3.11v3.08h3.41v-10.4a8.28 8.28 0 0 0 4.96 1.76V10.2a4.85 4.85 0 0 1-3.42-3.51Z"/></svg>
                         </a>
-                        <a href="https://x.com/sabbir_rahoman_" target="_blank" class="w-14 h-14 bg-white/50 backdrop-blur-sm rounded-full flex items-center justify-center text-slate-600 hover:text-white hover:bg-slate-900 transition-all transform hover:-translate-y-2 hover:rotate-12 shadow-lg" title="X">
+                        <a href="https://x.com/sabbir_rahoman_" target="_blank" class="w-16 h-16 bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-black transition-all transform hover:-translate-y-2 hover:rotate-12 shadow-lg" title="X">
                             <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                         </a>
                     </div>
@@ -429,7 +402,7 @@
 
     </main>
 
-    <footer class="bg-white/50 backdrop-blur-md border-t border-white/50 py-8">
+    <footer class="bg-black/80 backdrop-blur-md border-t border-white/10 py-8 relative z-10">
         <div class="container mx-auto px-6 text-center">
             <p class="text-slate-500 font-medium" data-lang-key="footer_text">
                 &copy; 2025 Sabbir Rahoman. All rights reserved.
@@ -437,78 +410,194 @@
         </div>
     </footer>
 
-    <a href="#home" id="back-to-top" class="fixed bottom-8 right-8 bg-slate-900 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-2xl opacity-0 invisible transition-all duration-300 hover:bg-primary hover:-translate-y-2 z-50">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
-    </a>
-
     <script>
-        // --- MOBILE MENU ---
-        const menuBtn = document.getElementById('menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-        menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
-        mobileMenu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => mobileMenu.classList.add('hidden')));
-
-        // --- IMAGE PROTECTION ---
-        document.addEventListener('contextmenu', e => {
-            if (e.target.tagName === 'IMG' && e.target.classList.contains('protected-image')) e.preventDefault();
+        // --- 1. LENIS SMOOTH SCROLL ---
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+            mouseMultiplier: 1,
+            smoothTouch: false,
+            touchMultiplier: 2,
         });
 
-        // --- SCROLL ANIMATIONS ---
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                }
-            });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
 
-        // --- ACTIVE LINK & SCROLL SPY ---
-        const sections = document.querySelectorAll('section[id]');
-        const navLinks = document.querySelectorAll('.nav-link');
-        const navObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if(entry.isIntersecting) {
-                    const id = entry.target.getAttribute('id');
-                    navLinks.forEach(l => l.classList.remove('active-link'));
-                    document.querySelectorAll(`.nav-link[href="#${id}"]`).forEach(l => l.classList.add('active-link'));
-                }
-            });
-        }, { threshold: 0.4 });
-        sections.forEach(s => navObserver.observe(s));
+        // --- 2. THREE.JS 3D BACKGROUND ---
+        const initThreeJS = () => {
+            const container = document.getElementById('canvas-container');
+            const scene = new THREE.Scene();
+            // Fog for depth
+            scene.fog = new THREE.FogExp2(0x050505, 0.002);
 
-        // --- BACK TO TOP ---
-        window.addEventListener('scroll', () => {
-            const btn = document.getElementById('back-to-top');
-            const nav = document.getElementById('navbar');
-            if(window.scrollY > 300) {
-                btn.classList.remove('opacity-0', 'invisible');
-                nav.classList.add('shadow-md');
-            } else {
-                btn.classList.add('opacity-0', 'invisible');
-                nav.classList.remove('shadow-md');
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+
+            // Create Star Field (Particles)
+            const geometry = new THREE.BufferGeometry();
+            const count = 2000;
+            const posArray = new Float32Array(count * 3);
+            const colorsArray = new Float32Array(count * 3);
+
+            for(let i = 0; i < count * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 20; // Spread
+                // Randomize colors (blue/purple/pink)
+                colorsArray[i] = Math.random();
             }
-        });
 
-        // --- TILT EFFECT ON HOVER ---
-        document.querySelectorAll('.tilt-card').forEach(card => {
-            card.addEventListener('mousemove', e => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                const rotateX = ((y - centerY) / centerY) * -10; 
-                const rotateY = ((x - centerX) / centerX) * 10;
+            geometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colorsArray, 3));
 
-                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+            // Material
+            const material = new THREE.PointsMaterial({
+                size: 0.02,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8,
             });
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
-            });
-        });
 
-        // --- LANGUAGE & TYPING ---
+            const particlesMesh = new THREE.Points(geometry, material);
+            scene.add(particlesMesh);
+
+            camera.position.z = 3;
+
+            // Mouse Interaction
+            let mouseX = 0;
+            let mouseY = 0;
+            let targetX = 0;
+            let targetY = 0;
+
+            const windowHalfX = window.innerWidth / 2;
+            const windowHalfY = window.innerHeight / 2;
+
+            document.addEventListener('mousemove', (event) => {
+                mouseX = (event.clientX - windowHalfX);
+                mouseY = (event.clientY - windowHalfY);
+            });
+
+            // Animate
+            const clock = new THREE.Clock();
+
+            const tick = () => {
+                const elapsedTime = clock.getElapsedTime();
+
+                targetX = mouseX * 0.001;
+                targetY = mouseY * 0.001;
+
+                particlesMesh.rotation.y += 0.05 * (targetX - particlesMesh.rotation.y);
+                particlesMesh.rotation.x += 0.05 * (targetY - particlesMesh.rotation.x);
+                
+                // Constant gentle rotation
+                particlesMesh.rotation.z = elapsedTime * 0.05;
+
+                // Parallax effect on scroll
+                camera.position.y = -window.scrollY * 0.001; 
+
+                renderer.render(scene, camera);
+                window.requestAnimationFrame(tick);
+            };
+            tick();
+
+            // Resize
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            // Fade in canvas
+            setTimeout(() => {
+                container.classList.add('loaded');
+            }, 500);
+        };
+
+        // --- 3. GSAP ANIMATIONS ---
+        const initGSAP = () => {
+            gsap.registerPlugin(ScrollTrigger);
+
+            // Hero Elements Reveal
+            const tl = gsap.timeline();
+            tl.from(".gs-reveal", {
+                y: 50,
+                opacity: 0,
+                duration: 1,
+                stagger: 0.2,
+                ease: "power3.out",
+                delay: 0.5 // wait for preloader
+            })
+            .from(".gs-reveal-img", {
+                scale: 0.8,
+                opacity: 0,
+                rotation: -10,
+                duration: 1.5,
+                ease: "elastic.out(1, 0.5)"
+            }, "-=1");
+
+            // Section Headers
+            gsap.utils.toArray('.gs-fade-up').forEach(element => {
+                gsap.from(element, {
+                    scrollTrigger: {
+                        trigger: element,
+                        start: "top 80%",
+                        toggleActions: "play none none reverse"
+                    },
+                    y: 50,
+                    opacity: 0,
+                    duration: 1,
+                    ease: "power3.out"
+                });
+            });
+
+            // Service Cards Stagger
+            gsap.from(".gs-card-stagger", {
+                scrollTrigger: {
+                    trigger: "#services",
+                    start: "top 70%",
+                },
+                y: 100,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.2,
+                ease: "back.out(1.7)"
+            });
+
+            // Portfolio Grid Stagger
+            gsap.from(".gs-portfolio-item", {
+                scrollTrigger: {
+                    trigger: "#my-design",
+                    start: "top 70%",
+                },
+                scale: 0.8,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.1,
+                ease: "power2.out"
+            });
+
+            // Contact Zoom
+            gsap.from(".gs-zoom-in", {
+                scrollTrigger: {
+                    trigger: "#contact",
+                    start: "top 75%",
+                },
+                scale: 0.5,
+                opacity: 0,
+                duration: 1,
+                ease: "back.out(1.5)"
+            });
+        };
+
+        // --- 4. LANGUAGE & LOGIC ---
         const translations = {
             en: {
                 nav_about: "About Me", nav_services: "Services", nav_my_design: "My Design", nav_contact: "Contact",
@@ -527,7 +616,7 @@
                 service2_title: "Documents & CV", service2_desc: "Professional ID cards and modern CV (Resume) designs.",
                 service2_item1: "Professional CV Design", service2_item2: "ID Card Design", service2_item3: "Business Cards",
                 service3_title: "AI Web Solutions", service3_desc: "Fast, responsive, and modern websites built using AI.",
-                service3_item1: "Personal My Design", service3_item2: "Basic Business Website", service3_item3: "Computer Basics",
+                service3_item1: "Personal Portfolio", service3_item2: "Basic Business Website", service3_item3: "Computer Basics",
                 my_design_title: "My Design", my_design_tag: "Logo Design",
                 contact_title: "Get In Touch", contact_subtitle: "Interested in working with me? Or just want to say hi? Send me an email or follow me on social media.",
                 footer_text: "&copy; 2025 Sabbir Rahoman. All rights reserved."
@@ -544,7 +633,7 @@
                 about_p3: '"FAIL" মানে হচ্ছে "First Attempt In Learning" অর্থাৎ, ব্যর্থতা আসলে শেখার প্রথম ধাপ! 🌱✨',
                 about_contact: "যোগাযোগ করুন",
                 services_title: "আমার সেবাসমূহ",
-                service1_title: "গ্রাফিক ডিজাইন", service1_desc: "আকর্ষণীয় এবং প্রফেশনাল ডিজাইন যা আপনার ব্র্যান্ডকে ফুটিয়ে তোলে।",
+                service1_title: "গ্রাফিক ডিজাইন", service1_desc: "আকর্ষণীয় এবং প্রফেশনাল ডিজাইন যা আপনার 브랜드কে ফুটিয়ে তোলে।",
                 service1_item1: "লোগো ডিজাইন", service1_item2: "ব্যানার ও পোস্টার", service1_item3: "প্রোডাক্ট ব্যানার",
                 service2_title: "ডকুমেন্ট ও সিভি", service2_desc: "প্রফেশনাল আইডি কার্ড এবং আধুনিক সিভি (রিজিউম) ডিজাইন।",
                 service2_item1: "প্রফেশনাল সিভি ডিজাইন", service2_item2: "আইডি কার্ড", service2_item3: "বিজনেস কার্ড",
@@ -552,7 +641,7 @@
                 service3_item1: "পার্সোনাল পোর্টফোলিও", service3_item2: "বেসিক বিজনেস ওয়েবসাইট", service3_item3: "কম্পিউটার বেসিক",
                 my_design_title: "আমার ডিজাইন", my_design_tag: "লোগো ডিজাইন",
                 contact_title: "যোগাযোগ করুন", contact_subtitle: "আমার সাথে কাজ করতে আগ্রহী? অথবা শুধু হাই বলতে চান? আমাকে ইমেইল করুন বা সোশ্যাল মিডিয়ায় ফলো করুন।",
-                footer_text: "&copy; 2025 সাব্বির রহমান। সর্বস্বত্ব সংরক্ষিত।"
+                footer_text: "&copy; 2025 সাব্বির রহমান। সর্বস্বত্ব সংরক্ষিত."
             }
         };
 
@@ -570,8 +659,16 @@
             document.documentElement.lang = lang;
             document.querySelectorAll('[data-lang-key]').forEach(el => {
                 const key = el.getAttribute('data-lang-key');
-                if (translations[lang][key] && key !== 'hero_title2') el.innerText = translations[lang][key];
+                if (translations[lang][key] && key !== 'hero_title2') {
+                    // Small fade animation for text change
+                    el.style.opacity = 0;
+                    setTimeout(() => {
+                        el.innerText = translations[lang][key];
+                        el.style.opacity = 1;
+                    }, 200);
+                }
             });
+            // Update typing words
             typingWords.bn = [translations.bn.hero_title2, "টেক উৎসাহী", "ডিজিটাল ক্রিয়েটর"];
             typingWords.en = [translations.en.hero_title2, "Tech Enthusiast", "Digital Creator"];
         }
@@ -586,7 +683,7 @@
         toggleDesktop.addEventListener('change', handleToggle);
         toggleMobile.addEventListener('change', handleToggle);
 
-        // Typing Loop
+        // Typing Effect Loop
         let wordIndex = 0, charIndex = 0, isDeleting = false;
         function type() {
             const currentWords = typingWords[currentLang];
@@ -602,10 +699,40 @@
             }
             setTimeout(type, isDeleting ? 75 : 150);
         }
-        setTimeout(type, 1000);
 
-        // Preloader fadeout
-        window.addEventListener('load', () => document.getElementById('preloader').classList.add('loaded'));
+        // Mobile Menu
+        const menuBtn = document.getElementById('menu-btn');
+        const closeBtn = document.getElementById('close-menu');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = mobileMenu.querySelectorAll('a');
+
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.remove('translate-x-full');
+            document.body.style.overflow = 'hidden'; // Stop scroll
+        });
+
+        const closeMenu = () => {
+            mobileMenu.classList.add('translate-x-full');
+            document.body.style.overflow = 'auto'; // Restore scroll
+        };
+
+        closeBtn.addEventListener('click', closeMenu);
+        mobileLinks.forEach(link => link.addEventListener('click', closeMenu));
+
+        // Initialization
+        window.addEventListener('load', () => {
+            // Remove Preloader
+            const preloader = document.getElementById('preloader');
+            preloader.style.opacity = '0';
+            setTimeout(() => {
+                preloader.style.display = 'none';
+                // Start Animations
+                initThreeJS();
+                initGSAP();
+                type();
+            }, 800);
+        });
+
     </script>
 </body>
 </html>
