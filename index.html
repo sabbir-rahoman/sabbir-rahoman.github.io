@@ -41,7 +41,7 @@
     
     <style>
         body {
-            background-color: #050505; /* Deep dark background for 3D contrast */
+            background-color: #050505; /* Deep dark background */
             color: #e2e8f0;
             overflow-x: hidden;
         }
@@ -56,6 +56,7 @@
             z-index: -1;
             opacity: 0; /* Hidden until loaded */
             transition: opacity 1.5s ease;
+            background: radial-gradient(circle at center, #11111a 0%, #000000 100%);
         }
         #canvas-container.loaded {
             opacity: 1;
@@ -71,12 +72,26 @@
         }
 
         .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.5s ease;
+            /* কার্ডের ব্যাকগ্রাউন্ড এমন রাখা হয়েছে যাতে লেখা সবসময় পড়া যায় */
+            background: rgba(17, 24, 39, 0.85); 
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
         }
         
+        .glass-card:hover {
+            background: rgba(30, 41, 59, 0.95);
+            border-color: rgba(99, 102, 241, 0.5);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px -10px rgba(99, 102, 241, 0.2);
+        }
+        
+        /* Ensure text is bright inside cards */
+        .card-text-white { color: #ffffff !important; }
+        .card-text-gray { color: #cbd5e1 !important; }
+
         /* --- TYPING CURSOR --- */
         .typing-cursor {
             display: inline-block;
@@ -247,19 +262,19 @@
                         <div class="md:w-1/2 grid grid-cols-2 gap-4">
                             <div class="glass-card p-6 rounded-2xl text-center cursor-pointer" data-tilt data-tilt-glare data-tilt-max-glare="0.5">
                                 <span class="text-4xl">🎨</span>
-                                <h3 class="font-bold mt-2 text-white">Creative</h3>
+                                <h3 class="font-bold mt-2 card-text-white">Creative</h3>
                             </div>
                             <div class="glass-card p-6 rounded-2xl text-center cursor-pointer translate-y-8" data-tilt data-tilt-glare data-tilt-max-glare="0.5">
                                 <span class="text-4xl">🚀</span>
-                                <h3 class="font-bold mt-2 text-white">Fast</h3>
+                                <h3 class="font-bold mt-2 card-text-white">Fast</h3>
                             </div>
                             <div class="glass-card p-6 rounded-2xl text-center cursor-pointer" data-tilt data-tilt-glare data-tilt-max-glare="0.5">
                                 <span class="text-4xl">💡</span>
-                                <h3 class="font-bold mt-2 text-white">Smart</h3>
+                                <h3 class="font-bold mt-2 card-text-white">Smart</h3>
                             </div>
                             <div class="glass-card p-6 rounded-2xl text-center cursor-pointer translate-y-8" data-tilt data-tilt-glare data-tilt-max-glare="0.5">
                                 <span class="text-4xl">💻</span>
-                                <h3 class="font-bold mt-2 text-white">Tech</h3>
+                                <h3 class="font-bold mt-2 card-text-white">Tech</h3>
                             </div>
                         </div>
                     </div>
@@ -267,7 +282,9 @@
             </div>
         </section>
 
-        <section id="services" class="py-24">
+        <section id="services" class="py-24 relative">
+             <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[120px] -z-10"></div>
+
             <div class="container mx-auto px-6">
                 <div class="text-center mb-16 gs-fade-up">
                     <span class="text-secondary font-bold tracking-wider uppercase text-sm">What I Do</span>
@@ -275,42 +292,42 @@
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="glass-card p-8 rounded-3xl gs-card-stagger group hover:bg-white/5" data-tilt data-tilt-max="10">
+                    <div class="glass-card p-8 rounded-3xl group" data-tilt data-tilt-max="10">
                         <div class="w-16 h-16 bg-gradient-to-br from-primary to-blue-500 rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg shadow-primary/20 group-hover:scale-110 transition duration-500">
                              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                         </div>
-                        <h3 class="text-2xl font-bold text-white mb-3" data-lang-key="service1_title">Graphic Design</h3>
-                        <p class="text-slate-400 mb-6" data-lang-key="service1_desc">Attractive and professional designs that highlight your brand.</p>
+                        <h3 class="text-2xl font-bold card-text-white mb-3" data-lang-key="service1_title">Graphic Design</h3>
+                        <p class="card-text-gray mb-6" data-lang-key="service1_desc">Attractive and professional designs that highlight your brand.</p>
                         <ul class="space-y-3">
-                            <li class="flex items-center text-slate-300"><span class="text-primary mr-2">✓</span> <span data-lang-key="service1_item1">Logo Design</span></li>
-                            <li class="flex items-center text-slate-300"><span class="text-primary mr-2">✓</span> <span data-lang-key="service1_item2">Banners & Posters</span></li>
-                            <li class="flex items-center text-slate-300"><span class="text-primary mr-2">✓</span> <span data-lang-key="service1_item3">Product Banners</span></li>
+                            <li class="flex items-center card-text-gray"><span class="text-primary mr-2">✓</span> <span data-lang-key="service1_item1">Logo Design</span></li>
+                            <li class="flex items-center card-text-gray"><span class="text-primary mr-2">✓</span> <span data-lang-key="service1_item2">Banners & Posters</span></li>
+                            <li class="flex items-center card-text-gray"><span class="text-primary mr-2">✓</span> <span data-lang-key="service1_item3">Product Banners</span></li>
                         </ul>
                     </div>
                     
-                    <div class="glass-card p-8 rounded-3xl gs-card-stagger group hover:bg-white/5" data-tilt data-tilt-max="10">
+                    <div class="glass-card p-8 rounded-3xl group" data-tilt data-tilt-max="10">
                         <div class="w-16 h-16 bg-gradient-to-br from-secondary to-pink-600 rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg shadow-secondary/20 group-hover:scale-110 transition duration-500">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 21h7a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2zM10 21h-4v-4a2 2 0 012-2h2v6zM14 3v4a1 1 0 001 1h4"></path></svg>
                         </div>
-                        <h3 class="text-2xl font-bold text-white mb-3" data-lang-key="service2_title">Documents & CV</h3>
-                        <p class="text-slate-400 mb-6" data-lang-key="service2_desc">Professional ID cards and modern CV (Resume) designs.</p>
+                        <h3 class="text-2xl font-bold card-text-white mb-3" data-lang-key="service2_title">Documents & CV</h3>
+                        <p class="card-text-gray mb-6" data-lang-key="service2_desc">Professional ID cards and modern CV (Resume) designs.</p>
                         <ul class="space-y-3">
-                            <li class="flex items-center text-slate-300"><span class="text-secondary mr-2">✓</span> <span data-lang-key="service2_item1">Professional CV Design</span></li>
-                            <li class="flex items-center text-slate-300"><span class="text-secondary mr-2">✓</span> <span data-lang-key="service2_item2">ID Card Design</span></li>
-                            <li class="flex items-center text-slate-300"><span class="text-secondary mr-2">✓</span> <span data-lang-key="service2_item3">Business Cards</span></li>
+                            <li class="flex items-center card-text-gray"><span class="text-secondary mr-2">✓</span> <span data-lang-key="service2_item1">Professional CV Design</span></li>
+                            <li class="flex items-center card-text-gray"><span class="text-secondary mr-2">✓</span> <span data-lang-key="service2_item2">ID Card Design</span></li>
+                            <li class="flex items-center card-text-gray"><span class="text-secondary mr-2">✓</span> <span data-lang-key="service2_item3">Business Cards</span></li>
                         </ul>
                     </div>
 
-                    <div class="glass-card p-8 rounded-3xl gs-card-stagger group hover:bg-white/5" data-tilt data-tilt-max="10">
+                    <div class="glass-card p-8 rounded-3xl group" data-tilt data-tilt-max="10">
                         <div class="w-16 h-16 bg-gradient-to-br from-accent to-purple-600 rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg shadow-accent/20 group-hover:scale-110 transition duration-500">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                         </div>
-                        <h3 class="text-2xl font-bold text-white mb-3" data-lang-key="service3_title">AI Web Solutions</h3>
-                        <p class="text-slate-400 mb-6" data-lang-key="service3_desc">Fast, responsive, and modern websites built using AI.</p>
+                        <h3 class="text-2xl font-bold card-text-white mb-3" data-lang-key="service3_title">AI Web Solutions</h3>
+                        <p class="card-text-gray mb-6" data-lang-key="service3_desc">Fast, responsive, and modern websites built using AI.</p>
                         <ul class="space-y-3">
-                            <li class="flex items-center text-slate-300"><span class="text-accent mr-2">✓</span> <span data-lang-key="service3_item1">Personal Portfolio</span></li>
-                            <li class="flex items-center text-slate-300"><span class="text-accent mr-2">✓</span> <span data-lang-key="service3_item2">Basic Business Website</span></li>
-                            <li class="flex items-center text-slate-300"><span class="text-accent mr-2">✓</span> <span data-lang-key="service3_item3">Computer Basics</span></li>
+                            <li class="flex items-center card-text-gray"><span class="text-accent mr-2">✓</span> <span data-lang-key="service3_item1">Personal Portfolio</span></li>
+                            <li class="flex items-center card-text-gray"><span class="text-accent mr-2">✓</span> <span data-lang-key="service3_item2">Basic Business Website</span></li>
+                            <li class="flex items-center card-text-gray"><span class="text-accent mr-2">✓</span> <span data-lang-key="service3_item3">Computer Basics</span></li>
                         </ul>
                     </div>
                 </div>
@@ -380,9 +397,18 @@
                     </a>
 
                     <div class="flex flex-wrap justify-center gap-6 mt-4">
-                         <a href="https://www.facebook.com/itzsabbirrahoman/" target="_blank" class="w-16 h-16 bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-[#1877F2] transition-all transform hover:-translate-y-2 hover:rotate-12 shadow-lg" title="Facebook">
+                        <a href="https://www.facebook.com/itzsabbirrahoman/" target="_blank" class="w-16 h-16 bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-[#1877F2] transition-all transform hover:-translate-y-2 hover:rotate-12 shadow-lg" title="Facebook">
                             <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3l-.5 3h-2.5v6.8c4.56-.93 8-4.96 8-9.8z"/></svg>
                         </a>
+                        
+                        <a href="https://www.linkedin.com/in/sabbir-rahoman" target="_blank" class="w-16 h-16 bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-[#0077b5] transition-all transform hover:-translate-y-2 hover:rotate-12 shadow-lg" title="LinkedIn">
+                            <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                        </a>
+
+                        <a href="https://www.youtube.com/@sabbir-rahoman/" target="_blank" class="w-16 h-16 bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-[#FF0000] transition-all transform hover:-translate-y-2 hover:rotate-12 shadow-lg" title="YouTube">
+                            <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        </a>
+
                         <a href="https://www.instagram.com/itz_sabbir_rahoman/" target="_blank" class="w-16 h-16 bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-white hover:bg-[#E1306C] transition-all transform hover:-translate-y-2 hover:rotate-12 shadow-lg" title="Instagram">
                             <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.148 3.227-1.669 4.771-4.919 4.919-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.07-1.646-.07-4.85s.012-3.584.07-4.85c.148-3.227 1.669 4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163m0-2.163C8.74 0 8.333.011 7.053.069 2.73 1.22.525 3.31.069 7.053.011 8.333 0 8.74 0 12s.011 3.667.069 4.947c.457 3.742 2.618 5.821 6.358 6.98C8.333 23.989 8.74 24 12 24s3.667-.011 4.947-.069c3.742-.457 5.821-2.618 6.98-6.358C23.989 16.667 24 16.26 24 12s-.011-3.667-.069-4.947c-.457-3.742-2.618-5.821-6.358-6.98C15.667.011 15.26 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.88 1.44 1.44 0 000-2.88z"></path></svg>
                         </a>
@@ -429,54 +455,69 @@
         }
         requestAnimationFrame(raf);
 
-        // --- 2. THREE.JS 3D BACKGROUND ---
+        // --- 2. THREE.JS 3D BACKGROUND (MODERN NEURAL NETWORK - UPDATED INTERACTIVITY) ---
         const initThreeJS = () => {
             const container = document.getElementById('canvas-container');
             const scene = new THREE.Scene();
-            // Fog for depth
-            scene.fog = new THREE.FogExp2(0x050505, 0.002);
-
-            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
             
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 4;
+            
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             container.appendChild(renderer.domElement);
 
-            // Create Star Field (Particles)
-            const geometry = new THREE.BufferGeometry();
-            const count = 2000;
-            const posArray = new Float32Array(count * 3);
-            const colorsArray = new Float32Array(count * 3);
+            // Group to hold all 3D objects
+            const group = new THREE.Group();
+            scene.add(group);
 
-            for(let i = 0; i < count * 3; i++) {
-                posArray[i] = (Math.random() - 0.5) * 20; // Spread
-                // Randomize colors (blue/purple/pink)
-                colorsArray[i] = Math.random();
-            }
-
-            geometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-            geometry.setAttribute('color', new THREE.BufferAttribute(colorsArray, 3));
-
-            // Material
-            const material = new THREE.PointsMaterial({
-                size: 0.02,
-                vertexColors: true,
+            // 1. Geometric Wireframe Sphere (The "Brain/Network")
+            const geometry = new THREE.IcosahedronGeometry(1.8, 1);
+            const material = new THREE.MeshBasicMaterial({ 
+                color: 0x6366f1, // Primary color
+                wireframe: true,
                 transparent: true,
-                opacity: 0.8,
+                opacity: 0.15 
             });
+            const sphere = new THREE.Mesh(geometry, material);
+            group.add(sphere);
 
-            const particlesMesh = new THREE.Points(geometry, material);
-            scene.add(particlesMesh);
+            // 2. Inner Glowing Core
+            const coreGeo = new THREE.IcosahedronGeometry(0.8, 0);
+            const coreMat = new THREE.MeshBasicMaterial({
+                color: 0xec4899, // Secondary color
+                wireframe: true,
+                transparent: true,
+                opacity: 0.3
+            });
+            const core = new THREE.Mesh(coreGeo, coreMat);
+            group.add(core);
 
-            camera.position.z = 3;
+            // 3. Floating Particles (Stars)
+            const particlesGeo = new THREE.BufferGeometry();
+            const particlesCount = 700;
+            const posArray = new Float32Array(particlesCount * 3);
+            
+            for(let i = 0; i < particlesCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 15; 
+            }
+            
+            particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            const particlesMat = new THREE.PointsMaterial({
+                size: 0.015,
+                color: 0xffffff,
+                transparent: true,
+                opacity: 0.6
+            });
+            const particlesMesh = new THREE.Points(particlesGeo, particlesMat);
+            scene.add(particlesMesh); 
 
             // Mouse Interaction
             let mouseX = 0;
             let mouseY = 0;
             let targetX = 0;
             let targetY = 0;
-
             const windowHalfX = window.innerWidth / 2;
             const windowHalfY = window.innerHeight / 2;
 
@@ -491,17 +532,27 @@
             const tick = () => {
                 const elapsedTime = clock.getElapsedTime();
 
-                targetX = mouseX * 0.001;
-                targetY = mouseY * 0.001;
+                // Rotate main group (sphere)
+                group.rotation.y = elapsedTime * 0.1;
+                group.rotation.x = Math.sin(elapsedTime * 0.5) * 0.1;
 
-                particlesMesh.rotation.y += 0.05 * (targetX - particlesMesh.rotation.y);
-                particlesMesh.rotation.x += 0.05 * (targetY - particlesMesh.rotation.x);
+                // Rotate inner core opposite direction
+                core.rotation.y = -elapsedTime * 0.2;
+                core.rotation.z = elapsedTime * 0.1;
+
+                // Mouse influence on group (INCREASED SENSITIVITY x4)
+                targetX = mouseX * 0.002;  // Increased from 0.0005
+                targetY = mouseY * 0.002;  // Increased from 0.0005
                 
-                // Constant gentle rotation
-                particlesMesh.rotation.z = elapsedTime * 0.05;
+                group.rotation.y += 0.05 * (targetX - group.rotation.y);
+                group.rotation.x += 0.05 * (targetY - group.rotation.x);
+
+                // Particles movement
+                particlesMesh.rotation.y = -elapsedTime * 0.05 + (targetX * 0.5); // Added mouse influence to particles too
+                particlesMesh.rotation.x = (targetY * 0.5);
 
                 // Parallax effect on scroll
-                camera.position.y = -window.scrollY * 0.001; 
+                camera.position.y = -window.scrollY * 0.0005; 
 
                 renderer.render(scene, camera);
                 window.requestAnimationFrame(tick);
@@ -558,18 +609,9 @@
                 });
             });
 
-            // Service Cards Stagger
-            gsap.from(".gs-card-stagger", {
-                scrollTrigger: {
-                    trigger: "#services",
-                    start: "top 70%",
-                },
-                y: 100,
-                opacity: 0,
-                duration: 0.8,
-                stagger: 0.2,
-                ease: "back.out(1.7)"
-            });
+            // Service Cards Stagger REMOVED TO FIX VISIBILITY
+            // The cards will now be static and visible immediately
+            // gsap.from(".gs-card-stagger", { ... }); <--- REMOVED
 
             // Portfolio Grid Stagger
             gsap.from(".gs-portfolio-item", {
@@ -633,7 +675,7 @@
                 about_p3: '"FAIL" মানে হচ্ছে "First Attempt In Learning" অর্থাৎ, ব্যর্থতা আসলে শেখার প্রথম ধাপ! 🌱✨',
                 about_contact: "যোগাযোগ করুন",
                 services_title: "আমার সেবাসমূহ",
-                service1_title: "গ্রাফিক ডিজাইন", service1_desc: "আকর্ষণীয় এবং প্রফেশনাল ডিজাইন যা আপনার 브랜드কে ফুটিয়ে তোলে।",
+                service1_title: "গ্রাফিক ডিজাইন", service1_desc: "আকর্ষণীয় এবং প্রফেশনাল ডিজাইন যা আপনার ব্র্যান্ডকে ফুটিয়ে তোলে।",
                 service1_item1: "লোগো ডিজাইন", service1_item2: "ব্যানার ও পোস্টার", service1_item3: "প্রোডাক্ট ব্যানার",
                 service2_title: "ডকুমেন্ট ও সিভি", service2_desc: "প্রফেশনাল আইডি কার্ড এবং আধুনিক সিভি (রিজিউম) ডিজাইন।",
                 service2_item1: "প্রফেশনাল সিভি ডিজাইন", service2_item2: "আইডি কার্ড", service2_item3: "বিজনেস কার্ড",
