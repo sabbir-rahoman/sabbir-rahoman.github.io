@@ -72,7 +72,6 @@
         }
 
         .glass-card {
-            /* কার্ডের ব্যাকগ্রাউন্ড এমন রাখা হয়েছে যাতে লেখা সবসময় পড়া যায় */
             background: rgba(17, 24, 39, 0.85); 
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
@@ -88,7 +87,6 @@
             box-shadow: 0 20px 40px -10px rgba(99, 102, 241, 0.2);
         }
         
-        /* Ensure text is bright inside cards */
         .card-text-white { color: #ffffff !important; }
         .card-text-gray { color: #cbd5e1 !important; }
 
@@ -122,10 +120,8 @@
         img.protected-image { pointer-events: none; -webkit-user-drag: none; user-select: none; }
         .text-glow { text-shadow: 0 0 20px rgba(99, 102, 241, 0.5); }
         
-        /* Scrollbar Hide (Lenis handles it) */
         ::-webkit-scrollbar { width: 0px; background: transparent; }
         
-        /* Preloader */
         #preloader {
             position: fixed; inset: 0; background: #000; z-index: 99999;
             display: flex; justify-content: center; align-items: center; transition: opacity 0.8s ease;
@@ -137,9 +133,18 @@
         }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* Image Profile Glow */
         .profile-glow {
             box-shadow: 0 0 40px rgba(99, 102, 241, 0.3), inset 0 0 20px rgba(236, 72, 153, 0.3);
+        }
+
+        /* Play Button Pulse */
+        .play-btn-pulse {
+            animation: pulse-border 2s infinite;
+        }
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 255, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
         }
     </style>
 </head>
@@ -160,6 +165,7 @@
                 <a href="#about" class="text-slate-300 hover:text-white hover:text-glow font-medium transition duration-300" data-lang-key="nav_about">About Me</a>
                 <a href="#services" class="text-slate-300 hover:text-white hover:text-glow font-medium transition duration-300" data-lang-key="nav_services">Services</a>
                 <a href="#my-design" class="text-slate-300 hover:text-white hover:text-glow font-medium transition duration-300" data-lang-key="nav_my_design">My Design</a>
+                <a href="#video-gallery" class="text-slate-300 hover:text-white hover:text-glow font-medium transition duration-300" data-lang-key="nav_gallery">Videos</a>
                 
                 <label class="lang-switch">
                     <input type="checkbox" id="language-toggle">
@@ -180,6 +186,7 @@
             <a href="#about" class="text-2xl font-bold text-white" data-lang-key="nav_about_m">About Me</a>
             <a href="#services" class="text-2xl font-bold text-white" data-lang-key="nav_services_m">Services</a>
             <a href="#my-design" class="text-2xl font-bold text-white" data-lang-key="nav_my_design_m">My Design</a>
+            <a href="#video-gallery" class="text-2xl font-bold text-white" data-lang-key="nav_gallery_m">Video Gallery</a>
             <a href="#contact" class="text-2xl font-bold text-white" data-lang-key="nav_contact_m">Contact</a>
             
             <div class="flex items-center gap-4 mt-4">
@@ -380,6 +387,163 @@
             </div>
         </section>
 
+        <section id="video-gallery" class="py-24 relative">
+            <div class="absolute top-1/4 right-0 w-[300px] h-[300px] bg-secondary/20 rounded-full blur-[100px] -z-10"></div>
+
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <span class="text-accent font-bold tracking-wider uppercase text-sm">Cinematic Moments</span>
+                    <h2 class="text-4xl md:text-5xl font-bold text-white mt-2 font-heading" data-lang-key="gallery_title">Video Gallery</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                    <div class="glass-card rounded-2xl overflow-hidden group hover:border-primary/50 transition duration-300 video-card" data-video-id="n_s1ZxuuM6I">
+                        <div class="relative w-full pt-[56.25%] bg-black cursor-pointer overflow-hidden">
+                            <img src="https://img.youtube.com/vi/n_s1ZxuuM6I/maxresdefault.jpg" class="absolute top-0 left-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition duration-500" alt="Thumbnail">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center group-hover:bg-red-600 transition duration-300 shadow-xl play-btn-pulse">
+                                    <svg class="w-8 h-8 text-white fill-current translate-x-1" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <span class="text-xs font-bold text-primary uppercase tracking-wider mb-2 block">Chittagong Travel</span>
+                            <h3 class="text-white font-medium text-lg leading-snug">আমার সাথে বুড়ো হবে কমলিনী? ❤️💌</h3>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-2xl overflow-hidden group hover:border-primary/50 transition duration-300 video-card" data-video-id="WDYmM-Q0_Cs">
+                        <div class="relative w-full pt-[56.25%] bg-black cursor-pointer overflow-hidden">
+                            <img src="https://img.youtube.com/vi/WDYmM-Q0_Cs/maxresdefault.jpg" class="absolute top-0 left-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition duration-500" alt="Thumbnail">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center group-hover:bg-red-600 transition duration-300 shadow-xl play-btn-pulse">
+                                    <svg class="w-8 h-8 text-white fill-current translate-x-1" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <span class="text-xs font-bold text-primary uppercase tracking-wider mb-2 block">Chittagong Travel</span>
+                            <h3 class="text-white font-medium text-lg leading-snug">চলুন না পাহাড়ে গিয়ে ঝর্না দেখে আসি..🍂💌</h3>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-2xl overflow-hidden group hover:border-primary/50 transition duration-300 video-card" data-video-id="-MC7qA75Luk">
+                        <div class="relative w-full pt-[56.25%] bg-black cursor-pointer overflow-hidden">
+                            <img src="https://img.youtube.com/vi/-MC7qA75Luk/maxresdefault.jpg" class="absolute top-0 left-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition duration-500" alt="Thumbnail">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center group-hover:bg-red-600 transition duration-300 shadow-xl play-btn-pulse">
+                                    <svg class="w-8 h-8 text-white fill-current translate-x-1" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <span class="text-xs font-bold text-primary uppercase tracking-wider mb-2 block">Chittagong Travel</span>
+                            <h3 class="text-white font-medium text-lg leading-snug">সমুদ্র যেন আমায় খুব ডাকে....? 🌊💌</h3>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-2xl overflow-hidden group hover:border-primary/50 transition duration-300 video-card" data-video-id="pfvssgJ234E">
+                        <div class="relative w-full pt-[56.25%] bg-black cursor-pointer overflow-hidden">
+                            <img src="https://img.youtube.com/vi/pfvssgJ234E/maxresdefault.jpg" class="absolute top-0 left-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition duration-500" alt="Thumbnail">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center group-hover:bg-red-600 transition duration-300 shadow-xl play-btn-pulse">
+                                    <svg class="w-8 h-8 text-white fill-current translate-x-1" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <span class="text-xs font-bold text-primary uppercase tracking-wider mb-2 block">Chittagong Travel</span>
+                            <h3 class="text-white font-medium text-lg leading-snug">আমার দেশ-বিদেশ ঘুরার খুব শখ....❤️‍🩹💌</h3>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-2xl overflow-hidden group hover:border-primary/50 transition duration-300 video-card" data-video-id="M0H_dKP2Aj0">
+                        <div class="relative w-full pt-[56.25%] bg-black cursor-pointer overflow-hidden">
+                            <img src="https://img.youtube.com/vi/M0H_dKP2Aj0/maxresdefault.jpg" class="absolute top-0 left-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition duration-500" alt="Thumbnail">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center group-hover:bg-red-600 transition duration-300 shadow-xl play-btn-pulse">
+                                    <svg class="w-8 h-8 text-white fill-current translate-x-1" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <span class="text-xs font-bold text-primary uppercase tracking-wider mb-2 block">Chittagong Travel</span>
+                            <h3 class="text-white font-medium text-lg leading-snug">চল না বন্ধু ঘুরে আসি...🤍🌊</h3>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-2xl overflow-hidden group hover:border-secondary/50 transition duration-300 video-card" data-video-id="_4PoKbFF2y8">
+                        <div class="relative w-full pt-[56.25%] bg-black cursor-pointer overflow-hidden">
+                            <img src="https://img.youtube.com/vi/_4PoKbFF2y8/maxresdefault.jpg" class="absolute top-0 left-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition duration-500" alt="Thumbnail">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center group-hover:bg-red-600 transition duration-300 shadow-xl play-btn-pulse">
+                                    <svg class="w-8 h-8 text-white fill-current translate-x-1" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <span class="text-xs font-bold text-secondary uppercase tracking-wider mb-2 block">Tea Garden</span>
+                            <h3 class="text-white font-medium text-lg leading-snug">চা পাতা উত্তোলন 😍</h3>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-2xl overflow-hidden group hover:border-accent/50 transition duration-300 video-card" data-video-id="9ZXyqDoe0Ao">
+                        <div class="relative w-full pt-[56.25%] bg-black cursor-pointer overflow-hidden">
+                            <img src="https://img.youtube.com/vi/9ZXyqDoe0Ao/maxresdefault.jpg" class="absolute top-0 left-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition duration-500" alt="Thumbnail">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center group-hover:bg-red-600 transition duration-300 shadow-xl play-btn-pulse">
+                                    <svg class="w-8 h-8 text-white fill-current translate-x-1" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <span class="text-xs font-bold text-accent uppercase tracking-wider mb-2 block">Sundarbans</span>
+                            <h3 class="text-white font-medium text-lg leading-snug">চোখ তুলে দেখুন, প্রকৃতি কথা বলছে নিঃশব্দে। 🌸🌝📍</h3>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-2xl overflow-hidden group hover:border-accent/50 transition duration-300 video-card" data-video-id="d5H62jzsZWE">
+                        <div class="relative w-full pt-[56.25%] bg-black cursor-pointer overflow-hidden">
+                            <img src="https://img.youtube.com/vi/d5H62jzsZWE/maxresdefault.jpg" class="absolute top-0 left-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition duration-500" alt="Thumbnail">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center group-hover:bg-red-600 transition duration-300 shadow-xl play-btn-pulse">
+                                    <svg class="w-8 h-8 text-white fill-current translate-x-1" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <span class="text-xs font-bold text-accent uppercase tracking-wider mb-2 block">Sundarbans</span>
+                            <h3 class="text-white font-medium text-lg leading-snug">করমজলের বুকে বয়ে চলা সুন্দরবনের নদীর নীরব সৌন্দর্য। ❤️‍🩹🌊</h3>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-2xl overflow-hidden group hover:border-white/50 transition duration-300 video-card" data-video-id="yWLPLNfJIXs">
+                        <div class="relative w-full pt-[56.25%] bg-black cursor-pointer overflow-hidden">
+                            <img src="https://img.youtube.com/vi/yWLPLNfJIXs/maxresdefault.jpg" class="absolute top-0 left-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition duration-500" alt="Thumbnail">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center group-hover:bg-red-600 transition duration-300 shadow-xl play-btn-pulse">
+                                    <svg class="w-8 h-8 text-white fill-current translate-x-1" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Moments</span>
+                            <h3 class="text-white font-medium text-lg leading-snug">Peaceful Moments with Soulful Nasheed 🌿</h3>
+                        </div>
+                    </div>
+
+                </div>
+                
+                <div class="mt-12 text-center gs-fade-up">
+                     <a href="https://www.youtube.com/@sabbir-rahoman/" target="_blank" class="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-red-600/90 text-white font-bold hover:bg-red-700 transition-all shadow-lg hover:shadow-red-600/30 transform hover:-translate-y-1">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        <span>Subscribe on YouTube</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
         <section id="contact" class="py-24 relative overflow-hidden">
             <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[100px] -z-10"></div>
             
@@ -455,7 +619,7 @@
         }
         requestAnimationFrame(raf);
 
-        // --- 2. THREE.JS 3D BACKGROUND (MODERN NEURAL NETWORK - UPDATED INTERACTIVITY) ---
+        // --- 2. THREE.JS 3D BACKGROUND ---
         const initThreeJS = () => {
             const container = document.getElementById('canvas-container');
             const scene = new THREE.Scene();
@@ -468,182 +632,138 @@
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             container.appendChild(renderer.domElement);
 
-            // Group to hold all 3D objects
             const group = new THREE.Group();
             scene.add(group);
 
-            // 1. Geometric Wireframe Sphere (The "Brain/Network")
             const geometry = new THREE.IcosahedronGeometry(1.8, 1);
             const material = new THREE.MeshBasicMaterial({ 
-                color: 0x6366f1, // Primary color
-                wireframe: true,
-                transparent: true,
-                opacity: 0.15 
+                color: 0x6366f1, wireframe: true, transparent: true, opacity: 0.15 
             });
             const sphere = new THREE.Mesh(geometry, material);
             group.add(sphere);
 
-            // 2. Inner Glowing Core
             const coreGeo = new THREE.IcosahedronGeometry(0.8, 0);
             const coreMat = new THREE.MeshBasicMaterial({
-                color: 0xec4899, // Secondary color
-                wireframe: true,
-                transparent: true,
-                opacity: 0.3
+                color: 0xec4899, wireframe: true, transparent: true, opacity: 0.3
             });
             const core = new THREE.Mesh(coreGeo, coreMat);
             group.add(core);
 
-            // 3. Floating Particles (Stars)
             const particlesGeo = new THREE.BufferGeometry();
             const particlesCount = 700;
             const posArray = new Float32Array(particlesCount * 3);
-            
-            for(let i = 0; i < particlesCount * 3; i++) {
-                posArray[i] = (Math.random() - 0.5) * 15; 
-            }
-            
+            for(let i = 0; i < particlesCount * 3; i++) posArray[i] = (Math.random() - 0.5) * 15; 
             particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-            const particlesMat = new THREE.PointsMaterial({
-                size: 0.015,
-                color: 0xffffff,
-                transparent: true,
-                opacity: 0.6
-            });
+            const particlesMat = new THREE.PointsMaterial({ size: 0.015, color: 0xffffff, transparent: true, opacity: 0.6 });
             const particlesMesh = new THREE.Points(particlesGeo, particlesMat);
             scene.add(particlesMesh); 
 
-            // Mouse Interaction
-            let mouseX = 0;
-            let mouseY = 0;
-            let targetX = 0;
-            let targetY = 0;
-            const windowHalfX = window.innerWidth / 2;
-            const windowHalfY = window.innerHeight / 2;
+            let mouseX = 0, mouseY = 0, targetX = 0, targetY = 0;
+            const windowHalfX = window.innerWidth / 2, windowHalfY = window.innerHeight / 2;
 
             document.addEventListener('mousemove', (event) => {
                 mouseX = (event.clientX - windowHalfX);
                 mouseY = (event.clientY - windowHalfY);
             });
 
-            // Animate
             const clock = new THREE.Clock();
-
             const tick = () => {
                 const elapsedTime = clock.getElapsedTime();
-
-                // Rotate main group (sphere)
                 group.rotation.y = elapsedTime * 0.1;
                 group.rotation.x = Math.sin(elapsedTime * 0.5) * 0.1;
-
-                // Rotate inner core opposite direction
                 core.rotation.y = -elapsedTime * 0.2;
                 core.rotation.z = elapsedTime * 0.1;
-
-                // Mouse influence on group (INCREASED SENSITIVITY x4)
-                targetX = mouseX * 0.002;  // Increased from 0.0005
-                targetY = mouseY * 0.002;  // Increased from 0.0005
-                
+                targetX = mouseX * 0.002; 
+                targetY = mouseY * 0.002; 
                 group.rotation.y += 0.05 * (targetX - group.rotation.y);
                 group.rotation.x += 0.05 * (targetY - group.rotation.x);
-
-                // Particles movement
-                particlesMesh.rotation.y = -elapsedTime * 0.05 + (targetX * 0.5); // Added mouse influence to particles too
+                particlesMesh.rotation.y = -elapsedTime * 0.05 + (targetX * 0.5); 
                 particlesMesh.rotation.x = (targetY * 0.5);
-
-                // Parallax effect on scroll
                 camera.position.y = -window.scrollY * 0.0005; 
-
                 renderer.render(scene, camera);
                 window.requestAnimationFrame(tick);
             };
             tick();
 
-            // Resize
             window.addEventListener('resize', () => {
                 camera.aspect = window.innerWidth / window.innerHeight;
                 camera.updateProjectionMatrix();
                 renderer.setSize(window.innerWidth, window.innerHeight);
             });
 
-            // Fade in canvas
-            setTimeout(() => {
-                container.classList.add('loaded');
-            }, 500);
+            setTimeout(() => { container.classList.add('loaded'); }, 500);
         };
 
         // --- 3. GSAP ANIMATIONS ---
         const initGSAP = () => {
             gsap.registerPlugin(ScrollTrigger);
 
-            // Hero Elements Reveal
             const tl = gsap.timeline();
             tl.from(".gs-reveal", {
-                y: 50,
-                opacity: 0,
-                duration: 1,
-                stagger: 0.2,
-                ease: "power3.out",
-                delay: 0.5 // wait for preloader
-            })
-            .from(".gs-reveal-img", {
-                scale: 0.8,
-                opacity: 0,
-                rotation: -10,
-                duration: 1.5,
-                ease: "elastic.out(1, 0.5)"
+                y: 50, opacity: 0, duration: 1, stagger: 0.2, ease: "power3.out", delay: 0.5
+            }).from(".gs-reveal-img", {
+                scale: 0.8, opacity: 0, rotation: -10, duration: 1.5, ease: "elastic.out(1, 0.5)"
             }, "-=1");
 
-            // Section Headers
+            // General Fade Up
             gsap.utils.toArray('.gs-fade-up').forEach(element => {
                 gsap.from(element, {
-                    scrollTrigger: {
-                        trigger: element,
-                        start: "top 80%",
-                        toggleActions: "play none none reverse"
-                    },
-                    y: 50,
-                    opacity: 0,
-                    duration: 1,
-                    ease: "power3.out"
+                    scrollTrigger: { trigger: element, start: "top 80%", toggleActions: "play none none reverse" },
+                    y: 50, opacity: 0, duration: 1, ease: "power3.out"
                 });
             });
 
-            // Service Cards Stagger REMOVED TO FIX VISIBILITY
-            // The cards will now be static and visible immediately
-            // gsap.from(".gs-card-stagger", { ... }); <--- REMOVED
-
-            // Portfolio Grid Stagger
+            // Portfolio Grid
             gsap.from(".gs-portfolio-item", {
-                scrollTrigger: {
-                    trigger: "#my-design",
-                    start: "top 70%",
-                },
-                scale: 0.8,
-                opacity: 0,
-                duration: 0.8,
-                stagger: 0.1,
-                ease: "power2.out"
+                scrollTrigger: { trigger: "#my-design", start: "top 70%" },
+                scale: 0.8, opacity: 0, duration: 0.8, stagger: 0.1, ease: "power2.out"
             });
 
             // Contact Zoom
             gsap.from(".gs-zoom-in", {
-                scrollTrigger: {
-                    trigger: "#contact",
-                    start: "top 75%",
-                },
-                scale: 0.5,
-                opacity: 0,
-                duration: 1,
-                ease: "back.out(1.5)"
+                scrollTrigger: { trigger: "#contact", start: "top 75%" },
+                scale: 0.5, opacity: 0, duration: 1, ease: "back.out(1.5)"
             });
         };
 
-        // --- 4. LANGUAGE & LOGIC ---
+        // --- 4. CLICK TO PLAY VIDEO LOGIC (FIXED FOR ERROR 153) ---
+        function initVideoPlayers() {
+            document.querySelectorAll('.video-card').forEach(card => {
+                const placeholder = card.querySelector('.relative'); // The black box area
+                const videoId = card.dataset.videoId;
+                
+                placeholder.addEventListener('click', () => {
+                    // Create iframe
+                    const iframe = document.createElement('iframe');
+                    
+                    // Basic Embed URL with autoplay and mute (to prevent browser blocking)
+                    // NOTE: Adding 'origin' helps verify the source, but it must be a valid http/https origin.
+                    let embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+                    
+                    // Only add origin if we are on a real server (http/https), NOT file://
+                    if (window.location.protocol.startsWith('http')) {
+                        embedUrl += `&origin=${window.location.origin}`;
+                    }
+
+                    iframe.setAttribute('src', embedUrl);
+                    iframe.setAttribute('class', 'absolute top-0 left-0 w-full h-full');
+                    iframe.setAttribute('frameborder', '0');
+                    // Added 'web-share' which is sometimes required by newer YouTube embeds
+                    iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+                    iframe.setAttribute('allowfullscreen', '');
+                    
+                    // Replace content
+                    placeholder.innerHTML = '';
+                    placeholder.appendChild(iframe);
+                });
+            });
+        }
+
+        // --- 5. LANGUAGE & LOGIC ---
         const translations = {
             en: {
-                nav_about: "About Me", nav_services: "Services", nav_my_design: "My Design", nav_contact: "Contact",
-                nav_about_m: "About Me", nav_services_m: "Services", nav_my_design_m: "My Design", nav_contact_m: "Contact", nav_lang_m: "Language",
+                nav_about: "About Me", nav_services: "Services", nav_my_design: "My Design", nav_gallery: "Videos", nav_contact: "Contact",
+                nav_about_m: "About Me", nav_services_m: "Services", nav_my_design_m: "My Design", nav_gallery_m: "Video Gallery", nav_contact_m: "Contact", nav_lang_m: "Language",
                 hero_title1: "Digital Creator &", hero_title2: "Creative Designer",
                 hero_subtitle: "Hello, I'm Sabbir Rahoman. I am a student and tech enthusiast. I transform your ideas into attractive designs and digital experiences.",
                 hero_btn_work: "See My Work", hero_btn_store: "Visit My Store",
@@ -660,12 +780,13 @@
                 service3_title: "AI Web Solutions", service3_desc: "Fast, responsive, and modern websites built using AI.",
                 service3_item1: "Personal Portfolio", service3_item2: "Basic Business Website", service3_item3: "Computer Basics",
                 my_design_title: "My Design", my_design_tag: "Logo Design",
+                gallery_title: "Video Gallery",
                 contact_title: "Get In Touch", contact_subtitle: "Interested in working with me? Or just want to say hi? Send me an email or follow me on social media.",
                 footer_text: "&copy; 2025 Sabbir Rahoman. All rights reserved."
             },
             bn: {
-                nav_about: "আমার সম্পর্কে", nav_services: "সেবাসমূহ", nav_my_design: "পোর্টফোলিও", nav_contact: "যোগাযোগ",
-                nav_about_m: "আমার সম্পর্কে", nav_services_m: "সেবাসমূহ", nav_my_design_m: "পোর্টফোলিও", nav_contact_m: "যোগাযোগ", nav_lang_m: "ভাষা",
+                nav_about: "আমার সম্পর্কে", nav_services: "সেবাসমূহ", nav_my_design: "পোর্টফোলিও", nav_gallery: "ভিডিও", nav_contact: "যোগাযোগ",
+                nav_about_m: "আমার সম্পর্কে", nav_services_m: "সেবাসমূহ", nav_my_design_m: "পোর্টফোলিও", nav_gallery_m: "ভিডিও গ্যালারি", nav_contact_m: "যোগাযোগ", nav_lang_m: "ভাষা",
                 hero_title1: "ডিজিটাল ক্রিয়েটর এবং", hero_title2: "ক্রিয়েটিভ ডিজাইনার",
                 hero_subtitle: "হ্যালো, আমি সাব্বির রহমান। আমি একজন ছাত্র এবং প্রযুক্তি উৎসাহী। আমি আপনার ধারণাকে আকর্ষণীয় ডিজাইন এবং ডিজিটাল অভিজ্ঞতায় রূপান্তরিত করি।",
                 hero_btn_work: "আমার কাজ দেখুন", hero_btn_store: "আমার স্টোর দেখুন",
@@ -682,6 +803,7 @@
                 service3_title: "এআই ওয়েব সলিউশন", service3_desc: "এআই ব্যবহার করে দ্রুত, রেসপন্সিভ এবং আধুনিক ওয়েবসাইট তৈরি।",
                 service3_item1: "পার্সোনাল পোর্টফোলিও", service3_item2: "বেসিক বিজনেস ওয়েবসাইট", service3_item3: "কম্পিউটার বেসিক",
                 my_design_title: "আমার ডিজাইন", my_design_tag: "লোগো ডিজাইন",
+                gallery_title: "ভিডিও গ্যালারি",
                 contact_title: "যোগাযোগ করুন", contact_subtitle: "আমার সাথে কাজ করতে আগ্রহী? অথবা শুধু হাই বলতে চান? আমাকে ইমেইল করুন বা সোশ্যাল মিডিয়ায় ফলো করুন।",
                 footer_text: "&copy; 2025 সাব্বির রহমান। সর্বস্বত্ব সংরক্ষিত."
             }
@@ -702,7 +824,6 @@
             document.querySelectorAll('[data-lang-key]').forEach(el => {
                 const key = el.getAttribute('data-lang-key');
                 if (translations[lang][key] && key !== 'hero_title2') {
-                    // Small fade animation for text change
                     el.style.opacity = 0;
                     setTimeout(() => {
                         el.innerText = translations[lang][key];
@@ -710,7 +831,6 @@
                     }, 200);
                 }
             });
-            // Update typing words
             typingWords.bn = [translations.bn.hero_title2, "টেক উৎসাহী", "ডিজিটাল ক্রিয়েটর"];
             typingWords.en = [translations.en.hero_title2, "Tech Enthusiast", "Digital Creator"];
         }
@@ -725,7 +845,6 @@
         toggleDesktop.addEventListener('change', handleToggle);
         toggleMobile.addEventListener('change', handleToggle);
 
-        // Typing Effect Loop
         let wordIndex = 0, charIndex = 0, isDeleting = false;
         function type() {
             const currentWords = typingWords[currentLang];
@@ -742,35 +861,24 @@
             setTimeout(type, isDeleting ? 75 : 150);
         }
 
-        // Mobile Menu
         const menuBtn = document.getElementById('menu-btn');
         const closeBtn = document.getElementById('close-menu');
         const mobileMenu = document.getElementById('mobile-menu');
         const mobileLinks = mobileMenu.querySelectorAll('a');
 
-        menuBtn.addEventListener('click', () => {
-            mobileMenu.classList.remove('translate-x-full');
-            document.body.style.overflow = 'hidden'; // Stop scroll
-        });
-
-        const closeMenu = () => {
-            mobileMenu.classList.add('translate-x-full');
-            document.body.style.overflow = 'auto'; // Restore scroll
-        };
-
+        menuBtn.addEventListener('click', () => { mobileMenu.classList.remove('translate-x-full'); document.body.style.overflow = 'hidden'; });
+        const closeMenu = () => { mobileMenu.classList.add('translate-x-full'); document.body.style.overflow = 'auto'; };
         closeBtn.addEventListener('click', closeMenu);
         mobileLinks.forEach(link => link.addEventListener('click', closeMenu));
 
-        // Initialization
         window.addEventListener('load', () => {
-            // Remove Preloader
             const preloader = document.getElementById('preloader');
             preloader.style.opacity = '0';
             setTimeout(() => {
                 preloader.style.display = 'none';
-                // Start Animations
                 initThreeJS();
                 initGSAP();
+                initVideoPlayers(); // Initialize new video logic
                 type();
             }, 800);
         });
