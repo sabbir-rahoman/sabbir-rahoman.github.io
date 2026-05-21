@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en" class="no-scrollbar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sabbir Rahoman - Digital Creator</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Share Tech Mono"', 'monospace'],
+                        heading: ['"Orbitron"', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#00f0ff',   // Neon Cyan
+                        secondary: '#ffcc00', // Warning Gold/Yellow
+                        accent: '#00ffaa',    // Matrix Green
+                        dark: '#010c0a',      // Very dark teal background
+                    },
+                },
+            },
+        };
+    </script>
+    
+    <style>
+        body {
+            background-color: #010605; /* Deep cyber dark background */
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        /* --- 3D CANVAS --- */
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+            opacity: 0; 
+            transition: opacity 1.5s ease;
+            background: radial-gradient(circle at center, #021a15 0%, #000000 100%);
+        }
+        #canvas-container.loaded {
+            opacity: 1;
+        }
+
+        /* --- SCI-FI PANELS --- */
+        .glass-panel {
+            background: rgba(1, 12, 10, 0.85);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.05), inset 0 0 10px rgba(0, 240, 255, 0.05);
+            border-radius: 4px !important; /* Sharper edges */
+            position: relative;
+        }
+        
+        /* Sci-Fi Decorative Corners for Panel */
+        .glass-panel::before, .glass-panel::after {
+            content: ''; position: absolute; width: 20px; height: 20px; border: 2px solid transparent; pointer-events: none;
+        }
+        .glass-panel::before { top: -1px; left: -1px; border-top-color: #00f0ff; border-left-color: #00f0ff; }
+        .glass-panel::after { bottom: -1px; right: -1px; border-bottom-color: #00f0ff; border-right-color: #00f0ff; }
+
+        .glass-card {
+            background: rgba(2, 20, 17, 0.9); 
+            border: 1px solid rgba(0, 240, 255, 0.15);
+            transition: all 0.4s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.8);
+            border-radius: 4px !important;
+        }
+        
+        .glass-card:hover {
+            background: rgba(4, 35, 30, 0.95);
+            border-color: rgba(0, 240, 255, 0.8);
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.3), inset 0 0 15px rgba(0, 240, 255, 0.1);
+        }
+        
+        .card-text-white { color: #00f0ff !important; text-shadow: 0 0 5px rgba(0, 240, 255, 0.5); }
+        .card-text-gray { color: #a1c7c3 !important; }
+
+        /* --- TYPING CURSOR --- */
+        .typing-cursor {
+            display: inline-block;
+            width: 8px;
+            background-color: #00f0ff;
+            animation: blink 1s infinite;
+            box-shadow: 0 0 8px #00f0ff;
+        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* --- LANGUAGE SWITCHER --- */
+        .lang-switch { position: relative; width: 60px; height: 30px; }
+        .lang-switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.4);
+            transition: .4s; border-radius: 4px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 22px; width: 22px; left: 3px; bottom: 3px;
+            background-color: #00f0ff; transition: .4s; border-radius: 2px;
+            box-shadow: 0 0 10px #00f0ff;
+        }
+        input:checked + .slider:before { transform: translateX(30px); background-color: #ffcc00; box-shadow: 0 0 10px #ffcc00; }
+        .slider:after { content: 'EN'; position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 10px; font-weight: bold; color: #fff; font-family: 'Orbitron', sans-serif;}
+        input:checked + .slider:after { content: 'BN'; left: 8px; color: #fff; right: auto; }
+
+        /* --- UTILS --- */
+        img.protected-image { pointer-events: none; -webkit-user-drag: none; user-select: none; }
+        .text-glow { text-shadow: 0 0 15px rgba(0, 240, 255, 0.8); }
+        
+        ::-webkit-scrollbar { width: 4px; background: #010c0a; }
+        ::-webkit-scrollbar-thumb { background: #00f0ff; border-radius: 0; }
+        
+        #preloader {
+            position: fixed; inset: 0; background: #010605; z-index: 99999;
+            display: flex; justify-content: center; align-items: center; transition: opacity 0.8s ease;
+        }
+        .loader-ring {
+            width: 80px; height: 80px; border-radius: 50%;
+            border: 2px solid transparent; border-top-color: #00f0ff; border-bottom-color: #ffcc00;
+            animation: spin 1s linear infinite;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+        }
+        .loader-ring::before {
+            content: ''; position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border-radius: 50%; border: 2px solid transparent; border-left-color: #00ffaa; border-right-color: #00f0ff;
+            animation: spin 0.5s linear infinite reverse;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .profile-glow {
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.4), inset 0 0 20px rgba(255, 204, 0, 0.2);
+            border-radius: 4px !important;
+        }
+
+        /* Play Button Pulse */
+        .play-btn-pulse {
+            animation: pulse-border 2s infinite;
+            border-radius: 4px;
+            border: 1px solid #00f0ff;
+        }
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.6); }
+            70% { box-shadow: 0 0 0 15px rgba(0, 240, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0); }
+        }
+
+        /* Scanline Overlay Effect for the whole body */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.15), rgba(0,0,0,0.15) 1px, transparent 1px, transparent 2px);
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body class="antialiased font-sans selection:bg-primary selection:text-dark">
+
+    <div id="preloader"><div class="loader-ring"></div></div>
+
+    <div id="canvas-container"></div>
+
+    <header class="fixed w-full top-0 z-50 transition-all duration-300" id="navbar">
+        <div class="absolute inset-0 bg-dark/90 backdrop-blur-md border-b border-primary/30 shadow-[0_4px_20px_rgba(0,240,255,0.1)]"></div>
+        <nav class="container mx-auto px-6 py-4 relative flex justify-between items-center">
+            <a href="#" class="text-2xl md:text-3xl font-extrabold font-heading tracking-widest text-white z-50 uppercase">
+                Sabbir <span class="text-primary text-glow">Rahoman</span>
+            </a>
+            
+            <div id="desktop-menu" class="hidden md:flex items-center space-x-8 tracking-wider">
+                <a href="#about" class="text-primary/70 hover:text-primary hover:text-glow font-medium transition duration-300 uppercase text-sm" data-lang-key="nav_about">About Me</a>
+                <a href="#services" class="text-primary/70 hover:text-primary hover:text-glow font-medium transition duration-300 uppercase text-sm" data-lang-key="nav_services">Services</a>
+                <a href="#my-design" class="text-primary/70 hover:text-primary hover:text-glow font-medium transition duration-300 uppercase text-sm" data-lang-key="nav_my_design">My Design</a>
+                <a href="#video-gallery" class="text-primary/70 hover:text-primary hover:text-glow font-medium transition duration-300 uppercase text-sm" data-lang-key="nav_gallery">Videos</a>
+                
+                <label class="lang-switch">
+                    <input type="checkbox" id="language-toggle">
+                    <span class="slider"></span>
+                </label>
+                
+                <a href="#contact" class="px-6 py-2 rounded border border-primary text-primary font-bold hover:bg-primary hover:text-dark transition-all uppercase text-sm shadow-[0_0_15px_rgba(0,240,255,0.2)]">
+                    <span data-lang-key="nav_contact">Contact</span>
+                </a>
+            </div>
+
+            <button id="menu-btn" class="md:hidden text-primary focus:outline-none z-50">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+
+        <div id="mobile-menu" class="fixed inset-0 bg-dark/95 backdrop-blur-xl z-40 transform translate-x-full transition-transform duration-300 flex flex-col justify-center items-center space-y-8 border-l border-primary/30">
+            <a href="#about" class="text-2xl font-bold text-primary uppercase tracking-widest" data-lang-key="nav_about_m">About Me</a>
+            <a href="#services" class="text-2xl font-bold text-primary uppercase tracking-widest" data-lang-key="nav_services_m">Services</a>
+            <a href="#my-design" class="text-2xl font-bold text-primary uppercase tracking-widest" data-lang-key="nav_my_design_m">My Design</a>
+            <a href="#video-gallery" class="text-2xl font-bold text-primary uppercase tracking-widest" data-lang-key="nav_gallery_m">Video Gallery</a>
+            <a href="#contact" class="text-2xl font-bold text-secondary uppercase tracking-widest" data-lang-key="nav_contact_m">Contact</a>
+            
+            <div class="flex items-center gap-4 mt-4 border border-primary/30 p-4 rounded bg-primary/5">
+                <span class="text-primary/70 uppercase text-sm" data-lang-key="nav_lang_m">Language</span>
+                <label class="lang-switch">
+                    <input type="checkbox" id="language-toggle-mobile">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <button id="close-menu" class="absolute top-6 right-6 text-primary p-2 hover:text-secondary transition">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <section id="home" class="min-h-screen flex items-center pt-20 relative overflow-hidden">
+            <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="z-10 order-2 md:order-1 hero-content">
+                    <div class="inline-block px-4 py-1.5 rounded bg-primary/10 border border-primary/50 text-sm font-bold text-primary mb-6 shadow-[0_0_10px_rgba(0,240,255,0.2)] gs-reveal uppercase tracking-wider">
+                        [ SYSTEM ACCESS GRANTED ]
+                    </div>
+                    <h1 class="text-4xl md:text-6xl font-bold text-white leading-tight mb-6 font-heading gs-reveal uppercase">
+                        <span data-lang-key="hero_title1">Digital Creator &</span> <br>
+                        <span class="text-primary text-glow" id="typing-container">
+                            <span id="typing-text"></span><span class="typing-cursor">&nbsp;</span>
+                        </span>
+                    </h1>
+                    <p class="text-lg text-primary/70 mb-8 leading-relaxed max-w-lg gs-reveal border-l-2 border-secondary pl-4" data-lang-key="hero_subtitle">
+                        Hello, I'm Sabbir Rahoman. I am a student and tech enthusiast. I transform your ideas into attractive designs and digital experiences.
+                    </p>
+                    <div class="flex flex-wrap gap-4 gs-reveal">
+                        <a href="#my-design" class="px-8 py-3 rounded bg-primary text-dark font-bold text-lg hover:bg-white transition-all shadow-[0_0_15px_rgba(0,240,255,0.4)] uppercase tracking-wider" data-lang-key="hero_btn_work">
+                            See My Work
+                        </a>
+                        <a href="https://shobkichuofficial.github.io/" target="_blank" class="px-8 py-3 rounded bg-transparent border border-secondary text-secondary font-bold text-lg hover:bg-secondary hover:text-dark transition-all shadow-[0_0_15px_rgba(255,204,0,0.2)] uppercase tracking-wider" data-lang-key="hero_btn_store">
+                            Visit My Store
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="relative z-10 flex justify-center order-1 md:order-2 gs-reveal-img">
+                    <div class="relative w-72 h-72 md:w-[450px] md:h-[450px]">
+                        <div class="absolute inset-0 border border-primary/50 rounded-sm animate-[spin_10s_linear_infinite] scale-110" style="border-style: dashed;"></div>
+                        <div class="absolute inset-0 border border-secondary/40 rounded-full animate-[spin_15s_linear_infinite_reverse] scale-125"></div>
+                        <div class="absolute inset-0 bg-primary opacity-10 blur-3xl animate-pulse"></div>
+                        
+                        <img src="IMG_3068 edited.webp" alt="Sabbir Rahoman" class="protected-image relative w-full h-full object-cover profile-glow border-2 border-primary">
+                        
+                        <div class="absolute -top-4 -left-4 w-8 h-8 border-t-2 border-l-2 border-primary"></div>
+                        <div class="absolute -bottom-4 -right-4 w-8 h-8 border-b-2 border-r-2 border-primary"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="py-24 relative border-t border-primary/20 bg-dark/50">
+            <div class="container mx-auto px-6">
+                <div class="glass-panel p-8 md:p-12 gs-section">
+                    <div class="flex flex-col md:flex-row items-center gap-12">
+                        <div class="md:w-1/2">
+                            <h2 class="text-3xl font-bold mb-6 font-heading flex items-center gap-3 uppercase tracking-widest">
+                                <span class="w-12 h-1 bg-primary"></span>
+                                <span data-lang-key="about_title" class="text-white text-glow">About Me</span>
+                            </h2>
+                            <p class="text-lg text-primary/80 mb-6 leading-relaxed" data-lang-key="about_p1">
+                                As a passionate tech enthusiast and digital creator from Bangladesh, I'm driven by the power of technology to bring ideas to life.
+                            </p>
+                            <p class="text-lg text-primary/80 mb-6 leading-relaxed" data-lang-key="about_p2">
+                                I am proficient in creating websites using AI, professional Logo Design, Banners, Posters, ID Cards, and CV (Resume) design.
+                            </p>
+                            <div class="bg-dark p-6 rounded border border-secondary mb-8 shadow-[inset_0_0_15px_rgba(255,204,0,0.1)] relative overflow-hidden">
+                                <div class="absolute top-0 left-0 w-1 h-full bg-secondary"></div>
+                                <p class="text-secondary font-mono text-lg" data-lang-key="about_p3">
+                                    > "FAIL" means "First Attempt In Learning". Failure is just the first step towards learning! _
+                                </p>
+                            </div>
+                            <a href="#contact" class="text-primary font-bold text-lg hover:text-white transition flex items-center gap-2 group uppercase tracking-widest border border-primary/30 inline-flex px-4 py-2 bg-primary/5">
+                                <span data-lang-key="about_contact">Contact Me</span>
+                                <svg class="w-5 h-5 transform group-hover:translate-x-2 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </a>
+                        </div>
+                        <div class="md:w-1/2 grid grid-cols-2 gap-4">
+                            <div class="glass-card p-6 text-center cursor-pointer border border-primary/30 hover:border-primary">
+                                <span class="text-4xl text-primary font-heading">01</span>
+                                <h3 class="font-bold mt-2 card-text-white uppercase tracking-wider">Creative</h3>
+                                <div class="w-full h-1 bg-primary/20 mt-2"><div class="w-3/4 h-full bg-primary"></div></div>
+                            </div>
+                            <div class="glass-card p-6 text-center cursor-pointer translate-y-8 border border-secondary/30 hover:border-secondary">
+                                <span class="text-4xl text-secondary font-heading">02</span>
+                                <h3 class="font-bold mt-2 text-secondary uppercase tracking-wider" style="text-shadow: 0 0 5px rgba(255,204,0,0.5);">Fast</h3>
+                                <div class="w-full h-1 bg-secondary/20 mt-2"><div class="w-[90%] h-full bg-secondary"></div></div>
+                            </div>
+                            <div class="glass-card p-6 text-center cursor-pointer border border-accent/30 hover:border-accent">
+                                <span class="text-4xl text-accent font-heading">03</span>
+                                <h3 class="font-bold mt-2 text-accent uppercase tracking-wider" style="text-shadow: 0 0 5px rgba(0,255,170,0.5);">Smart</h3>
+                                <div class="w-full h-1 bg-accent/20 mt-2"><div class="w-[85%] h-full bg-accent"></div></div>
+                            </div>
+                            <div class="glass-card p-6 text-center cursor-pointer translate-y-8 border border-primary/30 hover:border-primary">
+                                <span class="text-4xl text-primary font-heading">04</span>
+                                <h3 class="font-bold mt-2 card-text-white uppercase tracking-wider">Tech</h3>
+                                <div class="w-full h-1 bg-primary/20 mt-2"><div class="w-[95%] h-full bg-primary"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="services" class="py-24 relative">
+             <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -z-10 border border-primary/10"></div>
+
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16 gs-fade-up">
+                    <span class="text-primary font-bold tracking-widest uppercase text-sm border border-primary px-3 py-1 bg-primary/10">[ SYSTEM_MODULES ]</span>
+                    <h2 class="text-3xl md:text-4xl font-bold text-white mt-6 font-heading uppercase text-glow" data-lang-key="services_title">My Services</h2>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="glass-card p-8 group">
+                        <div class="w-16 h-16 bg-dark border border-primary flex items-center justify-center text-primary mb-6 shadow-[0_0_15px_rgba(0,240,255,0.3)] group-hover:bg-primary group-hover:text-dark transition duration-300">
+                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-bold card-text-white mb-3 uppercase tracking-wider" data-lang-key="service1_title">Graphic Design</h3>
+                        <p class="card-text-gray mb-6 text-sm" data-lang-key="service1_desc">Attractive and professional designs that highlight your brand.</p>
+                        <ul class="space-y-3 border-t border-primary/20 pt-4">
+                            <li class="flex items-center card-text-gray text-sm"><span class="text-primary mr-2">></span> <span data-lang-key="service1_item1">Logo Design</span></li>
+                            <li class="flex items-center card-text-gray text-sm"><span class="text-primary mr-2">></span> <span data-lang-key="service1_item2">Banners & Posters</span></li>
+                            <li class="flex items-center card-text-gray text-sm"><span class="text-primary mr-2">></span> <span data-lang-key="service1_item3">Product Banners</span></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="glass-card p-8 group border-secondary/30 hover:border-secondary">
+                        <div class="w-16 h-16 bg-dark border border-secondary flex items-center justify-center text-secondary mb-6 shadow-[0_0_15px_rgba(255,204,0,0.3)] group-hover:bg-secondary group-hover:text-dark transition duration-300">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 21h7a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2zM10 21h-4v-4a2 2 0 012-2h2v6zM14 3v4a1 1 0 001 1h4"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-secondary mb-3 uppercase tracking-wider" style="text-shadow: 0 0 5px rgba(255,204,0,0.5);" data-lang-key="service2_title">Documents & CV</h3>
+                        <p class="card-text-gray mb-6 text-sm" data-lang-key="service2_desc">Professional ID cards and modern CV (Resume) designs.</p>
+                        <ul class="space-y-3 border-t border-secondary/20 pt-4">
+                            <li class="flex items-center card-text-gray text-sm"><span class="text-secondary mr-2">></span> <span data-lang-key="service2_item1">Professional CV Design</span></li>
+                            <li class="flex items-center card-text-gray text-sm"><span class="text-secondary mr-2">></span> <span data-lang-key="service2_item2">ID Card Design</span></li>
+                            <li class="flex items-center card-text-gray text-sm"><span class="text-secondary mr-2">></span> <span data-lang-key="service2_item3">Business Cards</span></li>
+                        </ul>
+                    </div>
+
+                    <div class="glass-card p-8 group border-accent/30 hover:border-accent">
+                        <div class="w-16 h-16 bg-dark border border-accent flex items-center justify-center text-accent mb-6 shadow-[0_0_15px_rgba(0,255,170,0.3)] group-hover:bg-accent group-hover:text-dark transition duration-300">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-accent mb-3 uppercase tracking-wider" style="text-shadow: 0 0 5px rgba(0,255,170,0.5);" data-lang-key="service3_title">AI Web Solutions</h3>
+                        <p class="card-text-gray mb-6 text-sm" data-lang-key="service3_desc">Fast, responsive, and modern websites built using AI.</p>
+                        <ul class="space-y-3 border-t border-accent/20 pt-4">
+                            <li class="flex items-center card-text-gray text-sm"><span class="text-accent mr-2">></span> <span data-lang-key="service3_item1">Personal Portfolio</span></li>
+                            <li class="flex items-center card-text-gray text-sm"><span class="text-accent mr-2">></span> <span data-lang-key="service3_item2">Basic Business Website</span></li>
+                            <li class="flex items-center card-text-gray text-sm"><span class="text-accent mr-2">></span> <span data-lang-key="service3_item3">Computer Basics</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="my-design" class="py-24 border-t border-primary/20 bg-dark/50">
+            <div class="container mx-auto px-6">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-12 gs-fade-up">
+                    <div>
+                        <span class="text-primary font-bold tracking-widest uppercase text-sm">DATA_ARCHIVE // PORTFOLIO</span>
+                        <h2 class="text-3xl md:text-4xl font-bold text-white font-heading uppercase text-glow mt-2" data-lang-key="my_design_title">My Design</h2>
+                    </div>
+                    <div class="h-1 w-full md:w-1/3 bg-gradient-to-r from-primary via-secondary to-transparent mt-4 md:mt-0"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="group relative overflow-hidden shadow-[0_0_15px_rgba(0,0,0,0.8)] gs-portfolio-item border border-primary/30 hover:border-primary transition-all">
+                        <img src="logo1.webp" alt="Design 1" class="w-full h-80 object-cover transform transition duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100 mix-blend-luminosity group-hover:mix-blend-normal" onerror="this.src='https://placehold.co/400x500/010c0a/00f0ff?text=Logo+Design'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark via-dark/50 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-end p-6 border-b-4 border-primary">
+                            <h3 class="text-white font-bold text-lg uppercase tracking-wider translate-y-4 group-hover:translate-y-0 transition duration-300 font-heading text-glow">Antor Hair Fashion</h3>
+                            <p class="text-primary text-sm translate-y-4 group-hover:translate-y-0 transition duration-300 delay-75 uppercase" data-lang-key="my_design_tag">> Logo Design</p>
+                        </div>
+                    </div>
+                    
+                    <div class="group relative overflow-hidden shadow-[0_0_15px_rgba(0,0,0,0.8)] gs-portfolio-item border border-primary/30 hover:border-primary transition-all">
+                        <img src="logo2.webp" alt="Design 2" class="w-full h-80 object-cover transform transition duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100 mix-blend-luminosity group-hover:mix-blend-normal" onerror="this.src='https://placehold.co/400x500/010c0a/ffcc00?text=Logo+Design'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark via-dark/50 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-end p-6 border-b-4 border-secondary">
+                            <h3 class="text-white font-bold text-lg uppercase tracking-wider translate-y-4 group-hover:translate-y-0 transition duration-300 font-heading" style="text-shadow: 0 0 10px #ffcc00;">Jannat's Bakery</h3>
+                            <p class="text-secondary text-sm translate-y-4 group-hover:translate-y-0 transition duration-300 delay-75 uppercase" data-lang-key="my_design_tag">> Logo Design</p>
+                        </div>
+                    </div>
+                    
+                    <div class="group relative overflow-hidden shadow-[0_0_15px_rgba(0,0,0,0.8)] gs-portfolio-item border border-primary/30 hover:border-primary transition-all">
+                        <img src="logo3.webp" alt="Design 3" class="w-full h-80 object-cover transform transition duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100 mix-blend-luminosity group-hover:mix-blend-normal" onerror="this.src='https://placehold.co/400x500/010c0a/00ffaa?text=Logo+Design'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark via-dark/50 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-end p-6 border-b-4 border-accent">
+                            <h3 class="text-white font-bold text-lg uppercase tracking-wider translate-y-4 group-hover:translate-y-0 transition duration-300 font-heading" style="text-shadow: 0 0 10px #00ffaa;">Shuddho Deal</h3>
+                            <p class="text-accent text-sm translate-y-4 group-hover:translate-y-0 transition duration-300 delay-75 uppercase" data-lang-key="my_design_tag">> Logo Design</p>
+                        </div>
+                    </div>
+                    
+                    <div class="group relative overflow-hidden shadow-[0_0_15px_rgba(0,0,0,0.8)] gs-portfolio-item border border-primary/30 hover:border-primary transition-all">
+                         <img src="logo4.webp" alt="Design 4" class="w-full h-80 object-cover transform transition duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100 mix-blend-luminosity group-hover:mix-blend-normal" onerror="this.src='https://placehold.co/400x500/010c0a/00f0ff?text=Logo+Design'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark via-dark/50 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-end p-6 border-b-4 border-primary">
+                            <h3 class="text-white font-bold text-lg uppercase tracking-wider translate-y-4 group-hover:translate-y-0 transition duration-300 font-heading text-glow">Shorbokichu.com</h3>
+                            <p class="text-primary text-sm translate-y-4 group-hover:translate-y-0 transition duration-300 delay-75 uppercase" data-lang-key="my_design_tag">> Logo Design</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="video-gallery" class="py-24 relative">
+            <div class="absolute top-1/4 right-0 w-[300px] h-[300px] bg-secondary/10 rounded-full blur-[100px] -z-10"></div>
+
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <span class="text-secondary font-bold tracking-widest uppercase text-sm border border-secondary px-3 py-1 bg-secondary/10">[ MEDIA_STREAM ]</span>
+                    <h2 class="text-3xl md:text-4xl font-bold text-white mt-6 font-heading uppercase" style="text-shadow: 0 0 15px #ffcc00;" data-lang-key="gallery_title">Video Gallery</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                    <div class="glass-card overflow-hidden group hover:border-primary transition duration-300 video-card border-l-4" data-video-id="n_s1ZxuuM6I">
+                        <div class="relative w-full pt-[56.25%] bg-black cursor-pointer overflow-hidden border-b border-primary/30">
+                            <img src="https://img.youtube.com/vi/n_s1ZxuuM6I/maxresdefault.jpg" class="absolute top-0 left-0 w-full h-full object-cover opacity-70 mix-blend-luminosity group-hover:opacity-100 group-hover:mix-blend-normal transition duration-500" alt="Thumbnail">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-16 h-16 bg-dark/80 border border-primary text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-dark transition duration-300 shadow-[0_0_15px_rgba(0,240,255,0.5)] play-btn-pulse">
+                                    <svg class="w-8 h-8 fill-current translate-x-1" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                            <div class="absolute top-2 right-2 text-xs text-primary bg-dark/80 px-2 border border-primary font-mono uppercase">REC</div>
+                        </div>
+                        <div class="p-5 bg-dark">
+                            <span class="text-xs font-bold text-primary uppercase tracking-widest mb-2 block font-mono">> Chittagong Travel</span>
+                            <h3 class="text-white font-medium text-sm leading-snug">আমার সাথে বুড়ো হবে কমলিনী? ❤️💌</h3>
+                        </div>
+                    </div>
+
+                    <div class="glass-card overflow-hidden group hover:border-secondary transition duration-300 video-card border-l-4 border-l-secondary" data-video-id="WDYmM-Q0_Cs">
+                        <div class="relative w-full pt-[56.25%] bg-black cursor-pointer overflow-hidden border-b border-secondary/30">
+                            <img src="https://img.youtube.com/vi/WDYmM-Q0_Cs/maxresdefault.jpg" class="absolute top-0 left-0 w-full h-full object-cover opacity-70 mix-blend-luminosity group-hover:opacity-100 group-hover:mix-blend-normal transition duration-500" alt="Thumbnail">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-16 h-16 bg-dark/80 border border-secondary text-secondary flex items-center justify-center group-hover:bg-secondary group-hover:text-dark transition duration-300 shadow-[0_0_15px_rgba(255,204,0,0.5)] play-btn-pulse" style="border-color: #ffcc00;">
+                                    <svg class="w-8 h-8 fill-current translate-x-1" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                            <div class="absolute top-2 right-2 text-xs text-secondary bg-dark/80 px-2 border border-secondary font-mono uppercase">REC</div>
+                        </div>
+                        <div class="p-5 bg-dark">
+                            <span class="text-xs font-bold text-secondary uppercase tracking-widest mb-2 block font-mono">> Chittagong Travel</span>
+                            <h3 class="text-white font-medium text-sm leading-snug">চলুন না পাহাড়ে গিয়ে ঝর্না দেখে আসি..🍂💌</h3>
+                        </div>
+                    </div>
+
+                    <div class="glass-card overflow-hidden group hover:border-accent transition duration-300 video-card border-l-4 border-l-accent" data-video-id="-MC7qA75Luk">
+                        <div class="relative w-full pt-[56.25%] bg-black cursor-pointer overflow-hidden border-b border-accent/30">
+                            <img src="https://img.youtube.com/vi/-MC7qA75Luk/maxresdefault.jpg" class="absolute top-0 left-0 w-full h-full object-cover opacity-70 mix-blend-luminosity group-hover:opacity-100 group-hover:mix-blend-normal transition duration-500" alt="Thumbnail">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-16 h-16 bg-dark/80 border border-accent text-accent flex items-center justify-center group-hover:bg-accent group-hover:text-dark transition duration-300 shadow-[0_0_15px_rgba(0,255,170,0.5)] play-btn-pulse" style="border-color: #00ffaa;">
+                                    <svg class="w-8 h-8 fill-current translate-x-1" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                            <div class="absolute top-2 right-2 text-xs text-accent bg-dark/80 px-2 border border-accent font-mono uppercase">REC</div>
+                        </div>
+                        <div class="p-5 bg-dark">
+                            <span class="text-xs font-bold text-accent uppercase tracking-widest mb-2 block font-mono">> Chittagong Travel</span>
+                            <h3 class="text-white font-medium text-sm leading-snug">সমুদ্র যেন আমায় খুব ডাকে....? 🌊💌</h3>
+                        </div>
+                    </div>
+
+                    <div class="glass-card overflow-hidden group hover:border-primary transition duration-300 video-card border-l-4 border-l-primary" data-video-id="pfvssgJ234E">
+                        <div class="relative w-full pt-[56.25%] bg-black cursor-pointer overflow-hidden border-b border-primary/30">
+                            <img src="https://img.youtube.com/vi/pfvssgJ234E/maxresdefault.jpg" class="absolute top-0 left-0 w-full h-full object-cover opacity-70 mix-blend-luminosity group-hover:opacity-100 group-hover:mix-blend-normal transition duration-500" alt="Thumbnail">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-16 h-16 bg-dark/80 border border-primary text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-dark transition duration-300 shadow-[0_0_15px_rgba(0,240,255,0.5)] play-btn-pulse">
+                                    <svg class="w-8 h-8 fill-current translate-x-1" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                            <div class="absolute top-2 right-2 text-xs text-primary bg-dark/80 px-2 border border-primary font-mono uppercase">REC</div>
+                        </div>
+                        <div class="p-5 bg-dark">
+                            <span class="text-xs font-bold text-primary uppercase tracking-widest mb-2 block font-mono">> Chittagong Travel</span>
+                            <h3 class="text-white font-medium text-sm leading-snug">আমার দেশ-বিদেশ ঘুরার খুব শখ....❤️‍🩹💌</h3>
+                        </div>
+                    </div>
+
+                    <div class="glass-card overflow-hidden group hover:border-primary transition duration-300 video-card border-l-4 border-l-primary" data-video-id="M0H_dKP2Aj0">
+                        <div class="relative w-full pt-[56.25%] bg-black cursor-pointer overflow-hidden border-b border-primary/30">
+                            <img src="https://img.youtube.com/vi/M0H_dKP2Aj0/maxresdefault.jpg" class="absolute top-0 left-0 w-full h-full object-cover opacity-70 mix-blend-luminosity group-hover:opacity-100 group-hover:mix-blend-normal transition duration-500" alt="Thumbnail">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-16 h-16 bg-dark/80 border border-primary text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-dark transition duration-300 shadow-[0_0_15px_rgba(0,240,255,0.5)] play-btn-pulse">
+                                    <svg class="w-8 h-8 fill-current translate-x-1" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                            <div class="absolute top-2 right-2 text-xs text-primary bg-dark/80 px-2 border border-primary font-mono uppercase">REC</div>
+                        </div>
+                        <div class="p-5 bg-dark">
+                            <span class="text-xs font-bold text-primary uppercase tracking-widest mb-2 block font-mono">> Chittagong Travel</span>
+                            <h3 class="text-white font-medium text-sm leading-snug">চল না বন্ধু ঘুরে আসি...🤍🌊</h3>
+                        </div>
+                    </div>
+
+                    <div class="glass-card overflow-hidden group hover:border-secondary transition duration-300 video-card border-l-4 border-l-secondary" data-video-id="_4PoKbFF2y8">
+                        <div class="relative w-full pt-[56.25%] bg-black cursor-pointer overflow-hidden border-b border-secondary/30">
+                            <img src="https://img.youtube.com/vi/_4PoKbFF2y8/maxresdefault.jpg" class="absolute top-0 left-0 w-full h-full object-cover opacity-70 mix-blend-luminosity group-hover:opacity-100 group-hover:mix-blend-normal transition duration-500" alt="Thumbnail">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-16 h-16 bg-dark/80 border border-secondary text-secondary flex items-center justify-center group-hover:bg-secondary group-hover:text-dark transition duration-300 shadow-[0_0_15px_rgba(255,204,0,0.5)] play-btn-pulse" style="border-color: #ffcc00;">
+                                    <svg class="w-8 h-8 fill-current translate-x-1" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                            <div class="absolute top-2 right-2 text-xs text-secondary bg-dark/80 px-2 border border-secondary font-mono uppercase">REC</div>
+                        </div>
+                        <div class="p-5 bg-dark">
+                            <span class="text-xs font-bold text-secondary uppercase tracking-widest mb-2 block font-mono">> Tea Garden</span>
+                            <h3 class="text-white font-medium text-sm leading-snug">চা পাতা উত্তোলন 😍</h3>
+                        </div>
+                    </div>
+
+                    <div class="glass-card overflow-hidden group hover:border-accent transition duration-300 video-card border-l-4 border-l-accent" data-video-id="9ZXyqDoe0Ao">
+                        <div class="relative w-full pt-[56.25%] bg-black cursor-pointer overflow-hidden border-b border-accent/30">
+                            <img src="https://img.youtube.com/vi/9ZXyqDoe0Ao/maxresdefault.jpg" class="absolute top-0 left-0 w-full h-full object-cover opacity-70 mix-blend-luminosity group-hover:opacity-100 group-hover:mix-blend-normal transition duration-500" alt="Thumbnail">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-16 h-16 bg-dark/80 border border-accent text-accent flex items-center justify-center group-hover:bg-accent group-hover:text-dark transition duration-300 shadow-[0_0_15px_rgba(0,255,170,0.5)] play-btn-pulse" style="border-color: #00ffaa;">
+                                    <svg class="w-8 h-8 fill-current translate-x-1" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                            <div class="absolute top-2 right-2 text-xs text-accent bg-dark/80 px-2 border border-accent font-mono uppercase">REC</div>
+                        </div>
+                        <div class="p-5 bg-dark">
+                            <span class="text-xs font-bold text-accent uppercase tracking-widest mb-2 block font-mono">> Sundarbans</span>
+                            <h3 class="text-white font-medium text-sm leading-snug">চোখ তুলে দেখুন, প্রকৃতি কথা বলছে নিঃশব্দে। 🌸🌝📍</h3>
+                        </div>
+                    </div>
+
+                    <div class="glass-card overflow-hidden group hover:border-accent transition duration-300 video-card border-l-4 border-l-accent" data-video-id="d5H62jzsZWE">
+                        <div class="relative w-full pt-[56.25%] bg-black cursor-pointer overflow-hidden border-b border-accent/30">
+                            <img src="https://img.youtube.com/vi/d5H62jzsZWE/maxresdefault.jpg" class="absolute top-0 left-0 w-full h-full object-cover opacity-70 mix-blend-luminosity group-hover:opacity-100 group-hover:mix-blend-normal transition duration-500" alt="Thumbnail">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-16 h-16 bg-dark/80 border border-accent text-accent flex items-center justify-center group-hover:bg-accent group-hover:text-dark transition duration-300 shadow-[0_0_15px_rgba(0,255,170,0.5)] play-btn-pulse" style="border-color: #00ffaa;">
+                                    <svg class="w-8 h-8 fill-current translate-x-1" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                            <div class="absolute top-2 right-2 text-xs text-accent bg-dark/80 px-2 border border-accent font-mono uppercase">REC</div>
+                        </div>
+                        <div class="p-5 bg-dark">
+                            <span class="text-xs font-bold text-accent uppercase tracking-widest mb-2 block font-mono">> Sundarbans</span>
+                            <h3 class="text-white font-medium text-sm leading-snug">করমজলের বুকে বয়ে চলা সুন্দরবনের নদীর নীরব সৌন্দর্য। ❤️‍🩹🌊</h3>
+                        </div>
+                    </div>
+
+                    <div class="glass-card overflow-hidden group hover:border-primary transition duration-300 video-card border-l-4 border-l-primary" data-video-id="yWLPLNfJIXs">
+                        <div class="relative w-full pt-[56.25%] bg-black cursor-pointer overflow-hidden border-b border-primary/30">
+                            <img src="https://img.youtube.com/vi/yWLPLNfJIXs/maxresdefault.jpg" class="absolute top-0 left-0 w-full h-full object-cover opacity-70 mix-blend-luminosity group-hover:opacity-100 group-hover:mix-blend-normal transition duration-500" alt="Thumbnail">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-16 h-16 bg-dark/80 border border-primary text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-dark transition duration-300 shadow-[0_0_15px_rgba(0,240,255,0.5)] play-btn-pulse">
+                                    <svg class="w-8 h-8 fill-current translate-x-1" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                            <div class="absolute top-2 right-2 text-xs text-primary bg-dark/80 px-2 border border-primary font-mono uppercase">REC</div>
+                        </div>
+                        <div class="p-5 bg-dark">
+                            <span class="text-xs font-bold text-primary/70 uppercase tracking-widest mb-2 block font-mono">> Moments</span>
+                            <h3 class="text-white font-medium text-sm leading-snug">Peaceful Moments with Soulful Nasheed 🌿</h3>
+                        </div>
+                    </div>
+
+                </div>
+                
+                <div class="mt-12 text-center gs-fade-up">
+                     <a href="https://www.youtube.com/@sabbir-rahoman/" target="_blank" class="inline-flex items-center gap-2 px-8 py-3 bg-dark border-2 border-red-600 text-red-500 font-bold hover:bg-red-600 hover:text-white transition-all shadow-[0_0_15px_rgba(255,0,0,0.3)] uppercase tracking-widest">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        <span>INITIATE_YOUTUBE</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="py-24 relative overflow-hidden border-t border-primary/20 bg-dark/50">
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[100px] -z-10 border border-primary/10"></div>
+            
+            <div class="container mx-auto px-6 text-center relative z-10">
+                <div class="glass-panel max-w-4xl mx-auto p-10 md:p-16 border-t-4 border-t-primary gs-zoom-in">
+                    
+                    <span class="text-primary font-bold tracking-widest uppercase text-sm border border-primary px-3 py-1 bg-primary/10 inline-block mb-4">[ COMM_LINK_OPEN ]</span>
+                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-6 font-heading uppercase text-glow" data-lang-key="contact_title">Get In Touch</h2>
+                    <p class="text-lg text-primary/70 mb-10 max-w-2xl mx-auto font-mono" data-lang-key="contact_subtitle">
+                        > Interested in working with me? Or just want to say hi? Send me an email or follow me on social media.
+                    </p>
+
+                    <a href="mailto:sabbirrahoman217@gmail.com" class="inline-flex items-center gap-3 bg-dark border-2 border-primary text-primary font-bold py-4 px-10 text-lg transition duration-300 hover:bg-primary hover:text-dark shadow-[0_0_20px_rgba(0,240,255,0.4)] mb-12 uppercase tracking-wider">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        <span>sabbirrahoman217@gmail.com</span>
+                    </a>
+
+                    <div class="flex flex-wrap justify-center gap-6 mt-4">
+                        <a href="https://www.facebook.com/itzsabbirrahoman/" target="_blank" class="w-14 h-14 bg-dark border border-primary/50 flex items-center justify-center text-primary/70 hover:bg-primary hover:text-dark hover:border-primary transition-all shadow-[0_0_10px_rgba(0,240,255,0.2)]" title="Facebook">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3l-.5 3h-2.5v6.8c4.56-.93 8-4.96 8-9.8z"/></svg>
+                        </a>
+                        
+                        <a href="https://www.linkedin.com/in/sabbir-rahoman" target="_blank" class="w-14 h-14 bg-dark border border-primary/50 flex items-center justify-center text-primary/70 hover:bg-primary hover:text-dark hover:border-primary transition-all shadow-[0_0_10px_rgba(0,240,255,0.2)]" title="LinkedIn">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                        </a>
+
+                        <a href="https://www.youtube.com/@sabbir-rahoman/" target="_blank" class="w-14 h-14 bg-dark border border-primary/50 flex items-center justify-center text-primary/70 hover:bg-primary hover:text-dark hover:border-primary transition-all shadow-[0_0_10px_rgba(0,240,255,0.2)]" title="YouTube">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        </a>
+
+                        <a href="https://www.instagram.com/itz_sabbir_rahoman/" target="_blank" class="w-14 h-14 bg-dark border border-primary/50 flex items-center justify-center text-primary/70 hover:bg-primary hover:text-dark hover:border-primary transition-all shadow-[0_0_10px_rgba(0,240,255,0.2)]" title="Instagram">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.148 3.227-1.669 4.771-4.919 4.919-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.07-1.646-.07-4.85s.012-3.584.07-4.85c.148-3.227 1.669 4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163m0-2.163C8.74 0 8.333.011 7.053.069 2.73 1.22.525 3.31.069 7.053.011 8.333 0 8.74 0 12s.011 3.667.069 4.947c.457 3.742 2.618 5.821 6.358 6.98C8.333 23.989 8.74 24 12 24s3.667-.011 4.947-.069c3.742-.457 5.821-2.618 6.98-6.358C23.989 16.667 24 16.26 24 12s-.011-3.667-.069-4.947c-.457-3.742-2.618-5.821-6.358-6.98C15.667.011 15.26 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.88 1.44 1.44 0 000-2.88z"></path></svg>
+                        </a>
+                        <a href="https://www.threads.com/@itz_sabbir_rahoman" target="_blank" class="w-14 h-14 bg-dark border border-primary/50 flex items-center justify-center text-primary/70 hover:bg-primary hover:text-dark hover:border-primary transition-all shadow-[0_0_10px_rgba(0,240,255,0.2)]" title="Threads">
+                             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12.024 2c-5.526 0-10.005 4.479-10.005 10.005 0 5.526 4.479 10.005 10.005 10.005 5.526 0 10.005-4.479 10.005-10.005 0-5.526-4.479-10.005-10.005-10.005zm0 18.256c-4.555 0-8.251-3.696-8.251-8.251 0-4.555 3.696-8.251 8.251-8.251 4.555 0 8.251 3.696 8.251 8.251 0 1.933-.668 3.71-1.792 5.127l-.026.033c-.092.115-.246.165-.386.126-.14-.04-.242-.162-.255-.308l-.16-1.841c.849-1.298 1.349-2.836 1.349-4.489 0-3.35-2.029-6.191-4.992-7.394l-.031-.012c-.106-.042-.224-.012-.296.075-.072.087-.076.211-.009.302.946 1.284 1.507 2.859 1.507 4.564 0 1.294-.321 2.513-.889 3.587l-.234-.145c-.244-.151-.555-.074-.706.171-.151.244-.074.555.171.706l1.249.773c-.091.228-.188.452-.293.672-1.258 2.651-3.957 4.497-7.078 4.497zM16.14 12c0 2.287-1.854 4.14-4.14 4.14s-4.14-1.854-4.14-4.14 1.854-4.14 4.14-4.14 4.14 1.854 4.14 4.14zm-6.526 0c0 1.317 1.069 2.386 2.386 2.386s2.386-1.069 2.386-2.386-1.069-2.386-2.386-2.386-2.386 1.069-2.386 2.386z"/></svg>
+                        </a>
+                        <a href="https://www.tiktok.com/@itz_sabbir_rahoman" target="_blank" class="w-14 h-14 bg-dark border border-primary/50 flex items-center justify-center text-primary/70 hover:bg-primary hover:text-dark hover:border-primary transition-all shadow-[0_0_10px_rgba(0,240,255,0.2)]" title="TikTok">
+                             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 1 0-1 13.6 6.1 6.1 0 0 0 5.28-3.11v3.08h3.41v-10.4a8.28 8.28 0 0 0 4.96 1.76V10.2a4.85 4.85 0 0 1-3.42-3.51Z"/></svg>
+                        </a>
+                        <a href="https://x.com/sabbir_rahoman_" target="_blank" class="w-14 h-14 bg-dark border border-primary/50 flex items-center justify-center text-primary/70 hover:bg-primary hover:text-dark hover:border-primary transition-all shadow-[0_0_10px_rgba(0,240,255,0.2)]" title="X">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-[#010605] border-t border-primary/30 py-8 relative z-10 font-mono">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-primary/50 text-sm" data-lang-key="footer_text">
+                &copy; 2025 Sabbir Rahoman. SYSTEM_ONLINE // ALL RIGHTS RESERVED.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // --- 1. LENIS SMOOTH SCROLL ---
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+            mouseMultiplier: 1,
+            smoothTouch: false,
+            touchMultiplier: 2,
+        });
+
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+
+        // --- 2. THREE.JS 3D BACKGROUND (Updated for Cyberpunk colors) ---
+        const initThreeJS = () => {
+            const container = document.getElementById('canvas-container');
+            const scene = new THREE.Scene();
+            
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 4;
+            
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+
+            const group = new THREE.Group();
+            scene.add(group);
+
+            const geometry = new THREE.IcosahedronGeometry(1.8, 1);
+            // Updated to neon cyan
+            const material = new THREE.MeshBasicMaterial({ 
+                color: 0x00f0ff, wireframe: true, transparent: true, opacity: 0.15 
+            });
+            const sphere = new THREE.Mesh(geometry, material);
+            group.add(sphere);
+
+            const coreGeo = new THREE.IcosahedronGeometry(0.8, 0);
+            // Updated to warning yellow/gold
+            const coreMat = new THREE.MeshBasicMaterial({
+                color: 0xffcc00, wireframe: true, transparent: true, opacity: 0.3
+            });
+            const core = new THREE.Mesh(coreGeo, coreMat);
+            group.add(core);
+
+            const particlesGeo = new THREE.BufferGeometry();
+            const particlesCount = 700;
+            const posArray = new Float32Array(particlesCount * 3);
+            for(let i = 0; i < particlesCount * 3; i++) posArray[i] = (Math.random() - 0.5) * 15; 
+            particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            // Updated to matrix green
+            const particlesMat = new THREE.PointsMaterial({ size: 0.015, color: 0x00ffaa, transparent: true, opacity: 0.5 });
+            const particlesMesh = new THREE.Points(particlesGeo, particlesMat);
+            scene.add(particlesMesh); 
+
+            let mouseX = 0, mouseY = 0, targetX = 0, targetY = 0;
+            const windowHalfX = window.innerWidth / 2, windowHalfY = window.innerHeight / 2;
+
+            document.addEventListener('mousemove', (event) => {
+                mouseX = (event.clientX - windowHalfX);
+                mouseY = (event.clientY - windowHalfY);
+            });
+
+            const clock = new THREE.Clock();
+            const tick = () => {
+                const elapsedTime = clock.getElapsedTime();
+                group.rotation.y = elapsedTime * 0.1;
+                group.rotation.x = Math.sin(elapsedTime * 0.5) * 0.1;
+                core.rotation.y = -elapsedTime * 0.2;
+                core.rotation.z = elapsedTime * 0.1;
+                targetX = mouseX * 0.002; 
+                targetY = mouseY * 0.002; 
+                group.rotation.y += 0.05 * (targetX - group.rotation.y);
+                group.rotation.x += 0.05 * (targetY - group.rotation.x);
+                particlesMesh.rotation.y = -elapsedTime * 0.05 + (targetX * 0.5); 
+                particlesMesh.rotation.x = (targetY * 0.5);
+                camera.position.y = -window.scrollY * 0.0005; 
+                renderer.render(scene, camera);
+                window.requestAnimationFrame(tick);
+            };
+            tick();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            setTimeout(() => { container.classList.add('loaded'); }, 500);
+        };
+
+        // --- 3. GSAP ANIMATIONS ---
+        const initGSAP = () => {
+            gsap.registerPlugin(ScrollTrigger);
+
+            const tl = gsap.timeline();
+            tl.from(".gs-reveal", {
+                y: 50, opacity: 0, duration: 1, stagger: 0.2, ease: "power3.out", delay: 0.5
+            }).from(".gs-reveal-img", {
+                scale: 0.8, opacity: 0, rotation: -10, duration: 1.5, ease: "elastic.out(1, 0.5)"
+            }, "-=1");
+
+            // General Fade Up
+            gsap.utils.toArray('.gs-fade-up').forEach(element => {
+                gsap.from(element, {
+                    scrollTrigger: { trigger: element, start: "top 80%", toggleActions: "play none none reverse" },
+                    y: 50, opacity: 0, duration: 1, ease: "power3.out"
+                });
+            });
+
+            // Portfolio Grid
+            gsap.from(".gs-portfolio-item", {
+                scrollTrigger: { trigger: "#my-design", start: "top 70%" },
+                scale: 0.8, opacity: 0, duration: 0.8, stagger: 0.1, ease: "power2.out"
+            });
+
+            // Contact Zoom
+            gsap.from(".gs-zoom-in", {
+                scrollTrigger: { trigger: "#contact", start: "top 75%" },
+                scale: 0.5, opacity: 0, duration: 1, ease: "back.out(1.5)"
+            });
+        };
+
+        // --- 4. CLICK TO PLAY VIDEO LOGIC ---
+        function initVideoPlayers() {
+            document.querySelectorAll('.video-card').forEach(card => {
+                const placeholder = card.querySelector('.relative'); 
+                const videoId = card.dataset.videoId;
+                
+                placeholder.addEventListener('click', () => {
+                    const iframe = document.createElement('iframe');
+                    let embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+                    
+                    if (window.location.protocol.startsWith('http')) {
+                        embedUrl += `&origin=${window.location.origin}`;
+                    }
+
+                    iframe.setAttribute('src', embedUrl);
+                    iframe.setAttribute('class', 'absolute top-0 left-0 w-full h-full');
+                    iframe.setAttribute('frameborder', '0');
+                    iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+                    iframe.setAttribute('allowfullscreen', '');
+                    
+                    placeholder.innerHTML = '';
+                    placeholder.appendChild(iframe);
+                });
+            });
+        }
+
+        // --- 5. LANGUAGE & LOGIC ---
+        const translations = {
+            en: {
+                nav_about: "About Me", nav_services: "Services", nav_my_design: "My Design", nav_gallery: "Videos", nav_contact: "Contact",
+                nav_about_m: "About Me", nav_services_m: "Services", nav_my_design_m: "My Design", nav_gallery_m: "Video Gallery", nav_contact_m: "Contact", nav_lang_m: "Language",
+                hero_title1: "Digital Creator &", hero_title2: "System Admin",
+                hero_subtitle: "> Hello, I'm Sabbir Rahoman. I am a student and tech enthusiast. I transform your ideas into attractive designs and digital experiences.",
+                hero_btn_work: "See My Work", hero_btn_store: "Visit My Store",
+                about_title: "About Me",
+                about_p1: "As a passionate tech enthusiast and digital creator from Bangladesh, I'm driven by the power of technology to bring ideas to life.",
+                about_p2: "I am proficient in creating websites using AI, professional Logo Design, Banners, Posters, ID Cards, and CV (Resume) design.",
+                about_p3: '> "FAIL" means "First Attempt In Learning". Failure is just the first step towards learning! _',
+                about_contact: "Contact Me",
+                services_title: "My Services",
+                service1_title: "Graphic Design", service1_desc: "Attractive and professional designs that highlight your brand.",
+                service1_item1: "Logo Design", service1_item2: "Banners & Posters", service1_item3: "Product Banners",
+                service2_title: "Documents & CV", service2_desc: "Professional ID cards and modern CV (Resume) designs.",
+                service2_item1: "Professional CV Design", service2_item2: "ID Card Design", service2_item3: "Business Cards",
+                service3_title: "AI Web Solutions", service3_desc: "Fast, responsive, and modern websites built using AI.",
+                service3_item1: "Personal Portfolio", service3_item2: "Basic Business Website", service3_item3: "Computer Basics",
+                my_design_title: "My Design", my_design_tag: "> Logo Design",
+                gallery_title: "Video Gallery",
+                contact_title: "Get In Touch", contact_subtitle: "> Interested in working with me? Or just want to say hi? Send me an email or follow me on social media.",
+                footer_text: "&copy; 2025 Sabbir Rahoman. SYSTEM_ONLINE // ALL RIGHTS RESERVED."
+            },
+            bn: {
+                nav_about: "আমার সম্পর্কে", nav_services: "সেবাসমূহ", nav_my_design: "পোর্টফোলিও", nav_gallery: "ভিডিও", nav_contact: "যোগাযোগ",
+                nav_about_m: "আমার সম্পর্কে", nav_services_m: "সেবাসমূহ", nav_my_design_m: "পোর্টফোলিও", nav_gallery_m: "ভিডিও গ্যালারি", nav_contact_m: "যোগাযোগ", nav_lang_m: "ভাষা",
+                hero_title1: "ডিজিটাল ক্রিয়েটর এবং", hero_title2: "সিস্টেম অ্যাডমিন",
+                hero_subtitle: "> হ্যালো, আমি সাব্বির রহমান। আমি একজন ছাত্র এবং প্রযুক্তি উৎসাহী। আমি আপনার ধারণাকে আকর্ষণীয় ডিজাইন এবং ডিজিটাল অভিজ্ঞতায় রূপান্তরিত করি।",
+                hero_btn_work: "আমার কাজ দেখুন", hero_btn_store: "আমার স্টোর দেখুন",
+                about_title: "আমার সম্পর্কে",
+                about_p1: "বাংলাদেশ ভিত্তিক একজন কন্টেন্ট ক্রিয়েটর এবং ডিজিটাল ডিজাইনার হিসেবে, আমি নতুন নতুন টেকনোলজির প্রতি গভীরভাবে আগ্রহী।",
+                about_p2: "আমি এআই (AI) ব্যবহার করে ওয়েবসাইট তৈরি, প্রফেশনাল লোগো ডিজাইন, ব্যানার, পোস্টার, আইডি কার্ড এবং সিভি (CV) ডিজাইনে পারদর্শী।",
+                about_p3: '> "FAIL" মানে হচ্ছে "First Attempt In Learning" অর্থাৎ, ব্যর্থতা আসলে শেখার প্রথম ধাপ! _',
+                about_contact: "যোগাযোগ করুন",
+                services_title: "আমার সেবাসমূহ",
+                service1_title: "গ্রাফিক ডিজাইন", service1_desc: "আকর্ষণীয় এবং প্রফেশনাল ডিজাইন যা আপনার ব্র্যান্ডকে ফুটিয়ে তোলে।",
+                service1_item1: "লোগো ডিজাইন", service1_item2: "ব্যানার ও পোস্টার", service1_item3: "প্রোডাক্ট ব্যানার",
+                service2_title: "ডকুমেন্ট ও সিভি", service2_desc: "প্রফেশনাল আইডি কার্ড এবং আধুনিক সিভি (রিজিউম) ডিজাইন।",
+                service2_item1: "প্রফেশনাল সিভি ডিজাইন", service2_item2: "আইডি কার্ড", service2_item3: "বিজনেস কার্ড",
+                service3_title: "এআই ওয়েব সলিউশন", service3_desc: "এআই ব্যবহার করে দ্রুত, রেসপন্সিভ এবং আধুনিক ওয়েবসাইট তৈরি।",
+                service3_item1: "পার্সোনাল পোর্টফোলিও", service3_item2: "বেসিক বিজনেস ওয়েবসাইট", service3_item3: "কম্পিউটার বেসিক",
+                my_design_title: "আমার ডিজাইন", my_design_tag: "> লোগো ডিজাইন",
+                gallery_title: "ভিডিও গ্যালারি",
+                contact_title: "যোগাযোগ করুন", contact_subtitle: "> আমার সাথে কাজ করতে আগ্রহী? অথবা শুধু হাই বলতে চান? আমাকে ইমেইল করুন বা সোশ্যাল মিডিয়ায় ফলো করুন।",
+                footer_text: "&copy; 2025 সাব্বির রহমান। SYSTEM_ONLINE // সর্বস্বত্ব সংরক্ষিত."
+            }
+        };
+
+        const toggleDesktop = document.getElementById('language-toggle');
+        const toggleMobile = document.getElementById('language-toggle-mobile');
+        let currentLang = 'en';
+        const typingTextElement = document.getElementById('typing-text');
+        const typingWords = {
+            en: ["System Admin", "Tech Enthusiast", "Creative Designer"],
+            bn: ["সিস্টেম অ্যাডমিন", "টেক উৎসাহী", "ক্রিয়েটিভ ডিজাইনার"]
+        };
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.documentElement.lang = lang;
+            document.querySelectorAll('[data-lang-key]').forEach(el => {
+                const key = el.getAttribute('data-lang-key');
+                if (translations[lang][key] && key !== 'hero_title2') {
+                    el.style.opacity = 0;
+                    setTimeout(() => {
+                        el.innerText = translations[lang][key];
+                        el.style.opacity = 1;
+                    }, 200);
+                }
+            });
+            typingWords.bn = [translations.bn.hero_title2, "টেক উৎসাহী", "ক্রিয়েটিভ ডিজাইনার"];
+            typingWords.en = [translations.en.hero_title2, "Tech Enthusiast", "Creative Designer"];
+        }
+
+        function handleToggle(e) {
+            const lang = e.target.checked ? 'bn' : 'en';
+            toggleDesktop.checked = e.target.checked;
+            toggleMobile.checked = e.target.checked;
+            setLanguage(lang);
+        }
+
+        toggleDesktop.addEventListener('change', handleToggle);
+        toggleMobile.addEventListener('change', handleToggle);
+
+        let wordIndex = 0, charIndex = 0, isDeleting = false;
+        function type() {
+            const currentWords = typingWords[currentLang];
+            const currentWord = currentWords[wordIndex];
+            if (isDeleting) {
+                typingTextElement.textContent = currentWord.substring(0, charIndex - 1);
+                charIndex--;
+                if (charIndex === 0) { isDeleting = false; wordIndex = (wordIndex + 1) % currentWords.length; }
+            } else {
+                typingTextElement.textContent = currentWord.substring(0, charIndex + 1);
+                charIndex++;
+                if (charIndex === currentWord.length) { isDeleting = true; setTimeout(type, 2000); return; }
+            }
+            setTimeout(type, isDeleting ? 75 : 150);
+        }
+
+        const menuBtn = document.getElementById('menu-btn');
+        const closeBtn = document.getElementById('close-menu');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = mobileMenu.querySelectorAll('a');
+
+        menuBtn.addEventListener('click', () => { mobileMenu.classList.remove('translate-x-full'); document.body.style.overflow = 'hidden'; });
+        const closeMenu = () => { mobileMenu.classList.add('translate-x-full'); document.body.style.overflow = 'auto'; };
+        closeBtn.addEventListener('click', closeMenu);
+        mobileLinks.forEach(link => link.addEventListener('click', closeMenu));
+
+        window.addEventListener('load', () => {
+            const preloader = document.getElementById('preloader');
+            preloader.style.opacity = '0';
+            setTimeout(() => {
+                preloader.style.display = 'none';
+                initThreeJS();
+                initGSAP();
+                initVideoPlayers(); 
+                type();
+            }, 800);
+        });
+
+    </script>
+</body>
+</html>
