@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en" class="no-scrollbar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sabbir Rahoman - System Override</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Inter"', 'sans-serif'],
+                        heading: ['"Rajdhani"', 'sans-serif'],
+                        mono: ['"Fira Code"', 'monospace'],
+                    },
+                    colors: {
+                        primary: '#00e6b8',
+                        secondary: '#00E5FF',
+                        amber: '#e5a93c',
+                        dark: '#010a0a',
+                        panelBg: '#001a18',
+                    },
+                },
+            },
+        };
+    </script>
+    
+    <style>
+        body {
+            background-color: #010a0a; 
+            color: #8B949E;
+            overflow-x: hidden;
+            position: relative;
+            cursor: none; /* Custom cursor */
+        }
+
+        /* --- CUSTOM CYBER CURSOR --- */
+        @media (pointer: fine) {
+            .cursor-dot, .cursor-outline {
+                position: fixed; top: 0; left: 0; transform: translate(-50%, -50%);
+                border-radius: 50%; z-index: 9999999; pointer-events: none;
+            }
+            .cursor-dot { width: 6px; height: 6px; background-color: #00e6b8; box-shadow: 0 0 10px #00e6b8; }
+            .cursor-outline {
+                width: 36px; height: 36px; border: 1px solid rgba(0, 230, 184, 0.5);
+                transition: width 0.2s, height 0.2s, background-color 0.2s;
+            }
+            body:hover .cursor-dot { opacity: 1; }
+            a:hover ~ .cursor-outline, button:hover ~ .cursor-outline {
+                width: 50px; height: 50px; background-color: rgba(0, 230, 184, 0.1); border-color: #00e6b8;
+            }
+        }
+        @media (pointer: coarse) { body { cursor: auto; } .cursor-dot, .cursor-outline { display: none; } }
+
+        /* --- SCANLINES & NOISE --- */
+        .scanlines {
+            position: fixed; inset: 0; z-index: 99999; pointer-events: none; opacity: 0.25;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 4px, 3px 100%;
+        }
+
+        /* --- GLITCH EFFECT --- */
+        .glitch { position: relative; }
+        .glitch::before, .glitch::after {
+            content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #010a0a; clip: rect(0, 0, 0, 0);
+        }
+        .glitch::before { left: -2px; text-shadow: 2px 0 #ff00c1; animation: glitch-anim-1 2s infinite linear alternate-reverse; }
+        .glitch::after { left: 2px; text-shadow: -2px 0 #00e6b8; animation: glitch-anim-2 3s infinite linear alternate-reverse; }
+        @keyframes glitch-anim-1 {
+            0% { clip: rect(20px, 9999px, 85px, 0); }
+            20% { clip: rect(92px, 9999px, 6px, 0); }
+            40% { clip: rect(33px, 9999px, 85px, 0); }
+            60% { clip: rect(100px, 9999px, 14px, 0); }
+            80% { clip: rect(50px, 9999px, 70px, 0); }
+            100% { clip: rect(12px, 9999px, 40px, 0); }
+        }
+        @keyframes glitch-anim-2 {
+            0% { clip: rect(10px, 9999px, 40px, 0); }
+            20% { clip: rect(80px, 9999px, 20px, 0); }
+            40% { clip: rect(15px, 9999px, 90px, 0); }
+            60% { clip: rect(60px, 9999px, 10px, 0); }
+            80% { clip: rect(25px, 9999px, 50px, 0); }
+            100% { clip: rect(5px, 9999px, 80px, 0); }
+        }
+
+        /* --- 3D CANVAS --- */
+        #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: -1; opacity: 0; transition: opacity 2s ease; background: radial-gradient(circle at center, rgba(0, 230, 184, 0.08) 0%, #010a0a 100%); }
+        #canvas-container.loaded { opacity: 1; }
+
+        /* --- ANIMATIONS --- */
+        @keyframes spin-slow { 100% { transform: rotate(360deg); } }
+        @keyframes spin-reverse { 100% { transform: rotate(-360deg); } }
+        .ring-outer { animation: spin-slow 12s linear infinite; }
+        .ring-inner { animation: spin-reverse 15s linear infinite; }
+        .text-glow { text-shadow: 0 0 15px rgba(0, 230, 184, 0.8), 0 0 30px rgba(0, 230, 184, 0.4); }
+        .glow-amber { text-shadow: 0 0 10px rgba(229, 169, 60, 0.8); box-shadow: 0 0 20px rgba(229, 169, 60, 0.2), inset 0 0 10px rgba(229, 169, 60, 0.1); }
+
+        /* --- SPOTLIGHT GLASS CARDS --- */
+        .glass-card {
+            background: rgba(0, 230, 184, 0.02);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 230, 184, 0.1);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.4s;
+            border-radius: 4px; position: relative; overflow: hidden;
+        }
+        /* Spotlight Effect on Hover */
+        .glass-card::before {
+            content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity 0.3s;
+            background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(0, 230, 184, 0.1), transparent 40%);
+            z-index: -1;
+        }
+        .glass-card:hover::before { opacity: 1; }
+        .glass-card:hover { transform: translateY(-5px); border-color: rgba(0, 230, 184, 0.4); box-shadow: 0 10px 40px -10px rgba(0, 230, 184, 0.2); }
+
+        /* --- TECH CORNERS --- */
+        .tech-corners { position: absolute; inset: 0; pointer-events: none; }
+        .tech-corners::before, .tech-corners::after { content: ''; position: absolute; width: 12px; height: 12px; border: 2px solid #00e6b8; transition: all 0.4s; opacity: 0.4; }
+        .tech-corners::before { top: 0; left: 0; border-right: none; border-bottom: none; }
+        .tech-corners::after { bottom: 0; right: 0; border-left: none; border-top: none; }
+        .glass-card:hover .tech-corners::before, .glass-card:hover .tech-corners::after { width: 20px; height: 20px; opacity: 1; box-shadow: 0 0 15px rgba(0, 230, 184, 0.6); }
+
+        /* --- BUTTONS --- */
+        .btn-primary {
+            background: linear-gradient(90deg, rgba(0, 230, 184, 0.15), rgba(0, 230, 184, 0.05));
+            border: 1px solid rgba(0, 230, 184, 0.5); color: #00e6b8; position: relative; overflow: hidden;
+            transition: all 0.3s ease; font-family: 'Fira Code', monospace;
+        }
+        .btn-primary::after {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(45deg) translateY(-100%); transition: transform 0.6s ease;
+        }
+        .btn-primary:hover::after { transform: rotate(45deg) translateY(100%); }
+        .btn-primary:hover { background: rgba(0, 230, 184, 0.25); border-color: #00e6b8; box-shadow: 0 0 30px rgba(0, 230, 184, 0.4); color: #fff; text-shadow: 0 0 8px rgba(0, 230, 184, 1); }
+
+        /* --- SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 5px; background: #010a0a; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 230, 184, 0.5); }
+        ::-webkit-scrollbar-thumb:hover { background: #00e6b8; }
+        
+        /* --- TERMINAL BOOT LOADER --- */
+        #terminal-loader {
+            position: fixed; inset: 0; background: #010a0a; z-index: 99998;
+            display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
+            padding: 10vw; font-family: 'Fira Code', monospace; color: #00e6b8; font-size: 14px;
+        }
+        #terminal-loader p { margin: 4px 0; text-shadow: 0 0 5px rgba(0, 230, 184, 0.8); }
+        
+        /* --- LANG SWITCH --- */
+        .lang-switch { position: relative; width: 54px; height: 26px; }
+        .lang-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: none; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255, 255, 255, 0.05); border: 1px solid rgba(0, 230, 184, 0.3); transition: .4s; border-radius: 2px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: #00e6b8; transition: .4s; border-radius: 2px; box-shadow: 0 0 10px #00e6b8; }
+        input:checked + .slider { background-color: rgba(0, 230, 184, 0.2); }
+        input:checked + .slider:before { transform: translateX(28px); }
+        .slider:after { content: 'EN'; position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 10px; font-weight: bold; color: #8B949E; }
+        input:checked + .slider:after { content: 'BN'; left: 8px; color: #fff; right: auto; text-shadow: 0 0 5px #00e6b8; }
+        
+        .typing-cursor { display: inline-block; width: 8px; height: 1.1em; background-color: #00e6b8; vertical-align: middle; animation: blink 1s infinite; margin-left: 4px;}
+    </style>
+</head>
+<body class="antialiased font-sans selection:bg-primary/40 selection:text-white overflow-hidden">
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <div class="scanlines"></div>
+
+    <div id="auth-overlay" class="fixed inset-0 z-[999999] bg-[#010a0a] flex flex-col items-center justify-center transition-all duration-1000">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,230,184,0.08)_0%,rgba(1,10,10,1)_70%)]"></div>
+        <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+        
+        <div class="relative z-10 w-full max-w-md flex flex-col items-center px-4 transition-transform duration-700" id="auth-container">
+            
+            <div id="login-state" class="w-full flex flex-col items-center">
+                <div class="mb-6 opacity-90">
+                    <svg class="w-8 h-8 text-primary drop-shadow-[0_0_12px_#00e6b8] animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                </div>
+
+                <div class="relative w-40 h-40 mb-8 flex items-center justify-center">
+                    <div class="absolute inset-0 border-[3px] border-primary/50 border-dashed rounded-full ring-outer drop-shadow-[0_0_10px_#00e6b8]"></div>
+                    <div class="absolute inset-3 border-2 border-primary/80 rounded-full ring-inner" style="border-style: dotted;"></div>
+                    <div class="absolute inset-5 bg-primary/10 rounded-full flex items-center justify-center border border-primary/40 backdrop-blur-md shadow-[inset_0_0_20px_rgba(0,230,184,0.3)]">
+                        <span class="text-5xl font-heading font-bold text-primary text-glow glitch" data-text="SR">SR</span>
+                    </div>
+                    <div class="absolute -top-3 -left-3 w-6 h-6 border-t-2 border-l-2 border-primary/90"></div>
+                    <div class="absolute -top-3 -right-3 w-6 h-6 border-t-2 border-r-2 border-primary/90"></div>
+                    <div class="absolute -bottom-3 -left-3 w-6 h-6 border-b-2 border-l-2 border-primary/90"></div>
+                    <div class="absolute -bottom-3 -right-3 w-6 h-6 border-b-2 border-r-2 border-primary/90"></div>
+                </div>
+
+                <div class="text-center mb-8">
+                    <p class="text-primary/80 text-[11px] font-mono tracking-[0.4em] uppercase mb-2">Sabbir Rahoman Official</p>
+                    <h1 class="text-2xl font-heading font-bold text-white text-glow tracking-widest uppercase mb-1 glitch" data-text="Digital Identity System">Digital Identity System</h1>
+                    <p class="text-primary/60 text-[10px] font-mono tracking-[0.5em] uppercase">Secure Access Protocol</p>
+                </div>
+
+                <div class="border border-amber/60 bg-amber/10 px-8 py-3 mb-8 flex items-center gap-4 glow-amber rounded-sm relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-amber"></div>
+                    <svg class="w-6 h-6 text-amber animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                    <span class="text-amber text-[11px] font-mono font-bold tracking-[0.3em] uppercase leading-tight">Authorized<br>Personnel<br>Only</span>
+                </div>
+
+                <div class="w-full bg-panelBg/90 backdrop-blur-xl border border-primary/40 p-7 rounded-sm relative shadow-[0_0_30px_rgba(0,230,184,0.2),inset_0_0_20px_rgba(0,230,184,0.1)]" id="auth-box">
+                    <div class="flex justify-between items-end mb-6 border-b border-primary/30 pb-3">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"></path></svg>
+                            <span class="text-primary font-bold font-mono tracking-widest text-xs uppercase text-glow">System Login</span>
+                        </div>
+                        <div class="text-[9px] font-mono text-primary/60 tracking-widest">
+                            SESSION: <span class="text-white">OVR-2025-X9</span>
+                        </div>
+                    </div>
+
+                    <div class="w-full relative mb-3">
+                        <label class="block text-primary/80 text-[10px] font-mono tracking-widest uppercase mb-2">Decryption Key</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-primary/50 group-focus-within:text-primary transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            </div>
+                            <input type="password" id="auth-password" class="w-full bg-[#000c0a] border border-primary/30 text-white text-sm pl-11 pr-4 py-3 rounded-sm focus:outline-none focus:border-primary focus:shadow-[0_0_15px_rgba(0,230,184,0.4)] transition-all placeholder-primary/20 tracking-[0.3em] font-mono" placeholder="ENTER KEY">
+                        </div>
+                        <p id="auth-error" class="text-red-500 text-[10px] mt-2 text-center uppercase tracking-[0.2em] hidden font-mono font-bold drop-shadow-[0_0_5px_red] glitch" data-text="! Access Denied !">! Access Denied !</p>
+                    </div>
+
+                    <button id="auth-submit" class="w-full mt-6 bg-primary text-dark font-bold font-mono text-xs uppercase tracking-[0.3em] py-3.5 rounded-sm hover:bg-[#00ffd0] hover:shadow-[0_0_20px_rgba(0,230,184,0.6)] transition-all flex justify-center items-center gap-3">
+                        Initialize Access
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </button>
+
+                    <div class="mt-5 w-full border-t border-primary/20 pt-4 text-center">
+                        <button id="bypass-btn" class="text-[10px] text-primary/60 hover:text-white font-mono tracking-[0.2em] uppercase transition duration-300">>> Bypass Security (Read Info)</button>
+                    </div>
+
+                    <div class="absolute -top-px -left-px w-3 h-3 border-t-2 border-l-2 border-primary"></div>
+                    <div class="absolute -top-px -right-px w-3 h-3 border-t-2 border-r-2 border-primary"></div>
+                    <div class="absolute -bottom-px -left-px w-3 h-3 border-b-2 border-l-2 border-primary"></div>
+                    <div class="absolute -bottom-px -right-px w-3 h-3 border-b-2 border-r-2 border-primary"></div>
+                </div>
+            </div>
+
+            <div id="bypass-state" class="w-full hidden flex-col items-center">
+                <svg class="w-12 h-12 text-secondary mb-5 drop-shadow-[0_0_15px_rgba(0,229,255,0.6)] animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <h2 class="text-xl font-mono text-white text-glow tracking-[0.3em] uppercase mb-2 glitch" data-text="Public Records">Public Records</h2>
+                <p class="text-secondary/80 text-[11px] tracking-widest mb-8 text-center uppercase font-mono">> Read-Only Access_</p>
+                
+                <div class="w-full bg-[#001a18]/90 backdrop-blur-xl border border-secondary/40 p-6 rounded-sm font-mono text-xs text-slate-200 space-y-5 mb-8 shadow-[0_0_20px_rgba(0,229,255,0.1),inset_0_0_20px_rgba(0,229,255,0.05)] relative hover:border-secondary transition-colors">
+                    <div class="flex flex-col border-b border-secondary/20 pb-2">
+                        <span class="text-secondary opacity-80 mb-1 tracking-widest text-[10px]">FOUNDER & CEO:</span>
+                        <span class="text-white text-base font-bold">Sabbir Rahoman</span>
+                    </div>
+                    <div class="flex flex-col border-b border-secondary/20 pb-2">
+                        <span class="text-secondary opacity-80 mb-1 tracking-widest text-[10px]">DESIGNATION:</span>
+                        <span class="text-white">Digital Creator & Interface Designer</span>
+                    </div>
+                    <div class="flex flex-col border-b border-secondary/20 pb-2">
+                        <span class="text-secondary opacity-80 mb-1 tracking-widest text-[10px]">STORE NODE:</span>
+                        <a href="https://shobkichuofficial.github.io/" target="_blank" class="text-secondary hover:text-white hover:underline underline-offset-4 transition">shobkichuofficial.github.io</a>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-secondary opacity-80 mb-1 tracking-widest text-[10px]">COMMS:</span>
+                        <a href="mailto:sabbirrahoman217@gmail.com" class="text-secondary hover:text-white hover:underline underline-offset-4 transition">sabbirrahoman217@gmail.com</a>
+                    </div>
+
+                    <div class="absolute -top-px -left-px w-3 h-3 border-t-2 border-l-2 border-secondary"></div>
+                    <div class="absolute -top-px -right-px w-3 h-3 border-t-2 border-r-2 border-secondary"></div>
+                    <div class="absolute -bottom-px -left-px w-3 h-3 border-b-2 border-l-2 border-secondary"></div>
+                    <div class="absolute -bottom-px -right-px w-3 h-3 border-b-2 border-r-2 border-secondary"></div>
+                </div>
+                
+                <button id="return-login-btn" class="w-full border border-secondary/50 text-secondary hover:bg-secondary hover:text-dark hover:shadow-[0_0_20px_rgba(0,229,255,0.4)] py-3 font-mono font-bold uppercase tracking-widest text-xs rounded-sm transition-all duration-300"><< Return to Login</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="terminal-loader" style="display: none;"></div>
+
+    <div class="bg-grid"></div>
+    <div id="canvas-container"></div>
+
+    <header class="fixed w-full top-0 z-50 transition-all duration-500 transform -translate-y-full" id="navbar">
+        <div class="absolute inset-0 bg-dark/90 backdrop-blur-lg border-b border-primary/20 shadow-[0_4px_30px_rgba(0,230,184,0.1)]"></div>
+        <nav class="container mx-auto px-6 py-4 relative flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold font-heading tracking-widest text-white z-50 uppercase flex items-center gap-2 group">
+                <span class="text-primary font-mono text-lg group-hover:animate-pulse">>_</span>
+                Sabbir <span class="text-primary font-light text-glow group-hover:text-white transition-colors">Rahoman</span>
+            </a>
+            
+            <div id="desktop-menu" class="hidden md:flex items-center space-x-8 text-sm font-mono tracking-widest">
+                <a href="#about" class="text-slate-400 hover:text-primary hover:text-glow transition duration-300 relative group" data-lang-key="nav_about">
+                    About Me
+                    <span class="absolute -bottom-2 left-0 w-0 h-[1px] bg-primary transition-all duration-300 group-hover:w-full"></span>
+                </a>
+                <a href="#services" class="text-slate-400 hover:text-primary hover:text-glow transition duration-300 relative group" data-lang-key="nav_services">
+                    Services
+                    <span class="absolute -bottom-2 left-0 w-0 h-[1px] bg-primary transition-all duration-300 group-hover:w-full"></span>
+                </a>
+                <a href="#my-design" class="text-slate-400 hover:text-primary hover:text-glow transition duration-300 relative group" data-lang-key="nav_my_design">
+                    My Design
+                    <span class="absolute -bottom-2 left-0 w-0 h-[1px] bg-primary transition-all duration-300 group-hover:w-full"></span>
+                </a>
+                <a href="#video-gallery" class="text-slate-400 hover:text-primary hover:text-glow transition duration-300 relative group" data-lang-key="nav_gallery">
+                    Videos
+                    <span class="absolute -bottom-2 left-0 w-0 h-[1px] bg-primary transition-all duration-300 group-hover:w-full"></span>
+                </a>
+                
+                <label class="lang-switch">
+                    <input type="checkbox" id="language-toggle">
+                    <span class="slider"></span>
+                </label>
+                
+                <a href="#contact" class="px-6 py-2 rounded-sm btn-primary uppercase tracking-[0.2em] text-xs font-bold">
+                    <span data-lang-key="nav_contact">Contact</span>
+                </a>
+            </div>
+
+            <button id="menu-btn" class="md:hidden text-primary focus:outline-none z-50 hover:text-white transition-colors">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+
+        <div id="mobile-menu" class="fixed inset-0 bg-[#010a0a]/95 backdrop-blur-3xl z-40 transform translate-x-full transition-transform duration-500 flex flex-col justify-center items-center space-y-8 font-mono">
+            <a href="#about" class="text-xl font-bold text-slate-300 hover:text-primary hover:text-glow uppercase tracking-[0.3em] transition-all" data-lang-key="nav_about_m">About Me</a>
+            <a href="#services" class="text-xl font-bold text-slate-300 hover:text-primary hover:text-glow uppercase tracking-[0.3em] transition-all" data-lang-key="nav_services_m">Services</a>
+            <a href="#my-design" class="text-xl font-bold text-slate-300 hover:text-primary hover:text-glow uppercase tracking-[0.3em] transition-all" data-lang-key="nav_my_design_m">My Design</a>
+            <a href="#video-gallery" class="text-xl font-bold text-slate-300 hover:text-primary hover:text-glow uppercase tracking-[0.3em] transition-all" data-lang-key="nav_gallery_m">Video Gallery</a>
+            <a href="#contact" class="text-xl font-bold text-primary text-glow uppercase tracking-[0.3em]" data-lang-key="nav_contact_m">Contact</a>
+            
+            <div class="flex items-center gap-5 mt-10 pt-10 border-t border-primary/30 w-64 justify-center">
+                <span class="text-slate-400 text-xs font-mono tracking-widest" data-lang-key="nav_lang_m">LANGUAGE</span>
+                <label class="lang-switch">
+                    <input type="checkbox" id="language-toggle-mobile">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <button id="close-menu" class="absolute top-6 right-6 text-primary p-2 hover:text-white hover:rotate-90 transition-all duration-300">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+    </header>
+
+    <main id="main-content" style="opacity: 0;">
+        <section id="home" class="min-h-screen flex items-center pt-20 relative overflow-hidden">
+            <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="z-10 order-2 md:order-1 hero-content">
+                    <div class="inline-flex items-center gap-3 px-4 py-2 rounded-sm bg-primary/10 border border-primary/30 text-[11px] text-primary mb-8 gs-reveal uppercase tracking-[0.3em] font-mono shadow-[0_0_15px_rgba(0,230,184,0.2)]">
+                        <span class="w-2 h-2 bg-primary rounded-full animate-pulse shadow-[0_0_8px_#00e6b8]"></span>
+                        Access Granted
+                    </div>
+                    <h1 class="text-5xl md:text-7xl font-bold leading-tight mb-6 font-heading gs-reveal text-white uppercase tracking-tight">
+                        <span data-lang-key="hero_title1" class="text-slate-200">Digital Creator &</span> <br>
+                        <span class="text-primary text-glow font-light glitch" id="typing-container" data-text="Interface Designer">
+                            <span id="typing-text"></span><span class="typing-cursor"></span>
+                        </span>
+                    </h1>
+                    <p class="text-base md:text-lg text-slate-400 mb-10 leading-relaxed max-w-xl gs-reveal font-mono opacity-90" data-lang-key="hero_subtitle">
+                        Hello, I'm Sabbir Rahoman. I am a student and tech enthusiast. I transform your ideas into sophisticated digital experiences.
+                    </p>
+                    <div class="flex flex-wrap gap-5 gs-reveal font-mono tracking-[0.2em] text-xs font-bold">
+                        <a href="#my-design" class="px-8 py-4 rounded-sm border border-white/30 text-white hover:border-primary hover:bg-primary/10 hover:text-primary hover:shadow-[0_0_20px_rgba(0,230,184,0.3)] transition-all uppercase" data-lang-key="hero_btn_work">
+                            View Portfolio
+                        </a>
+                        <a href="https://shobkichuofficial.github.io/" target="_blank" class="px-8 py-4 rounded-sm btn-primary uppercase" data-lang-key="hero_btn_store">
+                            Visit Store
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="relative z-10 flex justify-center order-1 md:order-2 gs-reveal-img">
+                    <div class="relative w-80 h-80 md:w-[450px] md:h-[450px]" data-tilt data-tilt-max="10" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.2">
+                        <div class="absolute inset-[-15px] border-[2px] border-primary/30 rounded-full animate-[spin_25s_linear_infinite] shadow-[0_0_15px_rgba(0,230,184,0.2)]"></div>
+                        <div class="absolute inset-[-30px] border border-secondary/30 rounded-full animate-[spin_20s_linear_infinite_reverse]" style="border-style: dashed; border-width: 2px;"></div>
+                        <div class="absolute inset-[-45px] border border-white/10 rounded-full animate-[spin_35s_linear_infinite]" style="border-style: dotted; border-width: 3px;"></div>
+                        
+                        <img src="IMG_3068 edited.webp" alt="Sabbir Rahoman" class="protected-image relative w-full h-full object-cover rounded-full profile-glow filter grayscale hover:grayscale-0 hover:scale-[1.02] transition-all duration-700 ease-out z-10">
+                        
+                        <div class="absolute top-1/2 -left-12 w-10 h-[2px] bg-primary/80 shadow-[0_0_8px_#00e6b8] z-20"></div>
+                        <div class="absolute top-1/2 -right-12 w-10 h-[2px] bg-primary/80 shadow-[0_0_8px_#00e6b8] z-20"></div>
+                        <div class="absolute -top-12 left-1/2 w-[2px] h-10 bg-primary/80 shadow-[0_0_8px_#00e6b8] z-20"></div>
+                        <div class="absolute -bottom-12 left-1/2 w-[2px] h-10 bg-primary/80 shadow-[0_0_8px_#00e6b8] z-20"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="py-24 relative z-10">
+            <div class="container mx-auto px-6">
+                <div class="glass-panel p-10 md:p-16 gs-section border-l-[6px] border-l-primary hover:shadow-[0_0_40px_rgba(0,230,184,0.15)] transition-shadow duration-500">
+                    <div class="flex flex-col md:flex-row items-center gap-16">
+                        <div class="md:w-1/2">
+                            <h2 class="text-4xl font-bold mb-8 font-mono flex items-center gap-5 uppercase tracking-[0.2em] text-white text-glow glitch" data-text="Profile Data">
+                                <span class="w-10 h-[3px] bg-primary shadow-[0_0_10px_#00e6b8]"></span>
+                                <span data-lang-key="about_title">Profile Data</span>
+                            </h2>
+                            <p class="text-base text-slate-300 mb-6 leading-relaxed font-mono opacity-90" data-lang-key="about_p1">
+                                As a passionate tech enthusiast and digital creator from Bangladesh, I'm driven by the power of technology to bring ideas to life.
+                            </p>
+                            <p class="text-base text-slate-300 mb-10 leading-relaxed font-mono opacity-90" data-lang-key="about_p2">
+                                I am proficient in creating websites using AI, professional Logo Design, Banners, Posters, ID Cards, and CV (Resume) design.
+                            </p>
+                            
+                            <div class="bg-[#001a18] border border-primary/30 p-5 mb-12 relative rounded-sm shadow-[inset_0_0_20px_rgba(0,230,184,0.05)] hover:border-primary/60 transition-colors">
+                                <div class="absolute top-0 left-0 w-2 h-full bg-primary shadow-[0_0_10px_#00e6b8]"></div>
+                                <p class="text-slate-200 font-mono text-sm leading-relaxed ml-3" data-lang-key="about_p3">
+                                    <span class="text-primary font-bold text-glow">LOG:</span> "FAIL" means "First Attempt In Learning". Failure is just the first step towards learning.
+                                </p>
+                            </div>
+                            
+                            <a href="#contact" class="inline-flex text-primary font-bold text-sm font-mono hover:text-white transition-colors items-center gap-3 group uppercase tracking-[0.2em] bg-primary/10 px-6 py-3 border border-primary/20 rounded-sm hover:border-primary hover:shadow-[0_0_15px_rgba(0,230,184,0.3)]">
+                                <span data-lang-key="about_contact">Initialize Contact</span>
+                                <svg class="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </a>
+                        </div>
+                        
+                        <div class="md:w-1/2 grid grid-cols-2 gap-5 w-full font-mono">
+                            <div class="glass-card p-6 flex flex-col justify-between h-40">
+                                <div class="tech-corners"></div>
+                                <h3 class="text-xs text-primary/60 uppercase tracking-widest font-bold">> Attr_01</h3>
+                                <div class="text-xl font-bold text-white tracking-widest uppercase mt-2">Creative</div>
+                                <div class="w-full h-[2px] bg-white/10 mt-auto rounded-full overflow-hidden"><div class="w-[80%] h-full bg-primary shadow-[0_0_10px_#00e6b8]"></div></div>
+                            </div>
+                            <div class="glass-card p-6 flex flex-col justify-between h-40 mt-8 border-secondary/30 hover:border-secondary/60">
+                                <div class="tech-corners before:border-secondary after:border-secondary"></div>
+                                <h3 class="text-xs text-secondary/60 uppercase tracking-widest font-bold">> Attr_02</h3>
+                                <div class="text-xl font-bold text-white tracking-widest uppercase mt-2">Efficient</div>
+                                <div class="w-full h-[2px] bg-white/10 mt-auto rounded-full overflow-hidden"><div class="w-[90%] h-full bg-secondary shadow-[0_0_10px_#00E5FF]"></div></div>
+                            </div>
+                            <div class="glass-card p-6 flex flex-col justify-between h-40">
+                                <div class="tech-corners"></div>
+                                <h3 class="text-xs text-primary/60 uppercase tracking-widest font-bold">> Attr_03</h3>
+                                <div class="text-xl font-bold text-white tracking-widest uppercase mt-2">Smart</div>
+                                <div class="w-full h-[2px] bg-white/10 mt-auto rounded-full overflow-hidden"><div class="w-[85%] h-full bg-primary shadow-[0_0_10px_#00e6b8]"></div></div>
+                            </div>
+                            <div class="glass-card p-6 flex flex-col justify-between h-40 mt-8">
+                                <div class="tech-corners"></div>
+                                <h3 class="text-xs text-primary/60 uppercase tracking-widest font-bold">> Attr_04</h3>
+                                <div class="text-xl font-bold text-white tracking-widest uppercase mt-2">Technical</div>
+                                <div class="w-full h-[2px] bg-white/10 mt-auto rounded-full overflow-hidden"><div class="w-[95%] h-full bg-primary shadow-[0_0_10px_#00e6b8]"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="services" class="py-24 relative z-10">
+            <div class="container mx-auto px-6">
+                <div class="mb-20 gs-fade-up flex flex-col items-center">
+                    <span class="text-primary font-mono text-sm tracking-[0.4em] uppercase mb-4 font-bold">> Core Competencies</span>
+                    <h2 class="text-4xl md:text-5xl font-bold text-white font-mono uppercase tracking-widest text-glow glitch" data-lang-key="services_title" data-text="System Capabilities">System Capabilities</h2>
+                    <div class="w-24 h-1 bg-primary mt-6 shadow-[0_0_15px_#00e6b8]"></div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="glass-card p-10 group" data-tilt data-tilt-max="5" data-tilt-speed="400">
+                        <div class="tech-corners"></div>
+                        <div class="w-16 h-16 border-2 border-primary/40 flex items-center justify-center text-primary mb-8 rounded-sm group-hover:bg-primary group-hover:text-dark transition-all duration-300 shadow-[inset_0_0_15px_rgba(0,230,184,0.2)] group-hover:shadow-[0_0_30px_rgba(0,230,184,0.6)]">
+                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-mono font-bold text-white mb-5 uppercase tracking-widest group-hover:text-primary transition-colors" data-lang-key="service1_title">Visual Design</h3>
+                        <p class="text-slate-300 mb-8 text-sm font-mono leading-relaxed opacity-80" data-lang-key="service1_desc">Attractive and professional designs that highlight your brand identity.</p>
+                        <ul class="space-y-4 pt-6 border-t border-white/10 font-mono text-sm text-slate-200">
+                            <li class="flex items-center hover:text-primary transition-colors"><span class="text-primary font-bold mr-3">>_</span> <span data-lang-key="service1_item1">Logo Integration</span></li>
+                            <li class="flex items-center hover:text-primary transition-colors"><span class="text-primary font-bold mr-3">>_</span> <span data-lang-key="service1_item2">Banner & Poster Auth</span></li>
+                            <li class="flex items-center hover:text-primary transition-colors"><span class="text-primary font-bold mr-3">>_</span> <span data-lang-key="service1_item3">Product Layouts</span></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="glass-card p-10 group border-secondary/30 hover:border-secondary/60" data-tilt data-tilt-max="5" data-tilt-speed="400">
+                        <div class="tech-corners before:border-secondary after:border-secondary"></div>
+                        <div class="w-16 h-16 border-2 border-secondary/40 flex items-center justify-center text-secondary mb-8 rounded-sm group-hover:bg-secondary group-hover:text-dark transition-all duration-300 shadow-[inset_0_0_15px_rgba(0,229,255,0.2)] group-hover:shadow-[0_0_30px_rgba(0,229,255,0.6)]">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 21h7a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2zM10 21h-4v-4a2 2 0 012-2h2v6zM14 3v4a1 1 0 001 1h4"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-mono font-bold text-white mb-5 uppercase tracking-widest group-hover:text-secondary transition-colors" data-lang-key="service2_title">Doc Protocol</h3>
+                        <p class="text-slate-300 mb-8 text-sm font-mono leading-relaxed opacity-80" data-lang-key="service2_desc">Professional ID cards and modern CV (Resume) configurations.</p>
+                        <ul class="space-y-4 pt-6 border-t border-white/10 font-mono text-sm text-slate-200">
+                            <li class="flex items-center hover:text-secondary transition-colors"><span class="text-secondary font-bold mr-3">>_</span> <span data-lang-key="service2_item1">CV Structuring</span></li>
+                            <li class="flex items-center hover:text-secondary transition-colors"><span class="text-secondary font-bold mr-3">>_</span> <span data-lang-key="service2_item2">ID Generation</span></li>
+                            <li class="flex items-center hover:text-secondary transition-colors"><span class="text-secondary font-bold mr-3">>_</span> <span data-lang-key="service2_item3">Business Assets</span></li>
+                        </ul>
+                    </div>
+
+                    <div class="glass-card p-10 group" data-tilt data-tilt-max="5" data-tilt-speed="400">
+                        <div class="tech-corners"></div>
+                        <div class="w-16 h-16 border-2 border-primary/40 flex items-center justify-center text-primary mb-8 rounded-sm group-hover:bg-primary group-hover:text-dark transition-all duration-300 shadow-[inset_0_0_15px_rgba(0,230,184,0.2)] group-hover:shadow-[0_0_30px_rgba(0,230,184,0.6)]">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-mono font-bold text-white mb-5 uppercase tracking-widest group-hover:text-primary transition-colors" data-lang-key="service3_title">AI Web Solutions</h3>
+                        <p class="text-slate-300 mb-8 text-sm font-mono leading-relaxed opacity-80" data-lang-key="service3_desc">Fast, responsive, and modern web environments built using AI.</p>
+                        <ul class="space-y-4 pt-6 border-t border-white/10 font-mono text-sm text-slate-200">
+                            <li class="flex items-center hover:text-primary transition-colors"><span class="text-primary font-bold mr-3">>_</span> <span data-lang-key="service3_item1">Portfolio Deployment</span></li>
+                            <li class="flex items-center hover:text-primary transition-colors"><span class="text-primary font-bold mr-3">>_</span> <span data-lang-key="service3_item2">Business Node</span></li>
+                            <li class="flex items-center hover:text-primary transition-colors"><span class="text-primary font-bold mr-3">>_</span> <span data-lang-key="service3_item3">Computer Basics</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="my-design" class="py-24 relative z-10">
+            <div class="container mx-auto px-6">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-16 gs-fade-up">
+                    <div>
+                        <span class="text-primary font-mono text-sm font-bold tracking-[0.4em] uppercase mb-3 block">>> Visual Archive</span>
+                        <h2 class="text-4xl md:text-5xl font-bold text-white font-mono uppercase tracking-widest text-glow glitch" data-lang-key="my_design_title" data-text="Output Files">Output Files</h2>
+                    </div>
+                    <div class="h-[2px] w-full md:w-1/2 bg-gradient-to-r from-transparent via-primary to-transparent mt-8 md:mt-0 opacity-50 shadow-[0_0_10px_#00e6b8]"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="group relative overflow-hidden rounded-sm border-2 border-white/10 gs-portfolio-item bg-dark hover:border-primary transition duration-500 hover:shadow-[0_0_25px_rgba(0,230,184,0.3)]">
+                        <div class="absolute inset-0 bg-primary/20 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mix-blend-overlay pointer-events-none"></div>
+                        <img src="logo1.webp" alt="Design 1" class="w-full h-80 object-cover opacity-50 filter grayscale mix-blend-luminosity transform transition duration-700 group-hover:scale-110 group-hover:opacity-100 group-hover:grayscale-0 group-hover:mix-blend-normal" onerror="this.src='https://placehold.co/400x500/010a0a/00e6b8?text=Logo+Design'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#010a0a] via-[#010a0a]/80 to-transparent opacity-0 group-hover:opacity-100 transition duration-500 flex flex-col justify-end p-6 border-b-4 border-primary z-20">
+                            <h3 class="text-white font-mono font-bold text-lg uppercase tracking-wider translate-y-6 group-hover:translate-y-0 transition duration-500">Antor Hair Fashion</h3>
+                            <p class="text-primary font-mono text-xs font-bold mt-2 translate-y-6 group-hover:translate-y-0 transition duration-500 delay-100 uppercase text-glow" data-lang-key="my_design_tag">.Logo_Render</p>
+                        </div>
+                    </div>
+                    
+                    <div class="group relative overflow-hidden rounded-sm border-2 border-white/10 gs-portfolio-item bg-dark hover:border-secondary transition duration-500 hover:shadow-[0_0_25px_rgba(0,229,255,0.3)]">
+                        <img src="logo2.webp" alt="Design 2" class="w-full h-80 object-cover opacity-50 filter grayscale mix-blend-luminosity transform transition duration-700 group-hover:scale-110 group-hover:opacity-100 group-hover:grayscale-0 group-hover:mix-blend-normal" onerror="this.src='https://placehold.co/400x500/010a0a/00E5FF?text=Logo+Design'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#010a0a] via-[#010a0a]/80 to-transparent opacity-0 group-hover:opacity-100 transition duration-500 flex flex-col justify-end p-6 border-b-4 border-secondary z-20">
+                            <h3 class="text-white font-mono font-bold text-lg uppercase tracking-wider translate-y-6 group-hover:translate-y-0 transition duration-500">Jannat's Bakery</h3>
+                            <p class="text-secondary font-mono text-xs font-bold mt-2 translate-y-6 group-hover:translate-y-0 transition duration-500 delay-100 uppercase text-glow" data-lang-key="my_design_tag">.Logo_Render</p>
+                        </div>
+                    </div>
+                    
+                    <div class="group relative overflow-hidden rounded-sm border-2 border-white/10 gs-portfolio-item bg-dark hover:border-primary transition duration-500 hover:shadow-[0_0_25px_rgba(0,230,184,0.3)]">
+                        <img src="logo3.webp" alt="Design 3" class="w-full h-80 object-cover opacity-50 filter grayscale mix-blend-luminosity transform transition duration-700 group-hover:scale-110 group-hover:opacity-100 group-hover:grayscale-0 group-hover:mix-blend-normal" onerror="this.src='https://placehold.co/400x500/010a0a/00e6b8?text=Logo+Design'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#010a0a] via-[#010a0a]/80 to-transparent opacity-0 group-hover:opacity-100 transition duration-500 flex flex-col justify-end p-6 border-b-4 border-primary z-20">
+                            <h3 class="text-white font-mono font-bold text-lg uppercase tracking-wider translate-y-6 group-hover:translate-y-0 transition duration-500">Shuddho Deal</h3>
+                            <p class="text-primary font-mono text-xs font-bold mt-2 translate-y-6 group-hover:translate-y-0 transition duration-500 delay-100 uppercase text-glow" data-lang-key="my_design_tag">.Logo_Render</p>
+                        </div>
+                    </div>
+                    
+                    <div class="group relative overflow-hidden rounded-sm border-2 border-white/10 gs-portfolio-item bg-dark hover:border-primary transition duration-500 hover:shadow-[0_0_25px_rgba(0,230,184,0.3)]">
+                         <img src="logo4.webp" alt="Design 4" class="w-full h-80 object-cover opacity-50 filter grayscale mix-blend-luminosity transform transition duration-700 group-hover:scale-110 group-hover:opacity-100 group-hover:grayscale-0 group-hover:mix-blend-normal" onerror="this.src='https://placehold.co/400x500/010a0a/00e6b8?text=Logo+Design'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#010a0a] via-[#010a0a]/80 to-transparent opacity-0 group-hover:opacity-100 transition duration-500 flex flex-col justify-end p-6 border-b-4 border-primary z-20">
+                            <h3 class="text-white font-mono font-bold text-lg uppercase tracking-wider translate-y-6 group-hover:translate-y-0 transition duration-500">Shorbokichu.com</h3>
+                            <p class="text-primary font-mono text-xs font-bold mt-2 translate-y-6 group-hover:translate-y-0 transition duration-500 delay-100 uppercase text-glow" data-lang-key="my_design_tag">.Logo_Render</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="video-gallery" class="py-24 relative z-10">
+            <div class="container mx-auto px-6">
+                <div class="mb-20 text-center">
+                    <span class="text-secondary font-mono text-sm font-bold tracking-[0.4em] uppercase mb-4 block">>> Media Stream</span>
+                    <h2 class="text-4xl md:text-5xl font-bold text-white font-mono uppercase tracking-widest text-glow glitch inline-block" data-lang-key="gallery_title" data-text="Video Database">Video Database</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="glass-card group video-card p-3 border border-white/10 hover:border-primary transition-all duration-500" data-video-id="n_s1ZxuuM6I">
+                        <div class="relative w-full pt-[56.25%] bg-black cursor-none overflow-hidden rounded-sm border border-white/5">
+                            <img src="https://img.youtube.com/vi/n_s1ZxuuM6I/maxresdefault.jpg" class="absolute inset-0 w-full h-full object-cover opacity-60 filter grayscale group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition duration-700" alt="Thumbnail">
+                            <div class="absolute inset-0 flex items-center justify-center bg-dark/40 group-hover:bg-transparent transition-colors duration-500">
+                                <div class="w-16 h-16 bg-dark/80 backdrop-blur-md border-2 border-primary/50 rounded-full flex items-center justify-center group-hover:bg-primary group-hover:border-primary group-hover:text-dark group-hover:scale-110 transition-all duration-300 text-primary shadow-[0_0_20px_rgba(0,230,184,0.3)]">
+                                    <svg class="w-7 h-7 fill-current translate-x-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                            <div class="absolute top-4 left-4 flex items-center gap-2 bg-[#010a0a]/80 backdrop-blur px-3 py-1.5 rounded-sm border border-red-500/50">
+                                <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_red]"></span>
+                                <span class="text-[10px] font-mono font-bold text-white uppercase tracking-widest">Live_Feed</span>
+                            </div>
+                        </div>
+                        <div class="pt-5 pb-3 px-3">
+                            <span class="text-[11px] font-mono font-bold text-primary uppercase tracking-[0.2em] mb-2 block">> SYS.TRAVEL.CTG</span>
+                            <h3 class="text-slate-200 font-bold text-base leading-snug font-sans group-hover:text-white transition-colors">আমার সাথে বুড়ো হবে কমলিনী? ❤️💌</h3>
+                        </div>
+                    </div>
+
+                    <div class="glass-card group video-card p-3 border border-white/10 hover:border-secondary transition-all duration-500" data-video-id="WDYmM-Q0_Cs">
+                        <div class="relative w-full pt-[56.25%] bg-black cursor-none overflow-hidden rounded-sm border border-white/5">
+                            <img src="https://img.youtube.com/vi/WDYmM-Q0_Cs/maxresdefault.jpg" class="absolute inset-0 w-full h-full object-cover opacity-60 filter grayscale group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition duration-700" alt="Thumbnail">
+                            <div class="absolute inset-0 flex items-center justify-center bg-dark/40 group-hover:bg-transparent transition-colors duration-500">
+                                <div class="w-16 h-16 bg-dark/80 backdrop-blur-md border-2 border-secondary/50 rounded-full flex items-center justify-center group-hover:bg-secondary group-hover:border-secondary group-hover:text-dark group-hover:scale-110 transition-all duration-300 text-secondary shadow-[0_0_20px_rgba(0,229,255,0.3)]">
+                                    <svg class="w-7 h-7 fill-current translate-x-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pt-5 pb-3 px-3">
+                            <span class="text-[11px] font-mono font-bold text-secondary uppercase tracking-[0.2em] mb-2 block">> SYS.TRAVEL.CTG</span>
+                            <h3 class="text-slate-200 font-bold text-base leading-snug font-sans group-hover:text-white transition-colors">চলুন না পাহাড়ে গিয়ে ঝর্না দেখে আসি..🍂💌</h3>
+                        </div>
+                    </div>
+
+                    <div class="glass-card group video-card p-3 border border-white/10 hover:border-primary transition-all duration-500" data-video-id="-MC7qA75Luk">
+                        <div class="relative w-full pt-[56.25%] bg-black cursor-none overflow-hidden rounded-sm border border-white/5">
+                            <img src="https://img.youtube.com/vi/-MC7qA75Luk/maxresdefault.jpg" class="absolute inset-0 w-full h-full object-cover opacity-60 filter grayscale group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition duration-700" alt="Thumbnail">
+                            <div class="absolute inset-0 flex items-center justify-center bg-dark/40 group-hover:bg-transparent transition-colors duration-500">
+                                <div class="w-16 h-16 bg-dark/80 backdrop-blur-md border-2 border-primary/50 rounded-full flex items-center justify-center group-hover:bg-primary group-hover:border-primary group-hover:text-dark group-hover:scale-110 transition-all duration-300 text-primary shadow-[0_0_20px_rgba(0,230,184,0.3)]">
+                                    <svg class="w-7 h-7 fill-current translate-x-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pt-5 pb-3 px-3">
+                            <span class="text-[11px] font-mono font-bold text-primary uppercase tracking-[0.2em] mb-2 block">> SYS.TRAVEL.CTG</span>
+                            <h3 class="text-slate-200 font-bold text-base leading-snug font-sans group-hover:text-white transition-colors">সমুদ্র যেন আমায় খুব ডাকে....? 🌊💌</h3>
+                        </div>
+                    </div>
+
+                    <div class="glass-card group video-card p-3 border border-white/10 hover:border-primary transition-all duration-500" data-video-id="pfvssgJ234E">
+                         <div class="relative w-full pt-[56.25%] bg-black cursor-none overflow-hidden rounded-sm border border-white/5">
+                            <img src="https://img.youtube.com/vi/pfvssgJ234E/maxresdefault.jpg" class="absolute inset-0 w-full h-full object-cover opacity-60 filter grayscale group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition duration-700" alt="Thumbnail">
+                            <div class="absolute inset-0 flex items-center justify-center bg-dark/40 group-hover:bg-transparent transition-colors duration-500">
+                                <div class="w-16 h-16 bg-dark/80 backdrop-blur-md border-2 border-primary/50 rounded-full flex items-center justify-center group-hover:bg-primary group-hover:border-primary group-hover:text-dark group-hover:scale-110 transition-all duration-300 text-primary shadow-[0_0_20px_rgba(0,230,184,0.3)]">
+                                    <svg class="w-7 h-7 fill-current translate-x-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pt-5 pb-3 px-3">
+                            <span class="text-[11px] font-mono font-bold text-primary uppercase tracking-[0.2em] mb-2 block">> SYS.TRAVEL.CTG</span>
+                            <h3 class="text-slate-200 font-bold text-base leading-snug font-sans group-hover:text-white transition-colors">আমার দেশ-বিদেশ ঘুরার খুব শখ....❤️‍🩹💌</h3>
+                        </div>
+                    </div>
+
+                    <div class="glass-card group video-card p-3 border border-white/10 hover:border-primary transition-all duration-500" data-video-id="M0H_dKP2Aj0">
+                         <div class="relative w-full pt-[56.25%] bg-black cursor-none overflow-hidden rounded-sm border border-white/5">
+                            <img src="https://img.youtube.com/vi/M0H_dKP2Aj0/maxresdefault.jpg" class="absolute inset-0 w-full h-full object-cover opacity-60 filter grayscale group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition duration-700" alt="Thumbnail">
+                            <div class="absolute inset-0 flex items-center justify-center bg-dark/40 group-hover:bg-transparent transition-colors duration-500">
+                                <div class="w-16 h-16 bg-dark/80 backdrop-blur-md border-2 border-primary/50 rounded-full flex items-center justify-center group-hover:bg-primary group-hover:border-primary group-hover:text-dark group-hover:scale-110 transition-all duration-300 text-primary shadow-[0_0_20px_rgba(0,230,184,0.3)]">
+                                    <svg class="w-7 h-7 fill-current translate-x-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pt-5 pb-3 px-3">
+                            <span class="text-[11px] font-mono font-bold text-primary uppercase tracking-[0.2em] mb-2 block">> SYS.TRAVEL.CTG</span>
+                            <h3 class="text-slate-200 font-bold text-base leading-snug font-sans group-hover:text-white transition-colors">চল না বন্ধু ঘুরে আসি...🤍🌊</h3>
+                        </div>
+                    </div>
+
+                    <div class="glass-card group video-card p-3 border border-white/10 hover:border-secondary transition-all duration-500" data-video-id="_4PoKbFF2y8">
+                        <div class="relative w-full pt-[56.25%] bg-black cursor-none overflow-hidden rounded-sm border border-white/5">
+                            <img src="https://img.youtube.com/vi/_4PoKbFF2y8/maxresdefault.jpg" class="absolute inset-0 w-full h-full object-cover opacity-60 filter grayscale group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition duration-700" alt="Thumbnail">
+                            <div class="absolute inset-0 flex items-center justify-center bg-dark/40 group-hover:bg-transparent transition-colors duration-500">
+                                <div class="w-16 h-16 bg-dark/80 backdrop-blur-md border-2 border-secondary/50 rounded-full flex items-center justify-center group-hover:bg-secondary group-hover:border-secondary group-hover:text-dark group-hover:scale-110 transition-all duration-300 text-secondary shadow-[0_0_20px_rgba(0,229,255,0.3)]">
+                                    <svg class="w-7 h-7 fill-current translate-x-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pt-5 pb-3 px-3">
+                            <span class="text-[11px] font-mono font-bold text-secondary uppercase tracking-[0.2em] mb-2 block">> SYS.NATURE.TEA</span>
+                            <h3 class="text-slate-200 font-bold text-base leading-snug font-sans group-hover:text-white transition-colors">চা পাতা উত্তোলন 😍</h3>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-20 text-center gs-fade-up">
+                     <a href="https://www.youtube.com/@sabbir-rahoman/" target="_blank" class="inline-flex items-center gap-4 px-8 py-4 border-2 border-white/20 hover:border-primary text-sm font-bold text-white font-mono tracking-widest hover:bg-primary/10 hover:text-primary transition-all uppercase rounded-sm shadow-[0_0_10px_rgba(0,230,184,0)] hover:shadow-[0_0_25px_rgba(0,230,184,0.3)]">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        <span>Access Full Channel</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="py-24 relative overflow-hidden border-t border-white/10 bg-[linear-gradient(to_bottom,transparent,rgba(0,230,184,0.05))] z-10">
+            <div class="container mx-auto px-6 text-center relative z-10">
+                <div class="max-w-4xl mx-auto gs-zoom-in">
+                    
+                    <h2 class="text-4xl md:text-6xl font-bold text-white mb-8 font-mono uppercase tracking-widest text-glow glitch" data-lang-key="contact_title" data-text="Secure Connection">Secure Connection</h2>
+                    <p class="text-sm md:text-base text-primary opacity-90 mb-14 font-mono font-bold" data-lang-key="contact_subtitle">
+                        [ STATUS: AWAITING INPUT ] Interested in collaboration? Establish a secure link via email or social networks.
+                    </p>
+
+                    <a href="mailto:sabbirrahoman217@gmail.com" class="inline-flex items-center gap-4 bg-[#010a0a]/80 border-2 border-primary/40 hover:border-primary text-white py-4 px-10 text-base md:text-lg transition-all duration-300 hover:bg-primary/20 hover:text-primary mb-20 uppercase tracking-[0.2em] font-mono rounded-sm shadow-[inset_0_0_20px_rgba(0,230,184,0.1)] hover:shadow-[0_0_30px_rgba(0,230,184,0.5)]">
+                        <svg class="w-6 h-6 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        <span>sabbirrahoman217@gmail.com</span>
+                    </a>
+
+                    <div class="flex flex-wrap justify-center gap-6">
+                        <a href="https://www.facebook.com/itzsabbirrahoman/" target="_blank" class="w-16 h-16 rounded-sm border-2 border-white/10 flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary hover:-translate-y-2 transition-all duration-300 bg-dark/90 hover:shadow-[0_10px_20px_rgba(0,230,184,0.3)]" title="Facebook">
+                            <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3l-.5 3h-2.5v6.8c4.56-.93 8-4.96 8-9.8z"/></svg>
+                        </a>
+                        <a href="https://www.linkedin.com/in/sabbir-rahoman" target="_blank" class="w-16 h-16 rounded-sm border-2 border-white/10 flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary hover:-translate-y-2 transition-all duration-300 bg-dark/90 hover:shadow-[0_10px_20px_rgba(0,230,184,0.3)]" title="LinkedIn">
+                            <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                        </a>
+                        <a href="https://www.instagram.com/itz_sabbir_rahoman/" target="_blank" class="w-16 h-16 rounded-sm border-2 border-white/10 flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary hover:-translate-y-2 transition-all duration-300 bg-dark/90 hover:shadow-[0_10px_20px_rgba(0,230,184,0.3)]" title="Instagram">
+                            <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.148 3.227-1.669 4.771-4.919 4.919-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.07-1.646-.07-4.85s.012-3.584.07-4.85c.148-3.227 1.669 4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163m0-2.163C8.74 0 8.333.011 7.053.069 2.73 1.22.525 3.31.069 7.053.011 8.333 0 8.74 0 12s.011 3.667.069 4.947c.457 3.742 2.618 5.821 6.358 6.98C8.333 23.989 8.74 24 12 24s3.667-.011 4.947-.069c3.742-.457 5.821-2.618 6.98-6.358C23.989 16.667 24 16.26 24 12s-.011-3.667-.069-4.947c-.457-3.742-2.618-5.821-6.358-6.98C15.667.011 15.26 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.88 1.44 1.44 0 000-2.88z"></path></svg>
+                        </a>
+                        <a href="https://x.com/sabbir_rahoman_" target="_blank" class="w-16 h-16 rounded-sm border-2 border-white/10 flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary hover:-translate-y-2 transition-all duration-300 bg-dark/90 hover:shadow-[0_10px_20px_rgba(0,230,184,0.3)]" title="X">
+                            <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="border-t-2 border-primary/20 py-10 relative z-10 font-mono bg-dark">
+        <div class="container mx-auto px-6 text-center flex flex-col items-center justify-center">
+            <div class="w-24 h-[2px] bg-primary/60 mb-6 shadow-[0_0_10px_#00e6b8]"></div>
+            <p class="text-primary/70 text-xs font-bold tracking-[0.3em] uppercase" data-lang-key="footer_text">
+                &copy; 2026 Sabbir Rahoman. SYSTEM SECURED // ALL RIGHTS RESERVED.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // --- CUSTOM CURSOR ---
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorOutline = document.querySelector('.cursor-outline');
+        window.addEventListener('mousemove', (e) => {
+            const posX = e.clientX; const posY = e.clientY;
+            cursorDot.style.left = `${posX}px`; cursorDot.style.top = `${posY}px`;
+            // Smooth trailing for outline
+            cursorOutline.animate({ left: `${posX}px`, top: `${posY}px` }, { duration: 500, fill: "forwards" });
+        });
+
+        // --- SPOTLIGHT HOVER FOR GLASS CARDS ---
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left; const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+
+        // --- AUTHENTICATION & BOOT SEQUENCE ---
+        const AUTH_KEY = 'QWRtaW42OQ=='; // Admin69
+        const authOverlay = document.getElementById('auth-overlay');
+        const authInput = document.getElementById('auth-password');
+        const authSubmit = document.getElementById('auth-submit');
+        const authError = document.getElementById('auth-error');
+        const authBox = document.getElementById('auth-box');
+        const terminalLoader = document.getElementById('terminal-loader');
+        const mainContent = document.getElementById('main-content');
+        const navbar = document.getElementById('navbar');
+
+        // Bypass Elements
+        const loginState = document.getElementById('login-state');
+        const bypassState = document.getElementById('bypass-state');
+        const bypassBtn = document.getElementById('bypass-btn');
+        const returnLoginBtn = document.getElementById('return-login-btn');
+
+        function checkAuth() {
+            if (sessionStorage.getItem('system_authorized') === 'true') {
+                authOverlay.style.display = 'none';
+                document.body.classList.remove('overflow-hidden');
+                mainContent.style.opacity = '1';
+                navbar.classList.remove('-translate-y-full');
+                startSystemFeatures();
+                return true;
+            }
+            return false;
+        }
+
+        const bootLines = [
+            "Initiating root access override...",
+            "Bypassing security protocols [████████░░]",
+            "Decrypting payload... OK",
+            "Connecting to neural net... ESTABLISHED",
+            "Loading interface modules...",
+            "ACCESS GRANTED. Welcome back, Admin."
+        ];
+
+        function runTerminalBootloader() {
+            authOverlay.style.display = 'none';
+            terminalLoader.style.display = 'flex';
+            let delay = 0;
+            
+            bootLines.forEach((line, index) => {
+                setTimeout(() => {
+                    const p = document.createElement('p');
+                    p.innerText = `> ${line}`;
+                    terminalLoader.appendChild(p);
+                    window.scrollTo(0, document.body.scrollHeight);
+                }, delay);
+                delay += 400 + Math.random() * 300; // Random typing delay
+            });
+
+            setTimeout(() => {
+                terminalLoader.style.opacity = '0';
+                terminalLoader.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => {
+                    terminalLoader.style.display = 'none';
+                    document.body.classList.remove('overflow-hidden');
+                    mainContent.style.transition = 'opacity 1.5s ease';
+                    mainContent.style.opacity = '1';
+                    navbar.classList.remove('-translate-y-full');
+                    startSystemFeatures();
+                }, 500);
+            }, delay + 800);
+        }
+
+        function authenticate() {
+            const inputVal = authInput.value;
+            if (btoa(inputVal) === AUTH_KEY) {
+                sessionStorage.setItem('system_authorized', 'true');
+                authError.classList.add('hidden');
+                // Glitch out the auth screen
+                authOverlay.style.transform = 'scale(1.1) skewX(2deg)';
+                authOverlay.style.filter = 'invert(1) hue-rotate(180deg)';
+                authOverlay.style.opacity = '0.8';
+                
+                setTimeout(() => { runTerminalBootloader(); }, 400);
+            } else {
+                authError.classList.remove('hidden');
+                authInput.value = ''; authInput.focus();
+                
+                authBox.animate([
+                    { transform: 'translateX(0)' }, { transform: 'translateX(-15px)' },
+                    { transform: 'translateX(15px)' }, { transform: 'translateX(-15px)' },
+                    { transform: 'translateX(15px)' }, { transform: 'translateX(0)' }
+                ], { duration: 400 });
+            }
+        }
+
+        if (!checkAuth()) {
+            authSubmit.addEventListener('click', authenticate);
+            authInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') authenticate(); });
+
+            bypassBtn.addEventListener('click', () => {
+                loginState.classList.add('hidden');
+                bypassState.classList.remove('hidden'); bypassState.classList.add('flex');
+            });
+            returnLoginBtn.addEventListener('click', () => {
+                bypassState.classList.add('hidden'); bypassState.classList.remove('flex');
+                loginState.classList.remove('hidden');
+            });
+        }
+
+        // --- CORE FEATURES ---
+        function startSystemFeatures() {
+            initThreeJS();
+            initGSAP();
+            initVideoPlayers(); 
+            type();
+        }
+
+        // --- LENIS SMOOTH SCROLL ---
+        const lenis = new Lenis({
+            duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: 'vertical', gestureDirection: 'vertical', smooth: true,
+        });
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
+
+        // --- ENHANCED THREE.JS BACKGROUND ---
+        const initThreeJS = () => {
+            const container = document.getElementById('canvas-container');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 4;
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+
+            const group = new THREE.Group(); scene.add(group);
+
+            const geometry = new THREE.IcosahedronGeometry(2, 1);
+            const material = new THREE.MeshBasicMaterial({ color: 0x00e6b8, wireframe: true, transparent: true, opacity: 0.05 });
+            const sphere = new THREE.Mesh(geometry, material);
+            group.add(sphere);
+
+            // Lines connecting particles (Cyber web)
+            const particlesGeo = new THREE.BufferGeometry();
+            const particlesCount = 700; 
+            const posArray = new Float32Array(particlesCount * 3);
+            for(let i = 0; i < particlesCount * 3; i++) posArray[i] = (Math.random() - 0.5) * 12; 
+            particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            
+            const particlesMat = new THREE.PointsMaterial({ size: 0.02, color: 0x00e6b8, transparent: true, opacity: 0.4 });
+            const particlesMesh = new THREE.Points(particlesGeo, particlesMat);
+            scene.add(particlesMesh); 
+
+            let mouseX = 0, mouseY = 0, targetX = 0, targetY = 0;
+            const windowHalfX = window.innerWidth / 2, windowHalfY = window.innerHeight / 2;
+
+            document.addEventListener('mousemove', (event) => {
+                mouseX = (event.clientX - windowHalfX); mouseY = (event.clientY - windowHalfY);
+            });
+
+            const clock = new THREE.Clock();
+            const tick = () => {
+                const elapsedTime = clock.getElapsedTime();
+                
+                group.rotation.y = elapsedTime * 0.03; group.rotation.x = Math.sin(elapsedTime * 0.2) * 0.05;
+                targetX = mouseX * 0.0015; targetY = mouseY * 0.0015; 
+                
+                group.rotation.y += 0.05 * (targetX - group.rotation.y);
+                group.rotation.x += 0.05 * (targetY - group.rotation.x);
+                
+                // Stronger particle reaction
+                particlesMesh.rotation.y = -elapsedTime * 0.02 + (targetX * 0.5); 
+                particlesMesh.rotation.x = (targetY * 0.5);
+                
+                camera.position.y = -window.scrollY * 0.0003; 
+                renderer.render(scene, camera); window.requestAnimationFrame(tick);
+            };
+            tick();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+            setTimeout(() => { container.classList.add('loaded'); }, 200);
+        };
+
+        // --- GSAP ANIMATIONS ---
+        const initGSAP = () => {
+            gsap.registerPlugin(ScrollTrigger);
+            const tl = gsap.timeline();
+            tl.from(".gs-reveal", { y: 40, opacity: 0, duration: 1.2, stagger: 0.15, ease: "power3.out", delay: 0.2 })
+              .from(".gs-reveal-img", { scale: 0.9, opacity: 0, duration: 2, ease: "power3.out" }, "-=1.2");
+
+            gsap.utils.toArray('.gs-fade-up').forEach(element => {
+                gsap.from(element, { scrollTrigger: { trigger: element, start: "top 85%", toggleActions: "play none none reverse" }, y: 50, opacity: 0, duration: 1, ease: "power3.out" });
+            });
+            gsap.from(".gs-portfolio-item", { scrollTrigger: { trigger: "#my-design", start: "top 75%" }, y: 40, opacity: 0, duration: 0.8, stagger: 0.15, ease: "power3.out" });
+            gsap.from(".gs-zoom-in", { scrollTrigger: { trigger: "#contact", start: "top 80%" }, scale: 0.95, y: 40, opacity: 0, duration: 1, ease: "power3.out" });
+        };
+
+        // --- VIDEO PLAYERS ---
+        function initVideoPlayers() {
+            document.querySelectorAll('.video-card').forEach(card => {
+                const placeholder = card.querySelector('.relative'); const videoId = card.dataset.videoId;
+                placeholder.addEventListener('click', () => {
+                    const iframe = document.createElement('iframe');
+                    let embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+                    if (window.location.protocol.startsWith('http')) { embedUrl += `&origin=${window.location.origin}`; }
+                    iframe.setAttribute('src', embedUrl); iframe.setAttribute('class', 'absolute inset-0 w-full h-full rounded-sm border-2 border-primary'); iframe.setAttribute('frameborder', '0');
+                    iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'); iframe.setAttribute('allowfullscreen', '');
+                    placeholder.innerHTML = ''; placeholder.appendChild(iframe);
+                });
+            });
+        }
+
+        // --- LANGUAGE & TYPING ---
+        const translations = {
+            en: {
+                nav_about: "Profile", nav_services: "Capabilities", nav_my_design: "Archive", nav_gallery: "Media", nav_contact: "Contact",
+                nav_about_m: "Profile Data", nav_services_m: "System Capabilities", nav_my_design_m: "Visual Archive", nav_gallery_m: "Video Database", nav_contact_m: "Initialize Contact", nav_lang_m: "System Language",
+                hero_title1: "Digital Creator &", hero_title2: "Interface Designer",
+                hero_subtitle: "Hello, I'm Sabbir Rahoman. I am a student and tech enthusiast. I transform your ideas into sophisticated digital experiences.",
+                hero_btn_work: "View Portfolio", hero_btn_store: "Visit Store",
+                about_title: "Profile Data",
+                about_p1: "As a passionate tech enthusiast and digital creator from Bangladesh, I'm driven by the power of technology to bring ideas to life.",
+                about_p2: "I am proficient in creating websites using AI, professional Logo Design, Banners, Posters, ID Cards, and CV (Resume) design.",
+                about_p3: 'LOG: "FAIL" means "First Attempt In Learning". Failure is just the first step towards learning.',
+                about_contact: "Initialize Contact",
+                services_title: "System Capabilities",
+                service1_title: "Visual Design", service1_desc: "Attractive and professional designs that highlight your brand identity.",
+                service1_item1: "Logo Integration", service1_item2: "Banner & Poster Auth", service1_item3: "Product Layouts",
+                service2_title: "Doc Protocol", service2_desc: "Professional ID cards and modern CV (Resume) configurations.",
+                service2_item1: "CV Structuring", service2_item2: "ID Generation", service2_item3: "Business Assets",
+                service3_title: "AI Web Solutions", service3_desc: "Fast, responsive, and modern web environments built using AI.",
+                service3_item1: "Portfolio Deployment", service3_item2: "Business Node", service3_item3: "Computer Basics",
+                my_design_title: "Output Files", my_design_tag: ".Logo_Render",
+                gallery_title: "Video Database",
+                contact_title: "Secure Connection", contact_subtitle: "[ STATUS: AWAITING INPUT ] Interested in collaboration? Establish a secure link via email or social networks.",
+                footer_text: "&copy; 2026 Sabbir Rahoman. SYSTEM SECURED // ALL RIGHTS RESERVED."
+            },
+            bn: {
+                nav_about: "প্রোফাইল", nav_services: "ক্যাপাবিলিটিজ", nav_my_design: "আর্কাইভ", nav_gallery: "মিডিয়া", nav_contact: "যোগাযোগ",
+                nav_about_m: "প্রোফাইল ডেটা", nav_services_m: "সিস্টেম ক্যাপাবিলিটিজ", nav_my_design_m: "ভিজ্যুয়াল আর্কাইভ", nav_gallery_m: "ভিডিও ডেটাবেজ", nav_contact_m: "কানেকশন শুরু করুন", nav_lang_m: "সিস্টেম ভাষা",
+                hero_title1: "ডিজিটাল ক্রিয়েটর এবং", hero_title2: "ইন্টারফেস ডিজাইনার",
+                hero_subtitle: "হ্যালো, আমি সাব্বির রহমান। আমি একজন ছাত্র এবং প্রযুক্তি উৎসাহী। আমি আপনার ধারণাকে অত্যাধুনিক ডিজিটাল অভিজ্ঞতায় রূপান্তরিত করি।",
+                hero_btn_work: "পোর্টফোলিও দেখুন", hero_btn_store: "স্টোর ভিজিট করুন",
+                about_title: "প্রোফাইল ডেটা",
+                about_p1: "বাংলাদেশ ভিত্তিক একজন কন্টেন্ট ক্রিয়েটর এবং ডিজিটাল ডিজাইনার হিসেবে, আমি নতুন নতুন টেকনোলজির প্রতি গভীরভাবে আগ্রহী।",
+                about_p2: "আমি এআই (AI) ব্যবহার করে ওয়েবসাইট তৈরি, প্রফেশনাল লোগো ডিজাইন, ব্যানার, পোস্টার, আইডি কার্ড এবং সিভি (CV) ডিজাইনে পারদর্শী।",
+                about_p3: 'লগ: "FAIL" মানে হচ্ছে "First Attempt In Learning" অর্থাৎ, ব্যর্থতা আসলে শেখার প্রথম ধাপ।',
+                about_contact: "যোগাযোগ শুরু করুন",
+                services_title: "সিস্টেম ক্যাপাবিলিটিজ",
+                service1_title: "ভিজ্যুয়াল ডিজাইন", service1_desc: "আকর্ষণীয় এবং প্রফেশনাল ডিজাইন যা আপনার ব্র্যান্ডের পরিচয় তুলে ধরে।",
+                service1_item1: "লোগো ইন্টিগ্রেশন", service1_item2: "ব্যানার ও পোস্টার", service1_item3: "প্রোডাক্ট লেআউট",
+                service2_title: "ডক প্রোটোকল", service2_desc: "প্রফেশনাল আইডি কার্ড এবং আধুনিক সিভি (রিজিউম) কনফিগারেশন।",
+                service2_item1: "সিভি স্ট্রাকচারিং", service2_item2: "আইডি জেনারেশন", service2_item3: "বিজনেস অ্যাসেটস",
+                service3_title: "এআই ওয়েব সলিউশন", service3_desc: "এআই ব্যবহার করে দ্রুত, রেসপন্সিভ এবং আধুনিক ওয়েব এনভায়রনমেন্ট তৈরি।",
+                service3_item1: "পোর্টফোলিও ডেপ্লয়মেন্ট", service3_item2: "বিজনেস নোড", service3_item3: "কম্পিউটার বেসিক",
+                my_design_title: "আউটপুট ফাইলস", my_design_tag: ".লোগো_রেন্ডার",
+                gallery_title: "ভিডিও ডেটাবেজ",
+                contact_title: "সিকিউর কানেকশন", contact_subtitle: "[ স্ট্যাটাস: অপেক্ষারত ] কোলাবোরেশনে আগ্রহী? ইমেইল বা সোশ্যাল নেটওয়ার্কের মাধ্যমে একটি সুরক্ষিত লিঙ্ক স্থাপন করুন।",
+                footer_text: "&copy; 2026 সাব্বির রহমান। সিস্টেম সিকিউরড // সর্বস্বত্ব সংরক্ষিত."
+            }
+        };
+
+        const toggleDesktop = document.getElementById('language-toggle'); const toggleMobile = document.getElementById('language-toggle-mobile');
+        let currentLang = 'en';
+        const typingTextElement = document.getElementById('typing-text');
+        const typingContainer = document.getElementById('typing-container');
+        const typingWords = { en: ["Interface Designer", "Tech Enthusiast", "System Admin"], bn: ["ইন্টারফেস ডিজাইনার", "টেক উৎসাহী", "সিস্টেম অ্যাডমিন"] };
+
+        function setLanguage(lang) {
+            currentLang = lang; document.documentElement.lang = lang;
+            document.querySelectorAll('[data-lang-key]').forEach(el => {
+                const key = el.getAttribute('data-lang-key');
+                if (translations[lang][key] && key !== 'hero_title2') {
+                    gsap.to(el, {opacity: 0, duration: 0.2, onComplete: () => { 
+                        el.innerText = translations[lang][key]; 
+                        // Update glitch attribute if present
+                        if(el.classList.contains('glitch')) el.setAttribute('data-text', translations[lang][key]);
+                        gsap.to(el, {opacity: 1, duration: 0.2}); 
+                    }});
+                }
+            });
+            typingWords.bn = [translations.bn.hero_title2, "টেক উৎসাহী", "সিস্টেম অ্যাডমিন"]; typingWords.en = [translations.en.hero_title2, "Tech Enthusiast", "System Admin"];
+        }
+
+        function handleToggle(e) { const lang = e.target.checked ? 'bn' : 'en'; toggleDesktop.checked = e.target.checked; toggleMobile.checked = e.target.checked; setLanguage(lang); }
+        toggleDesktop.addEventListener('change', handleToggle); toggleMobile.addEventListener('change', handleToggle);
+
+        let wordIndex = 0, charIndex = 0, isDeleting = false;
+        function type() {
+            const currentWords = typingWords[currentLang]; const currentWord = currentWords[wordIndex];
+            if (isDeleting) {
+                typingTextElement.textContent = currentWord.substring(0, charIndex - 1); charIndex--;
+                if (charIndex === 0) { isDeleting = false; wordIndex = (wordIndex + 1) % currentWords.length; }
+            } else {
+                typingTextElement.textContent = currentWord.substring(0, charIndex + 1); charIndex++;
+                if (charIndex === currentWord.length) { isDeleting = true; setTimeout(type, 2000); return; }
+            }
+            // Update glitch text for typing container
+            typingContainer.setAttribute('data-text', typingTextElement.textContent);
+            setTimeout(type, isDeleting ? 30 : 80);
+        }
+
+        const menuBtn = document.getElementById('menu-btn'); const closeBtn = document.getElementById('close-menu'); const mobileMenu = document.getElementById('mobile-menu'); const mobileLinks = mobileMenu.querySelectorAll('a');
+        menuBtn.addEventListener('click', () => { mobileMenu.classList.remove('translate-x-full'); document.body.style.overflow = 'hidden'; });
+        const closeMenu = () => { mobileMenu.classList.add('translate-x-full'); document.body.style.overflow = 'auto'; };
+        closeBtn.addEventListener('click', closeMenu); mobileLinks.forEach(link => link.addEventListener('click', closeMenu));
+    </script>
+</body>
+</html>
