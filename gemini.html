@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>সিক্রেট চ্যাট রুম</title>
+    <!-- PeerJS লাইব্রেরি যুক্ত করা হলো -->
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ece5dd;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .chat-app {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            height: 90vh;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .header {
+            background-color: #075e54;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        .header h2 { margin: 0; font-size: 18px; }
+        .header p { margin: 5px 0 0; font-size: 12px; color: #dcf8c6; }
+        
+        #invite-box {
+            background: #fff3cd;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+            border-bottom: 1px solid #ddd;
+        }
+        #invite-link { font-weight: bold; word-break: break-all; color: #d32f2f; }
+
+        .chat-box {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background-color: #ece5dd;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .message {
+            max-width: 75%;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            word-wrap: break-word;
+        }
+        .message.sent {
+            background-color: #dcf8c6;
+            align-self: flex-end;
+            border-bottom-right-radius: 0;
+        }
+        .message.received {
+            background-color: white;
+            align-self: flex-start;
+            border-bottom-left-radius: 0;
+        }
+
+        .input-box {
+            display: flex;
+            padding: 10px;
+            background: #f0f0f0;
+        }
+        .input-box input {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 20px;
+            outline: none;
+        }
+        .input-box button {
+            background-color: #128c7e;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin-left: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .input-box button:disabled { background-color: #ccc; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+<div class="chat-app">
+    <div class="header">
+        <h2>সিক্রেট চ্যাট</h2>
+        <p id="status">সার্ভারে কানেক্ট হচ্ছে...</p>
+    </div>
+
+    <div id="invite-box" style="display: none;">
+        আপনার বন্ধুকে এই লিংকটি দিন:<br>
+        <span id="invite-link"></span>
+    </div>
+
+    <div class="chat-box" id="chat-box"></div>
+
+    <div class="input-box">
+        <input type="text" id="msg-input" placeholder="মেসেজ লিখুন..." disabled>
+        <button id="send-btn" disabled>Send</button>
+    </div>
+</div>
+
+<script>
+    // URL থেকে রুম আইডি চেক করা
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomFromUrl = urlParams.get('room');
+    
+    let peer = new Peer(); 
+    let conn;
+
+    const statusText = document.getElementById('status');
+    const inviteBox = document.getElementById('invite-box');
+    const inviteLink = document.getElementById('invite-link');
+    const chatBox = document.getElementById('chat-box');
+    const msgInput = document.getElementById('msg-input');
+    const sendBtn = document.getElementById('send-btn');
+
+    // PeerJS সার্ভারের সাথে যুক্ত হলে
+    peer.on('open', (id) => {
+        if (roomFromUrl) {
+            // যদি লিংকে রুম আইডি থাকে, তবে বন্ধুর সাথে কানেক্ট করবে
+            statusText.innerText = "বন্ধুর সাথে যুক্ত হচ্ছি...";
+            conn = peer.connect(roomFromUrl);
+            setupConnection(conn);
+        } else {
+            // যদি লিংকে আইডি না থাকে, তবে নতুন লিংক তৈরি করবে
+            statusText.innerText = "বন্ধুর জন্য অপেক্ষা করছি...";
+            const newUrl = window.location.origin + window.location.pathname + '?room=' + id;
+            inviteBox.style.display = 'block';
+            inviteLink.innerText = newUrl;
+            
+            // বন্ধু লিংকে ক্লিক করে আসলে কানেকশন রিসিভ করবে
+            peer.on('connection', (incomingConn) => {
+                conn = incomingConn;
+                inviteBox.style.display = 'none'; 
+                setupConnection(conn);
+            });
+        }
+    });
+
+    // কানেকশন সেটআপ করা
+    function setupConnection(connection) {
+        connection.on('open', () => {
+            statusText.innerText = "কানেক্টেড! এখন চ্যাট করতে পারেন।";
+            msgInput.disabled = false;
+            sendBtn.disabled = false;
+        });
+
+        // মেসেজ রিসিভ করা
+        connection.on('data', (data) => {
+            showHtmlMessage(data, 'received');
+        });
+        
+        // কেউ পেজ রিফ্রেশ দিলে বা চলে গেলে
+        connection.on('close', () => {
+            statusText.innerText = "আপনার বন্ধু চলে গেছে!";
+            msgInput.disabled = true;
+            sendBtn.disabled = true;
+        });
+    }
+
+    // মেসেজ সেন্ড করার ফাংশন
+    function sendMessage() {
+        const text = msgInput.value.trim();
+        if (text !== '' && conn && conn.open) {
+            conn.send(text);
+            showHtmlMessage(text, 'sent');
+            msgInput.value = '';
+        }
+    }
+
+    // বাটনে ক্লিক বা Enter চাপলে মেসেজ যাবে
+    sendBtn.addEventListener('click', sendMessage);
+    msgInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
+    });
+
+    // স্ক্রিনে মেসেজ দেখানোর ফাংশন
+    function showHtmlMessage(text, type) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'message ' + type;
+        msgDiv.innerText = text;
+        chatBox.appendChild(msgDiv);
+        chatBox.scrollTop = chatBox.scrollHeight; // অটোমেটিক নিচে স্ক্রল হবে
+    }
+</script>
+
+</body>
+</html>
