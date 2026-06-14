@@ -378,24 +378,63 @@
     </footer>
 
     <script>
-        // HLS Streaming Logic
+        // HLS Streaming Logic with Auto-Fallback
         const video = document.getElementById('video-player');
-        // নতুন সার্ভার ইউআরএল এখানে যুক্ত করা হয়েছে
-        const videoSrc = 'http://88b9da48.kazmazpaz.ru/iptv/XVU58NBPX2LUMP/7280/index.m3u8';
+        
+        // নতুন সার্ভার লিস্ট
+        const videoSources = [
+            'https://premierleagpl23.akamaized.net/hls/live/2107108/tapmad-P2s6L_FiN@L-UrU/master.m3u8',
+            'https://1nyaler.streamhostingcdn.top/stream/106/index_665579651.ts',
+            'https://live05.msdht.app/live/24561735.m3u8'
+        ];
+        
+        let hls;
 
-        if (Hls.isSupported()) {
-            const hls = new Hls({ maxBufferLength: 30, maxMaxBufferLength: 60 });
-            hls.loadSource(videoSrc);
-            hls.attachMedia(video);
-            hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                video.play().catch(e => console.log("Autoplay blocked"));
-            });
-        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-            video.src = videoSrc;
-            video.addEventListener('loadedmetadata', function() {
-                video.play();
-            });
+        function loadStream(index) {
+            // যদি সবগুলো সার্ভার চেক করা শেষ হয়ে যায়
+            if (index >= videoSources.length) {
+                console.error("সবগুলো সার্ভার লোড হতে ব্যর্থ হয়েছে।");
+                return;
+            }
+
+            const currentSrc = videoSources[index];
+            console.log(`Trying server ${index + 1}: ${currentSrc}`);
+
+            if (Hls.isSupported()) {
+                if (hls) {
+                    hls.destroy(); // আগের কোনো ফেইল্ড কানেকশন থাকলে তা ক্লিয়ার করা
+                }
+                hls = new Hls({ maxBufferLength: 30, maxMaxBufferLength: 60 });
+                hls.loadSource(currentSrc);
+                hls.attachMedia(video);
+                
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    video.play().catch(e => console.log("Autoplay blocked"));
+                });
+
+                // যদি স্ট্রিমে কোনো এরর আসে (যেমন সার্ভার ডাউন বা ব্লকড)
+                hls.on(Hls.Events.ERROR, function (event, data) {
+                    if (data.fatal) {
+                        console.warn(`Server ${index + 1} failed. Redirecting to next server...`);
+                        loadStream(index + 1); // পরবর্তী লিঙ্কে ট্রাই করবে
+                    }
+                });
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                // Safari / iOS Native Player এর জন্য ফলব্যাক
+                video.src = currentSrc;
+                video.addEventListener('loadedmetadata', function() {
+                    video.play().catch(e => console.log("Autoplay blocked"));
+                });
+                
+                video.addEventListener('error', function() {
+                    console.warn(`Native player: Server ${index + 1} failed. Redirecting...`);
+                    loadStream(index + 1);
+                }, { once: true });
+            }
         }
+
+        // প্রথম সার্ভার (index 0) থেকে শুরু
+        loadStream(0);
 
         // Live Chat Simulation (Creates the "Sticky" Vibe)
         const chatBox = document.getElementById('chat-box');
