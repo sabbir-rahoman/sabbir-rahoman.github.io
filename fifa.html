@@ -412,7 +412,7 @@
                     video.play().catch(e => console.log("Autoplay blocked"));
                 });
 
-                // যদি স্ট্রিমে কোনো এরর আসে (যেমন সার্ভার ডাউন বা ব্লকড)
+                // 
                 hls.on(Hls.Events.ERROR, function (event, data) {
                     if (data.fatal) {
                         console.warn(`Server ${index + 1} failed. Redirecting to next server...`);
