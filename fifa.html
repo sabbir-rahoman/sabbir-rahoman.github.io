@@ -105,8 +105,47 @@
         .main-stream {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px; /* গ্যাপ কমানো হয়েছে বাটন ও ভিডিওর মাঝে */
             width: 100%; 
+        }
+
+        /* ----- Server/Screen Selectors ----- */
+        .server-selectors {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .server-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 10px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .server-btn i {
+            font-size: 14px;
+        }
+
+        .server-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .server-btn.active {
+            background: linear-gradient(45deg, var(--primary), #b31b49);
+            border-color: var(--primary-glow);
+            box-shadow: 0 0 15px rgba(138, 21, 56, 0.5);
+            color: white;
         }
 
         .video-container {
@@ -157,6 +196,7 @@
             width: 100%;
             height: 100%;
             border: none;
+            background-color: #000;
         }
 
         .info-cards {
@@ -254,6 +294,15 @@
                 padding: 15px 10px;
                 gap: 15px;
             }
+            .server-selectors {
+                justify-content: center;
+            }
+            .server-btn {
+                padding: 8px 20px;
+                font-size: 14px;
+                flex: 1;
+                justify-content: center;
+            }
             .video-container { 
                 height: 65vh; 
                 border-radius: 12px;
@@ -281,6 +330,16 @@
 
     <div class="dashboard">
         <div class="main-stream">
+            
+            <div class="server-selectors">
+                <button class="server-btn active" onclick="switchServer('https://fwatch.tv/', this)">
+                    <i class="fa-solid fa-display"></i> Screen 1
+                </button>
+                <button class="server-btn" onclick="switchServer('https://tv.fibwatch.world/future_watch.php?id=1781206002', this)">
+                    <i class="fa-solid fa-display"></i> Screen 2
+                </button>
+            </div>
+
             <div class="video-container">
                 <div class="stream-overlay">
                     <div class="badge live"><i class="fa-solid fa-circle"></i> LIVE</div>
@@ -289,7 +348,8 @@
                 
                 <div class="iframe-wrapper">
                     <iframe 
-                        src="https://tv.fibwatch.world/future_watch.php?id=1781206002" 
+                        id="main-player"
+                        src="https://fwatch.tv/" 
                         scrolling="yes" 
                         allowfullscreen 
                         allow="autoplay; encrypted-media">
@@ -335,6 +395,20 @@
     </footer>
     
     <script>
+        // স্ক্রিন বা সার্ভার পরিবর্তন করার ফাংশন
+        function switchServer(url, buttonElement) {
+            // ১. আইফ্রেমের সোর্স পরিবর্তন করা
+            document.getElementById('main-player').src = url;
+
+            // ২. সব বাটন থেকে 'active' ক্লাস রিমুভ করা
+            let buttons = document.querySelectorAll('.server-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            // ৩. যে বাটনে ক্লিক করা হয়েছে সেটিতে 'active' ক্লাস যুক্ত করা
+            buttonElement.classList.add('active');
+        }
+
+        // Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
