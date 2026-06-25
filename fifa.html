@@ -2,12 +2,16 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FIFA Ultra Stream | By Sabbir Rahoman</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#8A1538">
     <link rel="apple-touch-icon" href="icon-192.jpg">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="FIFA Stream">
 
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -109,7 +113,6 @@
             width: 100%; 
         }
 
-        /* ----- Server/Screen Selectors ----- */
         .server-selectors {
             display: flex;
             gap: 15px;
@@ -133,13 +136,7 @@
             gap: 8px;
         }
 
-        .server-btn i {
-            font-size: 14px;
-        }
-
-        .server-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
+        .server-btn:hover { background: rgba(255, 255, 255, 0.1); }
 
         .server-btn.active {
             background: linear-gradient(45deg, var(--primary), #b31b49);
@@ -157,6 +154,8 @@
             box-shadow: 0 15px 40px rgba(0,0,0,0.8), 0 0 20px rgba(212, 175, 55, 0.1);
             width: 100%;
             height: 80vh;
+            /* iOS Smooth scrolling fixes */
+            -webkit-overflow-scrolling: touch;
         }
 
         .stream-overlay {
@@ -184,6 +183,32 @@
         .badge.live { color: #ff3b30; }
         .badge.live i { animation: blink 1.5s infinite; }
         .badge.quality { color: var(--gold); }
+
+        /* iOS External Link Button */
+        .external-link-container {
+            display: none;
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 20;
+        }
+        .btn-external {
+            background: rgba(0, 0, 0, 0.8);
+            color: var(--gold);
+            border: 1px solid var(--gold);
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(10px);
+            transition: 0.3s;
+            text-decoration: none;
+        }
+        .btn-external:hover { background: var(--gold); color: black; }
 
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
@@ -267,11 +292,7 @@
             border-radius: 30px;
             border: 1px solid rgba(212,175,55,0.3);
         }
-        .creator-badge h4 {
-            font-weight: 400;
-            color: var(--text-muted);
-            font-size: 14px;
-        }
+        .creator-badge h4 { font-weight: 400; color: var(--text-muted); font-size: 14px; }
         .creator-badge span {
             font-weight: 800;
             color: var(--gold);
@@ -282,39 +303,21 @@
         }
         .creator-badge p { font-size: 12px; margin-top: 4px; color: #aaa; }
 
-        /* ----- মোবাইল রেসপন্সিভ অপ্টিমাইজেশন ----- */
         @media (max-width: 768px) {
-            header {
-                padding: 15px 20px;
-            }
-            .logo {
-                font-size: 22px;
-            }
-            .dashboard {
-                padding: 15px 10px;
-                gap: 15px;
-            }
-            .server-selectors {
-                justify-content: center;
-            }
+            header { padding: 15px 20px; }
+            .logo { font-size: 22px; }
+            .dashboard { padding: 15px 10px; gap: 15px; }
+            .server-selectors { justify-content: center; }
             .server-btn {
                 padding: 8px 20px;
                 font-size: 14px;
-                flex: 1 1 calc(50% - 15px); /* মোবাইলে ২টি করে বাটন পাশাপাশি সুন্দর দেখাবে */
+                flex: 1 1 calc(50% - 15px);
                 justify-content: center;
             }
-            .video-container { 
-                height: 65vh; 
-                border-radius: 12px;
-            }
-            .info-cards { 
-                grid-template-columns: 1fr; 
-                gap: 15px;
-            }
-            .info-card {
-                padding: 15px;
-                border-radius: 12px;
-            }
+            .video-container { height: 45vh; border-radius: 12px; }
+            .info-cards { grid-template-columns: 1fr; gap: 15px; }
+            .info-card { padding: 15px; border-radius: 12px; }
+            .external-link-container { display: block; } /* মোবাইলে/আইফোনে এক্সটার্নাল ওপেন বাটন দেখাবে */
         }
     </style>
 </head>
@@ -354,14 +357,23 @@
                     <div class="badge live"><i class="fa-solid fa-circle"></i> LIVE</div>
                     <div class="badge quality">4K <i class="fa-solid fa-tv"></i></div>
                 </div>
+
+                <div class="external-link-container">
+                    <a id="external-link" href="https://fwatch.tv/" target="_blank" class="btn-external">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Open External Player
+                    </a>
+                </div>
                 
                 <div class="iframe-wrapper">
                     <iframe 
                         id="main-player"
                         src="https://fwatch.tv/" 
                         scrolling="yes" 
-                        allowfullscreen 
-                        allow="autoplay; encrypted-media">
+                        allowfullscreen="true"
+                        webkitallowfullscreen="true"
+                        mozallowfullscreen="true"
+                        allow="autoplay; encrypted-media; picture-in-picture"
+                        sandbox="allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts">
                     </iframe>
                 </div>
             </div>
@@ -370,8 +382,8 @@
                 <div class="info-card card-warning">
                     <div class="icon"><i class="fa-solid fa-link-slash"></i></div>
                     <div class="info-content">
-                        <h4>সার্ভার আপডেট নোটিশ</h4>
-                        <p>আমাদের মূল ডোমেইনটি সাময়িকভাবে ব্লক হওয়ার কারণে, নিরবচ্ছিন্ন স্ট্রিমিং নিশ্চিত করতে বিকল্প লিংকের মাধ্যমে ওয়েবসাইটটি এখানে যুক্ত করা হয়েছে।</p>
+                        <h4>আইফোন ও অ্যাপল ইউজারদের জন্য</h4>
+                        <p>আইফোনের অতিরিক্ত সুরক্ষার কারণে যদি প্লেয়ারে কালো স্ক্রিন দেখায় বা লোড না হয়, তবে প্লেয়ারের ভেতরের <strong>"Open External Player"</strong> বাটনে ক্লিক করে সরাসরি নতুন ট্যাবে খেলা দেখতে পারবেন।</p>
                     </div>
                 </div>
 
@@ -379,7 +391,7 @@
                     <div class="icon"><i class="fa-solid fa-shield-check"></i></div>
                     <div class="info-content">
                         <h4>100% Ad-Free Experience</h4>
-                        <p><strong>Best Option:</strong> এটি সম্পূর্ণ বিজ্ঞাপনমুক্ত (No Ads Shows) একটি সার্ভার। কোনো বিরক্তিকর পপ-আপ ছাড়াই নিশ্চিন্তে খেলা উপভোগ করুন।</p>
+                        <p><strong>Best Option:</strong> এটি সম্পূর্ণ বিজ্ঞাপনমুক্ত একটি সার্ভার। কোনো বিরক্তিকর পপ-আপ ছাড়াই নিশ্চিন্তে খেলা উপভোগ করুন।</p>
                     </div>
                 </div>
 
@@ -387,7 +399,7 @@
                     <div class="icon"><i class="fa-regular fa-futbol"></i></div>
                     <div class="info-content">
                         <h4>FIFA World Cup 2026</h4>
-                        <p>বিশ্বকাপের শ্বাসরুদ্ধকর প্রতিটি মুহূর্ত লাইভ! হাই-রেজোলিউশন এবং জিরো বাফারিং এক্সপেরিয়েন্সের সাথে আপনার প্রিয় দলের সাপোর্ট চালিয়ে যান।</p>
+                        <p>বিশ্বকাপের প্রতিটি মুহূর্ত লাইভ! হাই-রেজোলিউশন এবং জিরো বাফারিং এক্সপেরিয়েন্সের সাথে আপনার প্রিয় দলের সাপোর্ট চালিয়ে যান।</p>
                     </div>
                 </div>
             </div>
@@ -405,7 +417,11 @@
     
     <script>
         function switchServer(url, buttonElement) {
+            // আইফ্রেম সোর্স পরিবর্তন
             document.getElementById('main-player').src = url;
+            
+            // এক্সটার্নাল বাটনের লিঙ্ক পরিবর্তন
+            document.getElementById('external-link').href = url;
 
             let buttons = document.querySelectorAll('.server-btn');
             buttons.forEach(btn => btn.classList.remove('active'));
