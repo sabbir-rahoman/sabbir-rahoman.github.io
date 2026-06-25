@@ -105,7 +105,7 @@
         .main-stream {
             display: flex;
             flex-direction: column;
-            gap: 15px; /* গ্যাপ কমানো হয়েছে বাটন ও ভিডিওর মাঝে */
+            gap: 15px; 
             width: 100%; 
         }
 
@@ -300,7 +300,7 @@
             .server-btn {
                 padding: 8px 20px;
                 font-size: 14px;
-                flex: 1;
+                flex: 1 1 calc(50% - 15px); /* মোবাইলে ২টি করে বাটন পাশাপাশি সুন্দর দেখাবে */
                 justify-content: center;
             }
             .video-container { 
@@ -337,6 +337,15 @@
                 </button>
                 <button class="server-btn" onclick="switchServer('https://tv.fibwatch.world/future_watch.php?id=1781206002', this)">
                     <i class="fa-solid fa-display"></i> Screen 2
+                </button>
+                <button class="server-btn" onclick="switchServer('http://172.19.17.28/', this)">
+                    <i class="fa-solid fa-display"></i> Screen 3
+                </button>
+                <button class="server-btn" onclick="switchServer('http://172.16.16.100/', this)">
+                    <i class="fa-solid fa-display"></i> Screen 4
+                </button>
+                <button class="server-btn" onclick="switchServer('http://murgi.live/live-tv.html', this)">
+                    <i class="fa-solid fa-display"></i> Screen 5
                 </button>
             </div>
 
@@ -395,20 +404,15 @@
     </footer>
     
     <script>
-        // স্ক্রিন বা সার্ভার পরিবর্তন করার ফাংশন
         function switchServer(url, buttonElement) {
-            // ১. আইফ্রেমের সোর্স পরিবর্তন করা
             document.getElementById('main-player').src = url;
 
-            // ২. সব বাটন থেকে 'active' ক্লাস রিমুভ করা
             let buttons = document.querySelectorAll('.server-btn');
             buttons.forEach(btn => btn.classList.remove('active'));
 
-            // ৩. যে বাটনে ক্লিক করা হয়েছে সেটিতে 'active' ক্লাস যুক্ত করা
             buttonElement.classList.add('active');
         }
 
-        // Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
