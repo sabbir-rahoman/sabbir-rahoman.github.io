@@ -433,12 +433,10 @@
 
     <main class="app-container">
 
-        <!-- COMPACT SERVER TOOLBAR (Sticky on Mobile) -->
         <section class="server-toolbar" id="toolbar">
             <div class="toolbar-title"><i class="fa-solid fa-sliders"></i> Select Server:</div>
             
             <div class="server-groups-wrapper">
-                <!-- Global Stream -->
                 <div class="server-group-inline">
                     <span class="category-label-inline"><i class="fa-solid fa-earth-americas"></i> Global</span>
                     <button class="server-btn-compact active" onclick="switchServer('https://fwatch.tv/', this)">
@@ -447,11 +445,13 @@
                     <button class="server-btn-compact" onclick="switchServer('https://tv.fibwatch.world/future_watch.php?id=1781764552&v=1782466018155', this)">
                         <i class="fa-solid fa-play"></i> Scr 2
                     </button>
+                    <button class="server-btn-compact" onclick="switchServer('https://new.livekhelatv.org/', this)">
+                        <i class="fa-solid fa-play"></i> Scr 3
+                    </button>
                 </div>
 
                 <div class="toolbar-divider"></div>
 
-                <!-- IP TV Local -->
                 <div class="server-group-inline">
                     <span class="category-label-inline"><i class="fa-solid fa-server"></i> Local (BDIX)</span>
                     <button class="server-btn-compact" onclick="switchServer('http://172.19.17.28/', this)">
@@ -467,7 +467,6 @@
             </div>
         </section>
 
-        <!-- THEATER MODE PLAYER -->
         <section class="theater-wrapper">
             <div class="player-frame">
                 <div class="player-header">
@@ -477,7 +476,6 @@
                     </a>
                 </div>
 
-                <!-- Iframe Container (Scrolling enabled for PC & Mobile) -->
                 <div class="iframe-container">
                     <iframe 
                         id="main-player"
@@ -492,7 +490,6 @@
             </div>
         </section>
 
-        <!-- ENHANCED INFO CARDS -->
         <section class="info-grid">
             <div class="info-card card-1">
                 <div class="icon-box"><i class="fa-solid fa-lightbulb"></i></div>
@@ -513,7 +510,6 @@
 
     </main>
 
-    <!-- FOOTER WITH HYPERLINK -->
     <footer>
         <div class="creator-text">
             Recreated & Engineered by 
