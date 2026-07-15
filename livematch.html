@@ -5,13 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Premium Live Stream | Football Match</title>
     
-    <!-- DPlayer CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dplayer/1.27.1/DPlayer.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dplayer/dist/DPlayer.min.css">
     
-    <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
 
     <style>
@@ -152,14 +149,11 @@
         </div>
     </div>
 
-    <!-- FLV.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flv.js/1.6.2/flv.min.js"></script>
     
-    <!-- DPlayer -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dplayer/1.27.1/DPlayer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dplayer/dist/DPlayer.min.js"></script>
 
     <script>
-        // প্রফেশনাল প্লেয়ার ইনিশিয়ালাইজ করা (Ngrok বাইপাস কোডসহ)
         const dp = new DPlayer({
             container: document.getElementById('dplayer'),
             live: true,             
@@ -185,15 +179,21 @@
                         });
                         flvPlayer.attachMediaElement(video);
                         flvPlayer.load();
-                        flvPlayer.play();
+                        
+                        // ব্রাউজার অটোপ্লে ব্লক করলে ম্যানুয়াল প্লে এর জন্য
+                        var playPromise = flvPlayer.play();
+                        if (playPromise !== undefined) {
+                            playPromise.catch(error => {
+                                console.log("অটো-প্লে ব্লক করা হয়েছে। প্লেয়ারের বাটনে ক্লিক করুন।");
+                            });
+                        }
                     }
                 }
             },
         });
 
-        // প্লেয়ার চালু হলে এরর হ্যান্ডলিং
         dp.on('error', function () {
-            console.warn('ভিডিও লোড হচ্ছে না। নিশ্চিত করুন OBS স্ট্রিমিং চালু আছে এবং Ngrok লিংক সঠিক আছে।');
+            console.warn('ভিডিও লোড হচ্ছে না। নিশ্চিত করুন OBS স্ট্রিমিং চালু আছে।');
         });
     </script>
 
