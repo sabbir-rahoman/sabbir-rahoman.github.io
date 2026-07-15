@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Premium Live Stream | Football Match</title>
     
-    <!-- DPlayer CSS (প্রফেশনাল প্লেয়ারের ডিজাইনের জন্য) -->
+    <!-- DPlayer CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dplayer/1.27.1/DPlayer.min.css">
     
-    <!-- Font Awesome (আইকনের জন্য) -->
+    <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <!-- Google Fonts -->
@@ -34,7 +34,6 @@
             background-image: radial-gradient(circle at 50% 0%, rgba(225, 29, 72, 0.05) 0%, transparent 50%);
         }
 
-        /* হেডার ডিজাইন */
         .header {
             width: 100%;
             background: rgba(20, 20, 30, 0.95);
@@ -70,7 +69,6 @@
             box-shadow: 0 0 10px rgba(225, 29, 72, 0.5);
         }
 
-        /* প্লেয়ার কন্টেইনার */
         .player-wrapper {
             width: 95%;
             max-width: 1100px;
@@ -89,7 +87,6 @@
             aspect-ratio: 16/9;
         }
 
-        /* নিচের ইনফো বার */
         .stream-info {
             width: 95%;
             max-width: 1100px;
@@ -124,7 +121,6 @@
             50% { opacity: 0.6; }
         }
 
-        /* মোবাইল রেসপন্সিভ */
         @media (max-width: 768px) {
             .header h1 { font-size: 20px; }
             .stream-info { flex-direction: column; text-align: left; align-items: flex-start; gap: 15px; }
@@ -143,7 +139,6 @@
     </div>
 
     <div class="player-wrapper">
-        <!-- DPlayer Container -->
         <div id="dplayer"></div>
     </div>
 
@@ -157,31 +152,46 @@
         </div>
     </div>
 
-    <!-- FLV.js (সার্ভার থেকে ভিডিও আনার ইঞ্জিন) -->
+    <!-- FLV.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flv.js/1.6.2/flv.min.js"></script>
     
-    <!-- DPlayer (প্রফেশনাল ইউজার ইন্টারফেসের ইঞ্জিন) -->
+    <!-- DPlayer -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dplayer/1.27.1/DPlayer.min.js"></script>
 
     <script>
-        // প্রফেশনাল প্লেয়ার ইনিশিয়ালাইজ করা
+        // প্রফেশনাল প্লেয়ার ইনিশিয়ালাইজ করা (Ngrok বাইপাস কোডসহ)
         const dp = new DPlayer({
             container: document.getElementById('dplayer'),
-            live: true,             // লাইভ মোড চালু (টাইমলাইন হাইড করবে)
-            autoplay: true,         // অটো প্লে
-            theme: '#e11d48',       // প্লেয়ারের থিম কালার (লাল)
+            live: true,             
+            autoplay: true,         
+            theme: '#e11d48',       
             lang: 'en',
-            hotkey: true,           // কীবোর্ড শর্টকাট সাপোর্ট
+            hotkey: true,           
             preload: 'auto',
-            volume: 0.8,            // ডিফল্ট সাউন্ড ৮০%
+            volume: 0.8,            
             video: {
-                // এখানে আপনার OBS-এর সঠিক Stream Key (fifalive) দেওয়া হলো
                 url: 'https://hatchery-uncheck-wreath.ngrok-free.dev/live/fifalive.flv',
-                type: 'flv',
+                type: 'customFlv',
+                customType: {
+                    customFlv: function (video, player) {
+                        const flvPlayer = flvjs.createPlayer({
+                            type: 'flv',
+                            isLive: true,
+                            url: video.src
+                        }, {
+                            headers: {
+                                'ngrok-skip-browser-warning': 'true' // Ngrok Bypass Header
+                            }
+                        });
+                        flvPlayer.attachMediaElement(video);
+                        flvPlayer.load();
+                        flvPlayer.play();
+                    }
+                }
             },
         });
 
-        // প্লেয়ার চালু হলে এরর বা বাফারিং হ্যান্ডলিং
+        // প্লেয়ার চালু হলে এরর হ্যান্ডলিং
         dp.on('error', function () {
             console.warn('ভিডিও লোড হচ্ছে না। নিশ্চিত করুন OBS স্ট্রিমিং চালু আছে এবং Ngrok লিংক সঠিক আছে।');
         });
