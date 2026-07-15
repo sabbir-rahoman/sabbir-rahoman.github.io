@@ -6,7 +6,9 @@
     <title>Premium Live Stream | Football Match</title>
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dplayer/dist/DPlayer.min.css">
+    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
 
     <style>
@@ -42,42 +44,79 @@
         }
 
         .header h1 {
-            margin: 0; font-size: 26px; font-weight: 800;
-            display: flex; justify-content: center; align-items: center; gap: 12px; text-transform: uppercase;
+            margin: 0;
+            font-size: 26px;
+            font-weight: 800;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .live-badge {
-            background: var(--accent-red); color: white; font-size: 13px;
-            padding: 4px 12px; border-radius: 4px; font-weight: 800;
-            animation: blink 2s infinite; box-shadow: 0 0 10px rgba(225, 29, 72, 0.5);
+            background: var(--accent-red);
+            color: white;
+            font-size: 13px;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: 800;
+            animation: blink 2s infinite;
+            box-shadow: 0 0 10px rgba(225, 29, 72, 0.5);
         }
 
         .player-wrapper {
-            width: 95%; max-width: 1100px; margin-top: 30px;
-            background: #000; border-radius: 12px; padding: 5px;
+            width: 95%;
+            max-width: 1100px;
+            margin-top: 30px;
+            background: #000;
+            border-radius: 12px;
+            padding: 5px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.8), 0 0 20px rgba(225, 29, 72, 0.15);
             border: 1px solid rgba(255,255,255,0.05);
         }
 
-        #dplayer { width: 100%; border-radius: 8px; overflow: hidden; aspect-ratio: 16/9; }
+        #dplayer {
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+        }
 
         .stream-info {
-            width: 95%; max-width: 1100px; margin-top: 20px;
-            display: flex; justify-content: space-between; align-items: center;
-            background: rgba(255,255,255,0.03); padding: 20px; border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px);
+            width: 95%;
+            max-width: 1100px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.03);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
         }
 
         .stream-title h2 { margin: 0 0 5px 0; font-size: 20px; }
         .stream-title p { margin: 0; color: #94a3b8; font-size: 14px; }
         
         .viewers { 
-            color: #e11d48; font-weight: 600; display: flex; align-items: center; gap: 8px; 
-            background: rgba(225, 29, 72, 0.1); padding: 8px 15px; border-radius: 50px;
+            color: #e11d48; 
+            font-weight: 600; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            background: rgba(225, 29, 72, 0.1);
+            padding: 8px 15px;
+            border-radius: 50px;
             border: 1px solid rgba(225, 29, 72, 0.2);
         }
         
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
 
         @media (max-width: 768px) {
             .header h1 { font-size: 20px; }
@@ -89,7 +128,11 @@
 <body>
 
     <div class="header">
-        <h1><i class="fa-solid fa-trophy" style="color: #fbbf24;"></i> এলাকার ফুটবল ম্যাচ <span class="live-badge">LIVE</span></h1>
+        <h1>
+            <i class="fa-solid fa-trophy" style="color: #fbbf24;"></i> 
+            এলাকার ফুটবল ম্যাচ 
+            <span class="live-badge">LIVE</span>
+        </h1>
     </div>
 
     <div class="player-wrapper">
@@ -121,22 +164,19 @@
             preload: 'auto',
             volume: 0.8,            
             video: {
-                // FLV এর বদলে এখন HLS (.m3u8) লিংক ব্যবহার করা হলো
-                url: 'https://hatchery-uncheck-wreath.ngrok-free.dev/live/fifalive/index.m3u8',
+                // আপনার নতুন Cloudflare HLS লিংক
+                url: 'https://respondent-adequate-colony-sand.trycloudflare.com/live/fifalive/index.m3u8',
                 type: 'customHls',
                 customType: {
                     customHls: function (video, player) {
+                        // পিসি এবং অ্যান্ড্রয়েডের জন্য
                         if (Hls.isSupported()) {
-                            const hls = new Hls({
-                                xhrSetup: function(xhr, url) {
-                                    // Ngrok Bypass Header
-                                    xhr.setRequestHeader('ngrok-skip-browser-warning', 'true');
-                                }
-                            });
+                            const hls = new Hls();
                             hls.loadSource(video.src);
                             hls.attachMedia(video);
-                        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                            // আইফোনের নেটিভ প্লেয়ারের জন্য স্পেশাল কোড
+                        } 
+                        // আইফোনের (Safari) নেটিভ প্লেয়ারের জন্য
+                        else if (video.canPlayType('application/vnd.apple.mpegurl')) {
                             video.src = video.src;
                         }
                     }
@@ -145,7 +185,7 @@
         });
 
         dp.on('error', function () {
-            console.warn('ভিডিও লোড হচ্ছে না। নিশ্চিত করুন OBS স্ট্রিমিং চালু আছে।');
+            console.warn('ভিডিও লোড হচ্ছে না। নিশ্চিত করুন OBS স্ট্রিমিং চালু আছে এবং Cloudflare লিংক সঠিক আছে।');
         });
     </script>
 
