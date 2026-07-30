@@ -622,6 +622,26 @@
                 </div>
             </div>
         </section>
+
+        <!-- Floating Audio Player (Fixed Jittering) -->
+        <div class="fixed bottom-6 right-6 z-50 bg-dark/50 backdrop-blur-xl border border-white/10 p-4 rounded-2xl flex flex-col items-center gap-3 w-56 cursor-none shadow-2xl transition-transform duration-300 hover:scale-105">
+            <div class="text-white font-heading text-sm font-bold tracking-wider text-center w-full truncate" id="audio-title">1.mp3</div>
+            <div class="flex items-center gap-5">
+                <button id="prev-btn" class="magnetic-btn text-white hover:text-primary transition">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+                </button>
+                <button id="play-pause-btn" class="magnetic-btn w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white hover:bg-secondary transition shadow-[0_0_15px_rgba(99,102,241,0.5)] hover:shadow-secondary/50">
+                    <!-- Play Icon -->
+                    <svg id="play-icon" class="w-5 h-5 translate-x-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    <!-- Pause Icon -->
+                    <svg id="pause-icon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                </button>
+                <button id="next-btn" class="magnetic-btn text-white hover:text-primary transition">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                </button>
+            </div>
+            <audio id="bg-audio" src="1.mp3"></audio>
+        </div>
     </main>
 
     <footer class="bg-black py-10 relative z-10 border-t border-white/5">
@@ -850,7 +870,7 @@
             });
         }
 
-        // 6. LANGUAGE & TYPING LOGIC (FIXED)
+        // 6. LANGUAGE & TYPING LOGIC
         const translations = {
             en: {
                 nav_about: "About", nav_services: "Services", nav_my_design: "Work", nav_gallery: "Videos", nav_contact: "Contact",
@@ -1004,6 +1024,64 @@
                 }, 800); 
             }, 200); 
         });
+
+        // 7. AUDIO PLAYER LOGIC
+        // এখানে ৮টি গান অ্যাড করা হয়েছে, ফোল্ডারে ফাইলগুলো থাকতে হবে
+        const audioSongs = ['1.mp3', '2.mp3', '3.mp3', '4.mp3', '5.mp3', '6.mp3', '7.mp3', '8.mp3']; 
+        let currentAudioIndex = 0;
+        
+        const audioEl = document.getElementById('bg-audio');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const audioTitle = document.getElementById('audio-title');
+        const playIcon = document.getElementById('play-icon');
+        const pauseIcon = document.getElementById('pause-icon');
+
+        function loadAudio(index) {
+            audioTitle.innerText = audioSongs[index];
+            audioEl.src = audioSongs[index];
+        }
+
+        function toggleAudioPlayPause() {
+            if (audioEl.paused) {
+                audioEl.play();
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+            } else {
+                audioEl.pause();
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+            }
+        }
+
+        function nextAudio() {
+            currentAudioIndex = (currentAudioIndex + 1) % audioSongs.length;
+            loadAudio(currentAudioIndex);
+            audioEl.play().then(() => {
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+            }).catch(e => console.log("Auto-play prevented by browser. User interaction needed."));
+        }
+
+        function prevAudio() {
+            currentAudioIndex = (currentAudioIndex - 1 + audioSongs.length) % audioSongs.length;
+            loadAudio(currentAudioIndex);
+            audioEl.play().then(() => {
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+            }).catch(e => console.log("Auto-play prevented by browser. User interaction needed."));
+        }
+
+        playPauseBtn.addEventListener('click', toggleAudioPlayPause);
+        nextBtn.addEventListener('click', nextAudio);
+        prevBtn.addEventListener('click', prevAudio);
+        
+        // বর্তমান গান শেষ হলে অটোমেটিক সিরিয়ালের পরের গান চলবে
+        audioEl.addEventListener('ended', nextAudio); 
+
+        // প্রথমে প্রথম গানটি লোড হয়ে থাকবে
+        loadAudio(currentAudioIndex);
 
     </script>
 </body>
