@@ -978,12 +978,20 @@
         closeBtn.addEventListener('click', closeMenu);
         mobileLinks.forEach(link => link.addEventListener('click', closeMenu));
 
-        // Preloader Logic
+        // Preloader Logic (FIXED)
+        const preloader = document.getElementById('preloader');
+        const progressBar = document.getElementById('progress');
+        let loadProgress = 0;
+
+        const simulateLoading = setInterval(() => {
+            loadProgress += Math.random() * 20;
+            if (loadProgress > 90) loadProgress = 90; 
+            progressBar.style.width = `${loadProgress}%`;
+        }, 50);
+
         window.addEventListener('load', () => {
-            const preloader = document.getElementById('preloader');
-            const progressBar = document.getElementById('progress');
-            
-            progressBar.style.width = '100%';
+            clearInterval(simulateLoading); 
+            progressBar.style.width = '100%'; 
             
             setTimeout(() => {
                 preloader.style.transform = 'translateY(-100%)';
@@ -993,8 +1001,8 @@
                     initGSAP();
                     initVideoPlayers();
                     type();
-                }, 1000);
-            }, 500);
+                }, 800); 
+            }, 200); 
         });
 
     </script>
