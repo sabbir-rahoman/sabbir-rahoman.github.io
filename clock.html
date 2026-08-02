@@ -2,8 +2,8 @@
 <html lang="en" class="no-scrollbar">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elegance - Live Clock & Pro Weather</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Elegance - Ultimate Live Clock & Pro Weather</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -11,9 +11,9 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     
-    <!-- Three.js (Optimized for GPU) -->
+    <!-- Three.js (Optimized for max GPU performance) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     
     <script>
@@ -42,6 +42,8 @@
             overflow: hidden;
             user-select: none;
             cursor: default; 
+            margin: 0;
+            padding: 0;
         }
 
         /* --- 3D CANVAS (GPU Optimized) --- */
@@ -53,21 +55,22 @@
         }
         #canvas-container.loaded { opacity: 1; }
 
-        /* --- PREMIUM GLASSMORPHISM --- */
+        /* --- GLASSMORPHISM --- */
         .glass-panel {
-            background: rgba(15, 23, 42, 0.15);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(15, 23, 42, 0.2);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
         }
 
         .glass-pill {
-            background: rgba(15, 23, 42, 0.35);
+            background: rgba(15, 23, 42, 0.4);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         /* PRELOADER */
@@ -77,159 +80,212 @@
             transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
         }
         .progress-bar {
-            width: 180px; height: 2px; background: rgba(255,255,255,0.1); margin-top: 20px; overflow: hidden;
+            width: 200px; height: 2px; background: rgba(255,255,255,0.1); margin-top: 24px; overflow: hidden; border-radius: 2px;
         }
         .progress { width: 0%; height: 100%; background: #6366f1; transition: width 0.2s; }
 
-        .ui-transition { transition: opacity 0.5s ease, transform 0.5s ease; }
-
-        /* Remove Glow, keep a clean solid look */
+        /* Clean solid text without gloss for the massive clock */
         .clean-text {
             color: #ffffff;
-            text-shadow: none; /* No glossy text */
+            text-shadow: 0 10px 30px rgba(0,0,0,0.5); /* subtle shadow for depth, no gloss */
+        }
+
+        /* Hidden UI State for Controls ONLY */
+        .ui-hidden {
+            opacity: 0 !important;
+            pointer-events: none !important;
+            transform: translateY(20px) scale(0.95);
         }
     </style>
 </head>
-<body class="antialiased font-sans h-screen flex flex-col justify-between p-6 md:p-10">
+<body class="antialiased font-sans h-screen w-full flex flex-col justify-between p-4 md:p-8">
 
     <!-- Preloader -->
     <div id="preloader">
-        <h2 class="text-2xl font-heading font-light tracking-[0.3em] text-white uppercase">Elegance UI</h2>
+        <h2 class="text-3xl font-heading font-light tracking-[0.4em] text-white uppercase">Elegance</h2>
         <div class="progress-bar"><div class="progress" id="progress"></div></div>
     </div>
 
     <!-- 3D Particle Background -->
     <div id="canvas-container"></div>
 
-    <!-- Header: Weather in Center, Controls on Right -->
-    <header class="w-full flex justify-between items-start z-20 ui-element ui-transition relative">
+    <!-- Top Section: Weather Widget (Always Visible) & Status Info -->
+    <header class="w-full flex justify-between items-start z-20 relative">
         
-        <!-- Empty Div to balance flexbox -->
-        <div class="flex-1"></div>
+        <!-- Left: Status Info (Network & Battery) -->
+        <div class="flex flex-col gap-2">
+            <div id="network-status" class="glass-pill px-3 py-1.5 rounded-full flex items-center space-x-2 text-[10px] text-slate-300 font-mono w-max">
+                <span id="network-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span id="network-text" class="uppercase tracking-widest">Online</span>
+            </div>
+            
+            <div id="battery-status" class="glass-pill px-3 py-1.5 rounded-full flex items-center space-x-2 text-[10px] text-slate-300 font-mono w-max hidden">
+                <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16v10H4zM20 10h2v4h-2z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 10h6v4H6z"></path></svg>
+                <span id="battery-level">100%</span>
+            </div>
+        </div>
 
-        <!-- Center Weather Widget (Extra Features) -->
-        <div class="absolute left-1/2 -translate-x-1/2 flex flex-col items-center glass-pill px-6 py-3 rounded-3xl cursor-default w-64 md:w-auto">
-            <div class="flex items-center space-x-4">
+        <!-- Center: Advanced Weather Widget -->
+        <div class="absolute left-1/2 -translate-x-1/2 flex flex-col items-center glass-panel px-6 py-4 rounded-[2rem] cursor-default min-w-[280px] md:min-w-[320px]">
+            <!-- Top part: Icon & Temp -->
+            <div class="flex items-center space-x-5 w-full justify-center">
                 <div id="weather-icon-container" class="text-emerald-400">
-                    <!-- Icon inject via JS -->
-                    <svg class="w-8 h-8 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
+                    <svg class="w-10 h-10 md:w-12 md:h-12 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
                 </div>
                 <div class="flex flex-col text-left">
-                    <div class="flex items-baseline space-x-2">
-                        <span id="weather-temp" class="text-3xl font-bold text-white leading-none">--°</span>
-                        <span id="weather-condition" class="text-xs text-slate-300 font-medium tracking-wide">Loading...</span>
+                    <div class="flex items-start space-x-2">
+                        <span id="weather-temp" class="text-4xl md:text-5xl font-bold text-white leading-none tracking-tighter">--°</span>
+                        <div class="flex flex-col mt-1">
+                            <span id="weather-condition" class="text-sm text-slate-200 font-medium tracking-wide">Loading</span>
+                            <span class="text-[9px] text-slate-400 uppercase tracking-widest mt-0.5">Gopalganj, BD</span>
+                        </div>
                     </div>
-                    <span class="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Gopalganj, Bangladesh</span>
                 </div>
             </div>
             
-            <!-- Extra Weather Details -->
-            <div class="w-full h-[1px] bg-white/10 my-2"></div>
-            <div class="flex justify-between w-full text-[11px] text-slate-300 uppercase tracking-wider px-2">
-                <span class="flex items-center gap-1"><svg class="w-3 h-3 text-blue-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.5c-3.58 0-6.5-2.92-6.5-6.5 0-3.32 2.65-6.9 6.22-11.83.15-.21.41-.21.56 0 3.57 4.93 6.22 8.51 6.22 11.83 0 3.58-2.92 6.5-6.5 6.5z"/></svg> <span id="weather-humidity">--%</span></span>
-                <span class="flex items-center gap-1"><svg class="w-3 h-3 text-slate-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg> <span id="weather-wind">-- km/h</span></span>
+            <!-- Bottom part: Extra Grid Details -->
+            <div class="w-full h-[1px] bg-white/10 my-3"></div>
+            
+            <div class="grid grid-cols-2 gap-y-2 gap-x-6 w-full text-[10px] md:text-xs text-slate-300 uppercase tracking-wider px-2">
+                <span class="flex items-center justify-between">
+                    <span class="flex items-center gap-1.5 opacity-70"><svg class="w-3.5 h-3.5 text-blue-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.5c-3.58 0-6.5-2.92-6.5-6.5 0-3.32 2.65-6.9 6.22-11.83.15-.21.41-.21.56 0 3.57 4.93 6.22 8.51 6.22 11.83 0 3.58-2.92 6.5-6.5 6.5z"/></svg> Humidity</span>
+                    <span id="weather-humidity" class="font-bold text-white">--%</span>
+                </span>
+                <span class="flex items-center justify-between">
+                    <span class="flex items-center gap-1.5 opacity-70"><svg class="w-3.5 h-3.5 text-slate-300" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg> Wind</span>
+                    <span id="weather-wind" class="font-bold text-white">-- km/h</span>
+                </span>
+                <span class="flex items-center justify-between">
+                    <span class="flex items-center gap-1.5 opacity-70"><svg class="w-3.5 h-3.5 text-red-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.02c-5.51 0-9.98 4.47-9.98 9.98s4.47 9.98 9.98 9.98 9.98-4.47 9.98-9.98-4.47-9.98-9.98-9.98zm0 18.2c-4.53 0-8.22-3.69-8.22-8.22 0-4.53 3.69-8.22 8.22-8.22 4.53 0 8.22 3.69 8.22 8.22 0 4.53-3.69 8.22-8.22 8.22z"/><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 8c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z"/></svg> Feels Like</span>
+                    <span id="weather-feels" class="font-bold text-white">--°</span>
+                </span>
+                <span class="flex items-center justify-between">
+                    <span class="flex items-center gap-1.5 opacity-70"><svg class="w-3.5 h-3.5 text-amber-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> Pressure</span>
+                    <span id="weather-pressure" class="font-bold text-white">-- hPa</span>
+                </span>
             </div>
         </div>
 
-        <!-- Right Controls -->
-        <div class="flex-1 flex justify-end items-center space-x-3">
-            <button id="toggle-format" class="glass-pill px-4 py-2 rounded-full text-xs font-bold tracking-widest text-slate-300 hover:text-white hover:bg-white/10 transition-all">
-                12H
-            </button>
-            <button id="toggle-fullscreen" class="glass-pill p-2 rounded-full text-slate-300 hover:text-white hover:bg-white/10 transition-all" title="Toggle Fullscreen">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
-            </button>
-        </div>
+        <!-- Right: Empty space to balance header flexbox -->
+        <div class="w-16"></div>
     </header>
 
-    <!-- Main Clock & Date (Massive Size, No Glow) -->
-    <main class="my-auto flex flex-col items-center justify-center z-20 text-center w-full">
-        <div class="glass-panel p-8 md:p-12 rounded-[4rem] w-full max-w-6xl mx-auto cursor-default border-none bg-transparent shadow-none backdrop-blur-sm">
+    <!-- Main Section: Massive Responsive Clock (Always Visible) -->
+    <main class="my-auto flex flex-col items-center justify-center z-10 w-full px-2">
+        
+        <div class="flex items-baseline justify-center font-heading font-black tracking-tighter leading-none w-full">
+            <!-- Clamp used for extreme responsiveness on all devices -->
+            <span id="clock-hours" class="text-[clamp(5rem,24vw,32rem)] clean-text">00</span>
             
-            <div class="flex items-baseline justify-center font-heading font-extrabold tracking-tighter leading-none">
-                <!-- Massive Clock Numbers -->
-                <span id="clock-hours" class="text-[8rem] md:text-[15rem] lg:text-[18rem] clean-text tracking-tighter">00</span>
-                
-                <span class="text-[6rem] md:text-[10rem] lg:text-[14rem] opacity-50 mx-2 text-primary animate-pulse pb-8 md:pb-16">:</span>
-                
-                <span id="clock-minutes" class="text-[8rem] md:text-[15rem] lg:text-[18rem] clean-text tracking-tighter">00</span>
-                
-                <div class="flex flex-col items-start ml-4 md:ml-8 space-y-2">
-                    <span id="clock-seconds" class="text-4xl md:text-7xl font-mono text-primary/80 font-light">00</span>
-                    <span id="clock-ampm" class="text-xl md:text-3xl font-bold tracking-widest text-slate-400 uppercase">AM</span>
-                </div>
+            <span class="text-[clamp(4rem,18vw,24rem)] opacity-50 mx-1 md:mx-4 text-primary animate-pulse pb-[clamp(1rem,4vw,6rem)]">:</span>
+            
+            <span id="clock-minutes" class="text-[clamp(5rem,24vw,32rem)] clean-text">00</span>
+            
+            <div class="flex flex-col items-start ml-2 md:ml-6 space-y-1 md:space-y-3">
+                <span id="clock-seconds" class="text-[clamp(1.5rem,6vw,9rem)] font-mono text-primary/80 font-bold">00</span>
+                <span id="clock-ampm" class="text-[clamp(1rem,3vw,4rem)] font-bold tracking-widest text-slate-400 uppercase">AM</span>
             </div>
+        </div>
 
-            <!-- Date Display -->
-            <div class="flex items-center justify-center gap-4 text-slate-300 font-light tracking-widest mt-6">
-                <span id="date-day" class="text-2xl md:text-4xl font-semibold text-white uppercase">Sunday</span>
-                <span class="text-white/30 text-2xl">•</span>
-                <span id="date-full" class="text-xl md:text-3xl text-slate-300">August 02, 2026</span>
-            </div>
+        <!-- Date Display -->
+        <div class="flex items-center justify-center gap-2 md:gap-5 text-slate-300 font-light tracking-widest mt-[clamp(1rem,3vw,4rem)]">
+            <span id="date-day" class="text-[clamp(1.2rem,3vw,3.5rem)] font-semibold text-white uppercase tracking-wider">Sunday</span>
+            <span class="text-white/20 text-[clamp(1.2rem,3vw,3.5rem)]">•</span>
+            <span id="date-full" class="text-[clamp(1rem,2.5vw,2.5rem)] text-slate-300">August 02, 2026</span>
         </div>
     </main>
 
-    <!-- Footer Controls -->
-    <footer class="w-full flex justify-between items-end z-20 ui-element ui-transition">
+    <!-- Floating UI Controls (This section will hide when 'Hide UI' is clicked) -->
+    <div id="ui-controls" class="fixed bottom-6 right-6 flex flex-col md:flex-row items-end md:items-center gap-3 md:gap-4 z-50 transition-all duration-500">
         
-        <!-- Battery / Extra Status Info -->
-        <div id="battery-status" class="glass-pill px-4 py-2 rounded-full flex items-center space-x-2 text-xs text-slate-300 font-mono hidden">
-            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16v10H4zM20 10h2v4h-2z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 10h6v4H6z"></path></svg>
-            <span id="battery-level">100%</span>
+        <!-- Theme Switcher -->
+        <div class="flex items-center space-x-3 glass-pill px-4 py-3 md:py-2.5 rounded-full cursor-pointer">
+            <span class="text-[10px] uppercase tracking-widest text-slate-400 font-semibold mr-1">Color</span>
+            <button data-theme="indigo" class="theme-btn w-4 h-4 rounded-full bg-indigo-500 ring-2 ring-white/50 transition transform hover:scale-125"></button>
+            <button data-theme="pink" class="theme-btn w-4 h-4 rounded-full bg-pink-500 opacity-60 hover:opacity-100 transition transform hover:scale-125"></button>
+            <button data-theme="emerald" class="theme-btn w-4 h-4 rounded-full bg-emerald-400 opacity-60 hover:opacity-100 transition transform hover:scale-125"></button>
+            <button data-theme="amber" class="theme-btn w-4 h-4 rounded-full bg-amber-400 opacity-60 hover:opacity-100 transition transform hover:scale-125"></button>
         </div>
-        
-        <!-- Right side Footer elements -->
-        <div class="flex flex-col items-end space-y-4 ml-auto">
-            <!-- Theme Switcher -->
-            <div class="flex items-center space-x-3 glass-pill px-4 py-2.5 rounded-full cursor-pointer">
-                <span class="text-[10px] uppercase tracking-widest text-slate-400 font-semibold mr-1">Color</span>
-                <button data-theme="indigo" class="theme-btn w-4 h-4 rounded-full bg-indigo-500 ring-2 ring-white/50 transition transform hover:scale-125"></button>
-                <button data-theme="pink" class="theme-btn w-4 h-4 rounded-full bg-pink-500 opacity-60 hover:opacity-100 transition transform hover:scale-125"></button>
-                <button data-theme="emerald" class="theme-btn w-4 h-4 rounded-full bg-emerald-400 opacity-60 hover:opacity-100 transition transform hover:scale-125"></button>
-                <button data-theme="amber" class="theme-btn w-4 h-4 rounded-full bg-amber-400 opacity-60 hover:opacity-100 transition transform hover:scale-125"></button>
-            </div>
 
-            <button id="toggle-ui" class="glass-pill px-5 py-2.5 rounded-full text-xs font-semibold tracking-wider text-slate-300 hover:text-white flex items-center space-x-2 transition hover:bg-white/10">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg>
-                <span>Hide UI (Press 'H')</span>
-            </button>
-        </div>
-    </footer>
+        <!-- 12H / 24H Toggle -->
+        <button id="toggle-format" class="glass-pill px-5 py-3 md:py-2.5 rounded-full text-xs font-bold tracking-widest text-slate-300 hover:text-white hover:bg-white/10 transition-all hover:scale-105 active:scale-95">
+            12H
+        </button>
+
+        <!-- Fullscreen -->
+        <button id="toggle-fullscreen" class="glass-pill p-3 md:p-2.5 rounded-full text-slate-300 hover:text-white hover:bg-white/10 transition-all hover:scale-105 active:scale-95" title="Toggle Fullscreen">
+            <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+        </button>
+
+        <!-- Hide UI Button -->
+        <button id="toggle-ui" class="glass-pill px-5 py-3 md:py-2.5 rounded-full text-xs font-semibold tracking-wider text-slate-300 hover:text-white flex items-center space-x-2 transition-all hover:bg-white/10 hover:scale-105 active:scale-95">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg>
+            <span>Hide UI (Press 'H')</span>
+        </button>
+    </div>
+
+    <!-- Hidden Un-Hide Hint Button (Shows when UI is hidden) -->
+    <button id="show-ui-hint" class="fixed bottom-6 right-6 glass-pill p-3 rounded-full text-slate-300/50 hover:text-white ui-hidden transition-all duration-500 z-40 hover:bg-white/10">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+    </button>
 
     <!-- JavaScript Logic -->
     <script>
-        // 1. LIVE WEATHER FETCH (Gopalganj) WITH EXTRA DATA
+        // 1. ONLINE / OFFLINE STATUS
+        const updateNetworkStatus = () => {
+            const statusText = document.getElementById('network-text');
+            const statusDot = document.getElementById('network-dot');
+            if (navigator.onLine) {
+                statusText.textContent = "Online";
+                statusDot.classList.replace('bg-red-500', 'bg-emerald-400');
+                statusDot.classList.add('animate-pulse');
+            } else {
+                statusText.textContent = "Offline";
+                statusDot.classList.replace('bg-emerald-400', 'bg-red-500');
+                statusDot.classList.remove('animate-pulse');
+            }
+        };
+        window.addEventListener('online', updateNetworkStatus);
+        window.addEventListener('offline', updateNetworkStatus);
+        updateNetworkStatus();
+
+        // 2. ADVANCED LIVE WEATHER FETCH (Gopalganj)
         async function fetchLiveWeather() {
             try {
                 const lat = 23.0059; // Gopalganj Latitude
                 const lon = 89.8266; // Gopalganj Longitude
-                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code`;
+                // Fetching Extra Data: Apparent Temp (Feels Like), Surface Pressure
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,surface_pressure,weather_code&timezone=auto`;
                 
                 const response = await fetch(url);
                 const data = await response.json();
                 
                 if (data && data.current) {
                     const temp = Math.round(data.current.temperature_2m);
+                    const feelsLike = Math.round(data.current.apparent_temperature);
                     const humidity = data.current.relative_humidity_2m;
                     const windSpeed = data.current.wind_speed_10m;
+                    const pressure = Math.round(data.current.surface_pressure);
                     const weatherCode = data.current.weather_code;
                     
                     document.getElementById('weather-temp').textContent = `${temp}°`;
+                    document.getElementById('weather-feels').textContent = `${feelsLike}°`;
                     document.getElementById('weather-humidity').textContent = `${humidity}%`;
                     document.getElementById('weather-wind').textContent = `${windSpeed} km/h`;
+                    document.getElementById('weather-pressure').textContent = `${pressure} hPa`;
 
-                    // Simple WMO Weather Code Mapping
+                    // WMO Weather Code Mapping with Dynamic SVGs
                     let condition = "Clear";
-                    let iconSvg = `<svg class="w-8 h-8 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>`; // Sun
+                    let iconSvg = `<svg class="w-10 h-10 md:w-12 md:h-12 text-amber-400 animate-[spin_10s_linear_infinite]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>`; // Sun
                     
                     if(weatherCode >= 1 && weatherCode <= 3) {
                         condition = "Cloudy";
-                        iconSvg = `<svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>`;
+                        iconSvg = `<svg class="w-10 h-10 md:w-12 md:h-12 text-slate-300 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>`;
                     } else if (weatherCode >= 51 && weatherCode <= 67) {
                         condition = "Rainy";
-                        iconSvg = `<svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 14.894A1.996 1.996 0 0117.894 13c-1.077 0-1.954.836-1.996 1.894M12 14.894A1.996 1.996 0 0110.894 13c-1.077 0-1.954.836-1.996 1.894M5 14.894A1.996 1.996 0 013.894 13C2.817 13 1.94 13.836 1.898 14.894M19 8c-1.38 0-2.5 1.12-2.5 2.5m-11-2.5C4.12 8 3 9.12 3 10.5m16-2.5A5.002 5.002 0 009.78 5.904 5 5 0 105.1 10.5"></path></svg>`;
+                        iconSvg = `<svg class="w-10 h-10 md:w-12 md:h-12 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 14.894A1.996 1.996 0 0117.894 13c-1.077 0-1.954.836-1.996 1.894M12 14.894A1.996 1.996 0 0110.894 13c-1.077 0-1.954.836-1.996 1.894M5 14.894A1.996 1.996 0 013.894 13C2.817 13 1.94 13.836 1.898 14.894M19 8c-1.38 0-2.5 1.12-2.5 2.5m-11-2.5C4.12 8 3 9.12 3 10.5m16-2.5A5.002 5.002 0 009.78 5.904 5 5 0 105.1 10.5"></path></svg>`;
                     } else if (weatherCode >= 71) {
-                        condition = "Storm/Bad Weather";
+                        condition = "Storm/Snow";
                     }
 
                     document.getElementById('weather-condition').textContent = condition;
@@ -237,15 +293,13 @@
                 }
             } catch (error) {
                 console.error("Weather fetch failed:", error);
-                document.getElementById('weather-temp').textContent = '--°'; 
-                document.getElementById('weather-condition').textContent = 'Offline'; 
             }
         }
         
         fetchLiveWeather();
         setInterval(fetchLiveWeather, 600000); // 10 Min refresh
 
-        // EXTRA FEATURE: Battery API
+        // 3. BATTERY API
         if ('getBattery' in navigator) {
             navigator.getBattery().then(function(battery) {
                 const batteryEl = document.getElementById('battery-status');
@@ -260,7 +314,7 @@
             });
         }
 
-        // 2. CLOCK & DATE LOGIC
+        // 4. CLOCK & DATE LOGIC
         let is24Hour = false;
         function updateClock() {
             const now = new Date();
@@ -294,7 +348,7 @@
             updateClock();
         });
 
-        // 3. THREE.JS BACKGROUND (Highly Compressed & Optimized for GPU)
+        // 5. THREE.JS BACKGROUND (Optimized for max GPU Performance)
         let particleSystem, particleMaterial;
         const colorThemes = {
             indigo: { primary: 0x6366f1, secondary: 0xec4899, hex: '#6366f1' },
@@ -381,7 +435,7 @@
             setTimeout(() => { container.classList.add('loaded'); }, 100);
         };
 
-        // 4. THEME SWITCHING LOGIC
+        // 6. THEME SWITCHING LOGIC
         document.querySelectorAll('.theme-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const themeKey = e.target.getAttribute('data-theme');
@@ -402,30 +456,35 @@
                     colors[i + 2] = mixed.b;
                 }
                 geometry.attributes.color.needsUpdate = true;
-
                 document.documentElement.style.setProperty('--primary-color', theme.hex);
             });
         });
 
-        // 5. HIDE UI / CLEAN WALLPAPER MODE
+        // 7. HIDE UI LOGIC (FIXED) - ONLY HIDES CONTROLS
         let uiVisible = true;
-        const uiElements = document.querySelectorAll('.ui-element');
+        const uiControls = document.getElementById('ui-controls');
         const toggleUiBtn = document.getElementById('toggle-ui');
+        const showUiHint = document.getElementById('show-ui-hint');
 
         function toggleUI() {
             uiVisible = !uiVisible;
-            uiElements.forEach(el => {
-                el.style.opacity = uiVisible ? '1' : '0';
-                el.style.pointerEvents = uiVisible ? 'auto' : 'none';
-            });
+            if (uiVisible) {
+                uiControls.classList.remove('ui-hidden');
+                showUiHint.classList.add('ui-hidden');
+            } else {
+                uiControls.classList.add('ui-hidden');
+                showUiHint.classList.remove('ui-hidden');
+            }
         }
 
         toggleUiBtn.addEventListener('click', toggleUI);
+        showUiHint.addEventListener('click', toggleUI);
+        
         window.addEventListener('keydown', (e) => {
             if (e.key === 'h' || e.key === 'H') toggleUI();
         });
 
-        // 6. FULLSCREEN TOGGLE
+        // 8. FULLSCREEN TOGGLE
         const toggleFullscreenBtn = document.getElementById('toggle-fullscreen');
         toggleFullscreenBtn.addEventListener('click', () => {
             if (!document.fullscreenElement) {
@@ -441,7 +500,7 @@
         let loadProgress = 0;
 
         const simulateLoading = setInterval(() => {
-            loadProgress += 30;
+            loadProgress += 25;
             progressBar.style.width = `${loadProgress}%`;
             if (loadProgress >= 100) {
                 clearInterval(simulateLoading);
@@ -453,7 +512,7 @@
                     }, 500);
                 }, 200);
             }
-        }, 100);
+        }, 120);
     </script>
 </body>
 </html>
