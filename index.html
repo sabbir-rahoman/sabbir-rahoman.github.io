@@ -154,6 +154,13 @@
         }
 
         ::-webkit-scrollbar { width: 0px; background: transparent; }
+
+        /* --- MOBILE CURSOR FIX --- */
+        @media (hover: none) and (pointer: coarse), (max-width: 768px) {
+            body { cursor: auto !important; }
+            .cursor-dot, .cursor-outline { display: none !important; }
+            .cursor-none { cursor: auto !important; }
+        }
     </style>
 </head>
 <body class="antialiased font-sans selection:bg-indigo-500 selection:text-white">
