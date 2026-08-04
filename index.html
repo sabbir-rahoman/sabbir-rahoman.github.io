@@ -11,7 +11,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     
     <!-- Libraries (Three.js, GSAP, Lenis) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -26,6 +26,7 @@
                     fontFamily: {
                         sans: ['"Plus Jakarta Sans"', 'sans-serif'],
                         heading: ['"Outfit"', 'sans-serif'],
+                        mono: ['"Share Tech Mono"', 'monospace'],
                     },
                     colors: {
                         primary: '#6366f1',   
@@ -259,6 +260,27 @@
                         <a href="https://shobkichuofficial.github.io/" target="_blank" class="magnetic-btn px-8 py-4 rounded-full bg-transparent border border-white/20 text-white font-bold text-sm uppercase tracking-wider hover:bg-white/10 transition-all" data-lang-key="hero_btn_store">
                             Visit My Store
                         </a>
+                    </div>
+
+                    <!-- Live Clock Widget (Integrated from index4.html) -->
+                    <div class="mt-10 gs-reveal inline-block magnetic-btn cursor-none">
+                        <div class="glass-panel flex items-center gap-5 px-6 py-4 rounded-[2rem] border border-white/5 shadow-2xl hover:border-primary/30 transition-colors">
+                            <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary shadow-[0_0_15px_rgba(99,102,241,0.2)]">
+                                <svg class="w-6 h-6 animate-[spin_4s_linear_infinite]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <div class="flex flex-col text-left">
+                                <div class="flex items-baseline font-heading font-bold text-white leading-none">
+                                    <span id="clock-hours" class="text-3xl md:text-4xl tracking-tighter">00</span>
+                                    <span class="text-2xl md:text-3xl text-primary animate-pulse mx-1.5">:</span>
+                                    <span id="clock-minutes" class="text-3xl md:text-4xl tracking-tighter">00</span>
+                                    <div class="flex flex-col items-start ml-2 md:ml-3">
+                                        <span id="clock-seconds" class="text-sm font-mono text-primary/80 font-semibold tracking-wider">00</span>
+                                        <span id="clock-ampm" class="text-[9px] tracking-widest text-slate-400 uppercase mt-0.5">AM</span>
+                                    </div>
+                                </div>
+                                <div class="text-[10px] text-slate-400 tracking-[0.2em] font-medium mt-1.5 uppercase" id="date-full">Loading Date...</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -1089,6 +1111,36 @@
 
         // প্রথমে প্রথম গানটি লোড হয়ে থাকবে
         loadAudio(currentAudioIndex);
+
+        // 8. LIVE CLOCK LOGIC (INTEGRATED FROM index4.html)
+        function updateClock() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+
+            hours = hours % 12;
+            hours = hours ? hours : 12; 
+
+            const hoursEl = document.getElementById('clock-hours');
+            const minsEl = document.getElementById('clock-minutes');
+            const secsEl = document.getElementById('clock-seconds');
+            const ampmEl = document.getElementById('clock-ampm');
+            const dateEl = document.getElementById('date-full');
+
+            if(hoursEl) hoursEl.textContent = String(hours).padStart(2, '0');
+            if(minsEl) minsEl.textContent = minutes;
+            if(secsEl) secsEl.textContent = seconds;
+            if(ampmEl) ampmEl.textContent = ampm;
+
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            
+            if(dateEl) dateEl.textContent = `${days[now.getDay()]}, ${months[now.getMonth()]} ${String(now.getDate()).padStart(2, '0')}, ${now.getFullYear()}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
 
     </script>
 </body>
