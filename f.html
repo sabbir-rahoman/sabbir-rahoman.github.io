@@ -7,18 +7,33 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <style>
-        body{margin:0;overflow:hidden;background:#050505;color:white;font-family:sans-serif;}
-        #canvas-container{position:absolute;top:0;left:0;width:100vw;height:100vh;z-index:-1;}
-        .overlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;z-index:10;pointer-events:none;}
-        h1{font-size:4rem;text-shadow:2px 2px 10px rgba(0,0,0,0.8);color:#FFD700;margin-bottom:10px;}
-        p{font-size:1.5rem;}
-        .controls{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);z-index:10;display:flex;gap:15px;}
-        button{background:rgba(255,255,255,0.2);border:2px solid #FFD700;color:white;padding:10px 20px;cursor:pointer;border-radius:5px;}
-        button:hover{background:#FFD700;color:black;}
-        .gallery{position:absolute;top:0;left:0;width:100vw;height:100vh;display:none;overflow-y:auto;background:rgba(0,0,0,0.9);z-index:20;padding:50px;box-sizing:border-box;}
-        .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:15px;}
-        .gallery img, .gallery iframe{width:100%;border-radius:8px;border:2px solid #333;}
-        .close-btn{position:absolute;top:20px;right:30px;font-size:2rem;cursor:pointer;}
+        body { margin: 0; overflow: hidden; background: #050505; color: white; font-family: sans-serif; }
+        #canvas-container { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; }
+        .overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 90%; z-index: 10; pointer-events: none; }
+        h1 { font-size: 4rem; text-shadow: 2px 2px 10px rgba(0,0,0,0.8); color: #FFD700; margin-bottom: 10px; }
+        p { font-size: 1.5rem; text-shadow: 1px 1px 5px rgba(0,0,0,0.8); }
+        .controls { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 10; display: flex; gap: 15px; }
+        button { background: rgba(255,255,255,0.1); border: 2px solid #FFD700; color: white; padding: 10px 20px; cursor: pointer; border-radius: 5px; font-size: 1.1rem; transition: 0.3s; }
+        button:hover { background: #FFD700; color: black; }
+        
+        /* Gallery Responsive CSS */
+        .gallery { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; display: none; overflow-y: auto; background: rgba(0,0,0,0.95); z-index: 20; padding: 40px; box-sizing: border-box; }
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-top: 30px; }
+        .gallery img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; border: 1px solid #FFD700; }
+        .gallery iframe { width: 100%; height: 250px; border-radius: 8px; border: 1px solid #FFD700; background: black; }
+        .close-btn { position: absolute; top: 15px; right: 25px; font-size: 2.5rem; cursor: pointer; color: #FFD700; transition: 0.3s; }
+        .close-btn:hover { color: white; transform: scale(1.1); }
+        
+        /* Mobile View */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            p { font-size: 1.1rem; }
+            .gallery { padding: 20px; }
+            .gallery-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+            .gallery img { height: 150px; }
+            .gallery iframe { height: 200px; }
+            .close-btn { top: 10px; right: 15px; font-size: 2rem; }
+        }
     </style>
 </head>
 <body>
@@ -33,77 +48,88 @@
     </div>
     <div class="gallery" id="gallery-view">
         <span class="close-btn" onclick="closeGallery()">✖</span>
-        <h2 id="gallery-title" style="text-align:center;color:#FFD700;"></h2>
+        <h2 id="gallery-title" style="text-align:center;color:#FFD700; margin:0;"></h2>
         <div class="gallery-grid" id="gallery-grid"></div>
     </div>
     <script>
-        const scene=new THREE.Scene();
-        const camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);
-        const renderer=new THREE.WebGLRenderer({alpha:true});
-        renderer.setSize(window.innerWidth,window.innerHeight);
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
         document.getElementById('canvas-container').appendChild(renderer.domElement);
         
-        const geo=new THREE.BufferGeometry();
-        const pos=new Float32Array(6000);
-        for(let i=0;i<6000;i++) pos[i]=(Math.random()-0.5)*10;
-        geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
-        const mat=new THREE.PointsMaterial({size:0.02,color:0xffd700,transparent:true,opacity:0.8});
-        const mesh=new THREE.Points(geo,mat);
+        const geo = new THREE.BufferGeometry();
+        const pos = new Float32Array(6000);
+        for(let i = 0; i < 6000; i++) pos[i] = (Math.random() - 0.5) * 10;
+        geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+        const mat = new THREE.PointsMaterial({ size: 0.02, color: 0xffd700, transparent: true, opacity: 0.8 });
+        const mesh = new THREE.Points(geo, mat);
         scene.add(mesh);
-        camera.position.z=3;
+        camera.position.z = 3;
         
         function animate(){
             requestAnimationFrame(animate);
-            mesh.rotation.y+=0.001;
-            mesh.rotation.x+=0.0005;
-            renderer.render(scene,camera);
+            mesh.rotation.y += 0.001;
+            mesh.rotation.x += 0.0005;
+            renderer.render(scene, camera);
         }
         animate();
         
-        gsap.from("h1",{duration:2,y:-50,opacity:0,ease:"bounce.out"});
-        gsap.from("p",{duration:2,y:50,opacity:0,delay:0.5});
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
         
-        const API_KEY="AIzaSyBrUiAYNCCNK2dlX6l3OkqF-mUBPTHL2Mo";
-        const dirs={
-            photos:"1XembQaBsw2S2MO2GLfQuSXW76s0RrFCj",
-            videos:"1JjCg8omPVXdQRmM0pfebZoLckPcLP_ln"
+        gsap.from("h1", { duration: 2, y: -50, opacity: 0, ease: "bounce.out" });
+        gsap.from("p", { duration: 2, y: 50, opacity: 0, delay: 0.5 });
+        
+        const API_KEY = "AIzaSyBrUiAYNCCNK2dlX6l3OkqF-mUBPTHL2Mo";
+        const dirs = {
+            photos: "1XembQaBsw2S2MO2GLfQuSXW76s0RrFCj",
+            videos: "1JjCg8omPVXdQRmM0pfebZoLckPcLP_ln"
         };
         
         async function fetchDriveFiles(id){
-            try{
-                let res=await fetch(`https://www.googleapis.com/drive/v3/files?q='${id}'+in+parents&fields=files(id,mimeType)&key=${API_KEY}`);
-                let data=await res.json();
+            try {
+                let res = await fetch(`https://www.googleapis.com/drive/v3/files?q='${id}'+in+parents&fields=files(id,mimeType)&key=${API_KEY}`);
+                let data = await res.json();
                 return data.files || [];
-            }catch(e){ return []; }
+            } catch(e) { return []; }
         }
         
         async function openGallery(type){
-            const gView=document.getElementById('gallery-view');
-            const gGrid=document.getElementById('gallery-grid');
-            document.getElementById('gallery-title').innerText=type==='photos'?"ছবিসমূহ":"ভিডিওসমূহ";
-            gGrid.innerHTML='<p>Loading...</p>';
-            gView.style.display='block';
-            gsap.fromTo(gView,{opacity:0},{opacity:1,duration:0.5});
+            const gView = document.getElementById('gallery-view');
+            const gGrid = document.getElementById('gallery-grid');
+            document.getElementById('gallery-title').innerText = type === 'photos' ? "ছবিসমূহ" : "ভিডিওসমূহ";
+            gGrid.innerHTML = '<p style="color:white;text-align:center;grid-column:1/-1;">লোড হচ্ছে...</p>';
+            gView.style.display = 'block';
+            gsap.fromTo(gView, { opacity: 0 }, { opacity: 1, duration: 0.5 });
             
-            let files=await fetchDriveFiles(dirs[type]);
-            gGrid.innerHTML='';
-            if(files.length===0) gGrid.innerHTML='<p style="color:white;">ফাইল পাওয়া যায়নি।</p>';
+            let files = await fetchDriveFiles(dirs[type]);
+            gGrid.innerHTML = '';
             
-            files.forEach(f=>{
+            if(files.length === 0) {
+                gGrid.innerHTML = '<p style="color:white;text-align:center;grid-column:1/-1;">কোনো ফাইল পাওয়া যায়নি।</p>';
+            }
+            
+            files.forEach(f => {
                 if(f.mimeType.includes('video')){
                     let iframe = document.createElement('iframe');
                     iframe.src = `https://drive.google.com/file/d/${f.id}/preview`;
-                    iframe.style.height = "250px";
+                    iframe.setAttribute('allowfullscreen', 'true');
                     gGrid.appendChild(iframe);
                 } else if(f.mimeType.includes('image')){
                     let img = document.createElement('img');
-                    img.src = `https://drive.google.com/uc?export=view&id=${f.id}`;
+                    // ড্রাইভ থাম্বনেইল এপিআই ব্যবহার করে ছবি লোড করা হলো (CORS বাইপাস করার জন্য)
+                    img.src = `https://drive.google.com/thumbnail?id=${f.id}&sz=w800`;
                     gGrid.appendChild(img);
                 }
             });
         }
+        
         function closeGallery(){
-            document.getElementById('gallery-view').style.display='none';
+            document.getElementById('gallery-view').style.display = 'none';
         }
     </script>
 </body>
