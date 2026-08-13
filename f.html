@@ -17,7 +17,7 @@
         button:hover{background:#FFD700;color:black;}
         .gallery{position:absolute;top:0;left:0;width:100vw;height:100vh;display:none;overflow-y:auto;background:rgba(0,0,0,0.9);z-index:20;padding:50px;box-sizing:border-box;}
         .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:15px;}
-        .gallery img, .gallery video{width:100%;border-radius:8px;border:2px solid #333;}
+        .gallery img, .gallery iframe{width:100%;border-radius:8px;border:2px solid #333;}
         .close-btn{position:absolute;top:20px;right:30px;font-size:2rem;cursor:pointer;}
     </style>
 </head>
@@ -71,7 +71,7 @@
         
         async function fetchDriveFiles(id){
             try{
-                let res=await fetch(`https://www.googleapis.com/drive/v3/files?q='${id}'+in+parents&fields=files(mimeType,webContentLink)&key=${API_KEY}`);
+                let res=await fetch(`https://www.googleapis.com/drive/v3/files?q='${id}'+in+parents&fields=files(id,mimeType)&key=${API_KEY}`);
                 let data=await res.json();
                 return data.files || [];
             }catch(e){ return []; }
@@ -87,13 +87,19 @@
             
             let files=await fetchDriveFiles(dirs[type]);
             gGrid.innerHTML='';
-            if(files.length===0) gGrid.innerHTML='<p style="color:white;">ফাইল পাওয়া যায়নি বা ড্রাইভ ফোল্ডারে পাবলিক এক্সেস দেওয়া নেই।</p>';
+            if(files.length===0) gGrid.innerHTML='<p style="color:white;">ফাইল পাওয়া যায়নি।</p>';
+            
             files.forEach(f=>{
-                if(!f.webContentLink) return;
-                let el = document.createElement(f.mimeType.includes('video')?'video':'img');
-                el.src = f.webContentLink;
-                if(el.tagName==='VIDEO') el.controls=true;
-                gGrid.appendChild(el);
+                if(f.mimeType.includes('video')){
+                    let iframe = document.createElement('iframe');
+                    iframe.src = `https://drive.google.com/file/d/${f.id}/preview`;
+                    iframe.style.height = "250px";
+                    gGrid.appendChild(iframe);
+                } else if(f.mimeType.includes('image')){
+                    let img = document.createElement('img');
+                    img.src = `https://drive.google.com/uc?export=view&id=${f.id}`;
+                    gGrid.appendChild(img);
+                }
             });
         }
         function closeGallery(){
