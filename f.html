@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>স্ফুরণ-২০২৬ | HSC '26 Rag Day</title>
+    <!-- Three.js & GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #050505; color: white; font-family: 'Arial', sans-serif; }
+        #canvas-container { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; }
+        .overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; z-index: 10; pointer-events: none; }
+        h1 { font-size: 4rem; text-shadow: 2px 2px 10px rgba(0,0,0,0.8); margin-bottom: 10px; color: #FFD700; }
+        p { font-size: 1.5rem; text-shadow: 1px 1px 5px rgba(0,0,0,0.8); }
+        .controls { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 10; display: flex; gap: 15px; }
+        button { background: rgba(255, 255, 255, 0.2); border: 2px solid #FFD700; color: white; padding: 10px 20px; font-size: 1.2rem; cursor: pointer; border-radius: 5px; transition: 0.3s; backdrop-filter: blur(5px); }
+        button:hover { background: #FFD700; color: black; }
+        .gallery { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; display: none; overflow-y: auto; background: rgba(0, 0, 0, 0.9); z-index: 20; padding: 50px; box-sizing: border-box; }
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
+        .gallery img, .gallery video { width: 100%; border-radius: 8px; border: 2px solid #333; }
+        .close-btn { position: absolute; top: 20px; right: 30px; font-size: 2rem; color: white; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div id="canvas-container"></div>
+
+    <div class="overlay">
+        <h1>স্ফুরণ-২০২৬</h1>
+        <p>HSC 2026 - একটি সুন্দর বিদায় ও নতুন শুরু</p>
+    </div>
+
+    <div class="controls">
+        <button onclick="openGallery('photos')">Photos</button>
+        <button onclick="openGallery('videos')">Videos</button>
+    </div>
+
+    <div class="gallery" id="gallery-view">
+        <span class="close-btn" onclick="closeGallery()">✖</span>
+        <h2 id="gallery-title" style="text-align: center; color: #FFD700; margin-bottom: 20px;"></h2>
+        <div class="gallery-grid" id="gallery-grid"></div>
+    </div>
+
+    <script>
+        // --- 1. Three.js Background Animation ---
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // Particle System
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 2000;
+        const posArray = new Float32Array(particlesCount * 3);
+        for(let i = 0; i < particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 10;
+        }
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.02,
+            color: 0xffd700, // Golden particles
+            transparent: true,
+            opacity: 0.8
+        });
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+        camera.position.z = 3;
+
+        // Animation Loop
+        function animate() {
+            requestAnimationFrame(animate);
+            particlesMesh.rotation.y += 0.001;
+            particlesMesh.rotation.x += 0.0005;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // GSAP Title Animation
+        gsap.from("h1", { duration: 2, y: -50, opacity: 0, ease: "bounce.out" });
+        gsap.from("p", { duration: 2, y: 50, opacity: 0, delay: 0.5 });
+        gsap.from(".controls", { duration: 1.5, opacity: 0, delay: 1 });
+
+
+        // --- 2. Google Drive Data Fetching (Placeholder) ---
+        //  এখানে API Key এবং ফোল্ডার আইডি দিয়ে ডাইনামিকালি ডাটা আনতে হবে। 
+        //  আপাতত ডেমো পারপাসে কাজ করার জন্য নিচে ফাংশনটি সাজানো হলো।
+
+        const API_KEY = "YOUR_API_KEY_HERE"; // এখানে আপনার API Key বসাবেন
+        const PHOTOS_FOLDER_ID = "1XembQaBsw2S2MO2GLfQuSXW76s0RrFCj";
+        const VIDEOS_FOLDER_ID = "1JjCg8omPVXdQRmM0pfebZoLckPcLP_ln";
+
+        async function fetchDriveFiles(folderId) {
+            // এই ফাংশনটি গুগল ড্রাইভ এপিআই কল করবে। 
+            // API Key ছাড়া সরাসরি ফ্রন্টএন্ড থেকে কল করা সিকিউরিটির জন্য ভালো না হলেও স্ট্যাটিক সাইটে এটিই একমাত্র উপায়।
+            // URL Structure: `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${API_KEY}&fields=files(id,name,mimeType,webContentLink)`
+            
+            // যেহেতু আপনার কাছে API Key নেই, আমি ডেমো ডাটা রিটার্ন করছি।
+            console.log(`Fetching from folder: ${folderId}`);
+            
+            return new Promise((resolve) => {
+                 setTimeout(() => {
+                    resolve([
+                        { name: "Demo 1", webContentLink: "https://via.placeholder.com/300", mimeType: "image/jpeg" },
+                        { name: "Demo 2", webContentLink: "https://via.placeholder.com/300", mimeType: "image/jpeg" }
+                    ]);
+                 }, 500);
+            });
+        }
+
+        // --- 3. UI Interactions ---
+        async function openGallery(type) {
+            const galleryView = document.getElementById('gallery-view');
+            const galleryTitle = document.getElementById('gallery-title');
+            const galleryGrid = document.getElementById('gallery-grid');
+            
+            galleryGrid.innerHTML = '<p>Loading...</p>';
+            galleryView.style.display = 'block';
+            gsap.fromTo(galleryView, {opacity: 0, scale: 0.9}, {opacity: 1, scale: 1, duration: 0.5});
+
+            let files = [];
+            if(type === 'photos') {
+                galleryTitle.innerText = "গ্যালারি - ছবিসমূহ";
+                files = await fetchDriveFiles(PHOTOS_FOLDER_ID);
+            } else {
+                galleryTitle.innerText = "গ্যালারি - ভিডিওসমূহ";
+                files = await fetchDriveFiles(VIDEOS_FOLDER_ID);
+            }
+
+            galleryGrid.innerHTML = '';
+            files.forEach(file => {
+                let el;
+                if(file.mimeType.startsWith('image/')) {
+                    el = document.createElement('img');
+                    el.src = file.webContentLink;
+                } else if(file.mimeType.startsWith('video/')) {
+                    el = document.createElement('video');
+                    el.src = file.webContentLink;
+                    el.controls = true;
+                }
+                if(el) galleryGrid.appendChild(el);
+            });
+        }
+
+        function closeGallery() {
+            const galleryView = document.getElementById('gallery-view');
+            gsap.to(galleryView, {opacity: 0, scale: 0.9, duration: 0.3, onComplete: () => {
+                galleryView.style.display = 'none';
+            }});
+        }
+    </script>
+</body>
+</html>
