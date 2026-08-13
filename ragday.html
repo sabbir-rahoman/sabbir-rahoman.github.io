@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>স্ফুরণ-২০২৬ | The Ultimate Memorial</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #FFD700;
+            --gold-light: #FDF5A9;
+            --dark-glass: rgba(10, 10, 10, 0.85);
+            --card-glass: rgba(255, 255, 255, 0.05);
+        }
+        body { margin: 0; overflow: hidden; background: #050505; color: white; font-family: 'Noto Serif Bengali', serif; }
+        #canvas-container { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; }
+        
+        /* Premium Hero Section */
+        .hero { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 95%; max-width: 900px; z-index: 10; pointer-events: none; }
+        h1 { 
+            font-size: 6rem; margin-bottom: 10px; margin-top: 0;
+            background: linear-gradient(45deg, #fff, var(--gold), var(--gold-light), #D4AF37);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0px 10px 20px rgba(255, 215, 0, 0.3));
+            animation: glow 3s infinite alternate;
+        }
+        @keyframes glow {
+            0% { filter: drop-shadow(0px 0px 10px rgba(255, 215, 0, 0.3)); }
+            100% { filter: drop-shadow(0px 0px 25px rgba(255, 215, 0, 0.7)); }
+        }
+        
+        /* Emotional Quotes Slider */
+        .quotes-container { position: relative; height: 80px; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; }
+        .quote { position: absolute; width: 100%; font-size: 1.6rem; font-style: italic; color: #f8e597; text-shadow: 0 4px 15px rgba(0,0,0,0.9); opacity: 0; letter-spacing: 1px; line-height: 1.4; }
+        .quote.active { opacity: 1; }
+
+        /* Modern Buttons */
+        .controls { position: absolute; bottom: 8%; left: 50%; transform: translateX(-50%); z-index: 10; display: flex; gap: 25px; flex-wrap: wrap; justify-content: center; width: 100%; }
+        button {
+            background: rgba(255, 215, 0, 0.05); border: 1px solid rgba(255, 215, 0, 0.5);
+            color: var(--gold-light); padding: 15px 40px; cursor: pointer; border-radius: 50px; font-size: 1.3rem;
+            backdrop-filter: blur(15px); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+            font-family: inherit; font-weight: bold; display: flex; align-items: center; gap: 12px; overflow: hidden; position: relative; pointer-events: auto;
+        }
+        button::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,215,0,0.2), transparent);
+            transition: 0.5s;
+        }
+        button:hover::before { left: 100%; }
+        button:hover { background: var(--gold); color: #000; box-shadow: 0 0 30px rgba(255, 215, 0, 0.8); transform: translateY(-5px) scale(1.05); border-color: transparent; }
+        
+        /* Gallery UI */
+        .gallery {
+            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; display: none; overflow-y: auto;
+            background: var(--dark-glass); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            z-index: 20; padding: 40px 5%; box-sizing: border-box; scroll-behavior: smooth;
+        }
+        .gallery::-webkit-scrollbar { width: 10px; }
+        .gallery::-webkit-scrollbar-track { background: #0a0a0a; }
+        .gallery::-webkit-scrollbar-thumb { background: linear-gradient(var(--gold), #D4AF37); border-radius: 10px; }
+        
+        .gallery-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(255, 215, 0, 0.2); padding-bottom: 20px; margin-bottom: 40px; position: sticky; top: 0; z-index: 25; background: rgba(0,0,0,0.6); backdrop-filter: blur(15px); border-radius: 15px; padding: 15px 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .gallery-header h2 { margin: 0; font-size: 2.2rem; color: var(--gold); font-weight: 700; letter-spacing: 2px; }
+        .close-btn { font-size: 2.5rem; cursor: pointer; color: var(--gold); transition: 0.4s; }
+        .close-btn:hover { color: #fff; transform: rotate(180deg) scale(1.2); filter: drop-shadow(0 0 10px var(--gold)); }
+        
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; padding-bottom: 50px; }
+        
+        .media-card {
+            border-radius: 15px; overflow: hidden; position: relative; cursor: pointer;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6); border: 1px solid rgba(255,215,0,0.15);
+            transition: all 0.4s ease; background: #050505; aspect-ratio: 4/3;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        @media (hover: hover) {
+            .media-card:hover { transform: translateY(-10px) scale(1.02); border-color: var(--gold); box-shadow: 0 20px 50px rgba(255,215,0,0.4); z-index: 2; }
+            .media-card:hover img { transform: scale(1.15); filter: brightness(1.1); }
+            .media-card:hover .play-overlay { color: var(--gold); transform: translate(-50%, -50%) scale(1.3); }
+        }
+        
+        .media-card img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        .play-overlay {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 3.5rem; color: rgba(255,255,255,0.9); text-shadow: 0 0 20px rgba(0,0,0,0.9);
+            pointer-events: none; transition: 0.4s;
+        }
+        
+        /* Fullscreen Lightbox */
+        #lightbox {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.98);
+            z-index: 100; display: none; align-items: center; justify-content: center; flex-direction: column;
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        }
+        .lightbox-content {
+            position: relative; width: 90vw; height: 75vh; max-width: 1200px; display: flex; justify-content: center; align-items: center;
+        }
+        .lightbox-content img { max-width: 100%; max-height: 100%; border-radius: 12px; box-shadow: 0 0 40px rgba(255,215,0,0.15); object-fit: contain; }
+        .lightbox-content video { width: 100%; max-height: 100%; border-radius: 12px; outline: none; background: #000; box-shadow: 0 0 40px rgba(255,215,0,0.15); }
+        .lightbox-content iframe { width: 100%; height: 100%; border: none; border-radius: 12px; background: #000; }
+        
+        .lb-close { position: absolute; top: 25px; right: 35px; font-size: 2.8rem; color: white; cursor: pointer; transition: 0.3s; z-index: 101; }
+        .lb-close:hover { color: var(--gold); transform: scale(1.2); }
+        .lb-nav { position: absolute; top: 50%; transform: translateY(-50%); font-size: 3.5rem; color: rgba(255,255,255,0.4); cursor: pointer; transition: 0.3s; z-index: 101; padding: 20px; }
+        .lb-nav:hover { color: var(--gold); text-shadow: 0 0 20px rgba(255,215,0,0.5); }
+        .lb-prev { left: 20px; }
+        .lb-next { right: 20px; }
+        
+        .lb-toolbar { margin-top: 25px; display: flex; gap: 20px; }
+        .lb-btn { background: rgba(255,215,0,0.15); border: 1px solid var(--gold); color: white; padding: 12px 30px; border-radius: 30px; cursor: pointer; font-size: 1.2rem; transition: 0.3s; display: flex; align-items: center; gap: 10px; }
+        .lb-btn:hover { background: var(--gold); color: black; box-shadow: 0 0 20px rgba(255,215,0,0.6); }
+        
+        .loader-container { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 50vh; color: var(--gold); }
+        .spinner { width: 60px; height: 60px; border: 4px solid rgba(255,215,0,0.2); border-top-color: var(--gold); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Footer Section */
+        .footer { position: absolute; bottom: 15px; width: 100%; text-align: center; z-index: 10; font-size: 0.95rem; color: rgba(255,255,255,0.6); pointer-events: none; font-family: sans-serif; }
+        .footer a { color: var(--gold); text-decoration: none; font-weight: bold; pointer-events: auto; transition: 0.3s; letter-spacing: 1px; }
+        .footer a:hover { color: #fff; text-shadow: 0 0 15px var(--gold); }
+        
+        @media (max-width: 768px) {
+            h1 { font-size: 3.5rem; }
+            .quotes-container { height: 100px; padding: 0 15px; }
+            .quote { font-size: 1.1rem; }
+            .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+            button { padding: 12px 25px; font-size: 1.1rem; }
+            .lb-nav { font-size: 2.5rem; padding: 5px; }
+            .lb-prev { left: 5px; } .lb-next { right: 5px; }
+            .lightbox-content { height: 65vh; width: 100vw; }
+            .lb-close { top: 15px; right: 20px; font-size: 2.2rem; }
+            .gallery-header { flex-direction: column; gap: 15px; }
+            .gallery-header h2 { font-size: 1.8rem; }
+            .close-btn { position: absolute; right: 20px; top: 15px; }
+            .footer { font-size: 0.8rem; bottom: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div>
+    
+    <div class="hero">
+        <h1 id="main-title">স্ফুরণ-২০২৬</h1>
+        
+        <div class="quotes-container" id="quotes">
+            <p class="quote active">"স্মৃতিগুলো আজ ফ্রেমবন্দি, তবুও হৃদয়ে অমলিন..."</p>
+            <p class="quote">"বিদায় মানে শেষ নয়, নতুন এক স্বপ্নের শুরু!"</p>
+            <p class="quote">"একসাথে কাটানো প্রতিটি মুহূর্ত, আজীবন বেঁচে থাকবে আমাদের মাঝে।"</p>
+            <p class="quote">"স্ফুরণ-২০২৬: যেখানে আমাদের গল্পগুলো কখনো শেষ হবে না।"</p>
+        </div>
+    </div>
+    
+    <div class="controls" id="btn-group">
+        <button onclick="openGallery('photos')"><i class="fas fa-camera-retro"></i> স্মৃতির পাতা</button>
+        <button onclick="openGallery('videos')"><i class="fas fa-film"></i> ভিডিও গ্যালারি</button>
+    </div>
+
+    <!-- Creator Footer -->
+    <div class="footer">
+        Website created by <a href="https://sabbir-rahoman.github.io/" target="_blank">Sabbir Rahoman</a>
+    </div>
+
+    <div class="gallery" id="gallery-view">
+        <div class="gallery-header">
+            <h2 id="gallery-title">গ্যালারি</h2>
+            <i class="fas fa-times close-btn" onclick="closeGallery()"></i>
+        </div>
+        <div class="gallery-grid" id="gallery-grid"></div>
+    </div>
+
+    <div id="lightbox">
+        <i class="fas fa-times lb-close" onclick="closeLightbox()"></i>
+        <i class="fas fa-chevron-left lb-nav lb-prev" onclick="changeSlide(-1)"></i>
+        
+        <div class="lightbox-content" id="lb-content"></div>
+        
+        <i class="fas fa-chevron-right lb-nav lb-next" onclick="changeSlide(1)"></i>
+        
+        <div class="lb-toolbar">
+            <button class="lb-btn" onclick="downloadCurrent()"><i class="fas fa-download"></i> অরিজিনাল সাইজ ডাউনলোড</button>
+        </div>
+    </div>
+
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+        
+        const geo = new THREE.BufferGeometry();
+        const particleCount = 5000;
+        const pos = new Float32Array(particleCount * 3);
+        const speeds = new Float32Array(particleCount);
+
+        for(let i = 0; i < particleCount; i++) {
+            pos[i*3] = (Math.random() - 0.5) * 25;
+            pos[i*3+1] = (Math.random() - 0.5) * 25;
+            pos[i*3+2] = (Math.random() - 0.5) * 25;
+            speeds[i] = Math.random() * 0.015 + 0.005;
+        }
+        geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+        
+        const mat = new THREE.PointsMaterial({ size: 0.035, color: 0xffd700, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending });
+        const particles = new THREE.Points(geo, mat);
+        scene.add(particles);
+        camera.position.z = 8;
+        
+        let mouseX = 0; let mouseY = 0;
+        document.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX - window.innerWidth / 2) * 0.003;
+            mouseY = (e.clientY - window.innerHeight / 2) * 0.003;
+        });
+
+        function animate(){
+            requestAnimationFrame(animate);
+            const positions = particles.geometry.attributes.position.array;
+            for(let i = 0; i < particleCount; i++) {
+                positions[i*3+1] += speeds[i]; 
+                if(positions[i*3+1] > 12) positions[i*3+1] = -12; 
+            }
+            particles.geometry.attributes.position.needsUpdate = true;
+            particles.rotation.y += 0.0008;
+            camera.position.x += (mouseX - camera.position.x) * 0.05;
+            camera.position.y += (-mouseY - camera.position.y) * 0.05;
+            camera.lookAt(scene.position);
+            renderer.render(scene, camera);
+        }
+        animate();
+        
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        gsap.from("#main-title", { duration: 1.8, y: -60, opacity: 0, ease: "power4.out" });
+        gsap.from("#quotes", { duration: 1.5, opacity: 0, delay: 0.6 });
+        gsap.from("#btn-group", { duration: 1.5, y: 40, opacity: 0, delay: 1.2, ease: "back.out(1.5)" });
+
+        const quotes = document.querySelectorAll('.quote');
+        let quoteIndex = 0;
+        setInterval(() => {
+            gsap.to(quotes[quoteIndex], { opacity: 0, y: -20, duration: 1 });
+            quoteIndex = (quoteIndex + 1) % quotes.length;
+            gsap.fromTo(quotes[quoteIndex], { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1 });
+        }, 4500);
+
+        const API_KEY = "AIzaSyBrUiAYNCCNK2dlX6l3OkqF-mUBPTHL2Mo";
+        const dirs = { photos: "1XembQaBsw2S2MO2GLfQuSXW76s0RrFCj", videos: "1JjCg8omPVXdQRmM0pfebZoLckPcLP_ln" };
+        
+        let currentFiles = [];
+        let currentIndex = 0;
+        
+        async function fetchDriveFiles(id){
+            try {
+                let url = `https://www.googleapis.com/drive/v3/files?q='${id}'+in+parents&pageSize=1000&fields=files(id,name,mimeType)&key=${API_KEY}`;
+                let res = await fetch(url);
+                let data = await res.json();
+                return data.files || [];
+            } catch(e) { return []; }
+        }
+        
+        async function openGallery(type){
+            const gView = document.getElementById('gallery-view');
+            const gGrid = document.getElementById('gallery-grid');
+            document.getElementById('gallery-title').innerHTML = type === 'photos' ? '<i class="fas fa-camera"></i> স্মৃতির পাতা' : '<i class="fas fa-video"></i> ভিডিও গ্যালারি';
+            
+            gGrid.innerHTML = `<div class="loader-container"><div class="spinner"></div><h3 style="margin-top:25px; font-weight:normal;">ফাইল লোড হচ্ছে, সুন্দর কিছুর জন্য অপেক্ষা করুন...</h3></div>`;
+            gView.style.display = 'block';
+            gsap.fromTo(gView, { opacity: 0, scale: 0.95 }, { opacity: 1, scale: 1, duration: 0.5, ease: "power2.out" });
+            
+            currentFiles = await fetchDriveFiles(dirs[type]);
+            gGrid.innerHTML = '';
+            
+            if(currentFiles.length === 0) {
+                gGrid.innerHTML = '<p style="text-align:center; width:100%; grid-column:1/-1; font-size:1.5rem;">কোনো ফাইল পাওয়া যায়নি।</p>';
+                return;
+            }
+            
+            currentFiles.forEach((f, index) => {
+                let card = document.createElement('div');
+                card.className = 'media-card';
+                card.onclick = () => openLightbox(index);
+                
+                let img = document.createElement('img');
+                img.src = `https://drive.google.com/thumbnail?id=${f.id}&sz=w600`;
+                img.loading = "lazy";
+                img.onerror = function() { this.src = 'https://via.placeholder.com/600x450/111/FFD700?text=Preview+Not+Available'; };
+                card.appendChild(img);
+                
+                if(f.mimeType.includes('video')){
+                    let playIcon = document.createElement('i');
+                    playIcon.className = "fas fa-play-circle play-overlay";
+                    card.appendChild(playIcon);
+                }
+                gGrid.appendChild(card);
+            });
+            gsap.fromTo('.media-card', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.03, ease: "back.out(1.2)" });
+        }
+        
+        function closeGallery(){
+            gsap.to('#gallery-view', { opacity: 0, scale: 1.05, duration: 0.4, onComplete: () => { document.getElementById('gallery-view').style.display = 'none'; }});
+        }
+
+        const lightbox = document.getElementById('lightbox');
+        const lbContent = document.getElementById('lb-content');
+        
+        function openLightbox(index){
+            currentIndex = index;
+            renderLightboxMedia();
+            lightbox.style.display = 'flex';
+            gsap.fromTo(lightbox, { opacity: 0, backdropFilter: "blur(0px)" }, { opacity: 1, backdropFilter: "blur(10px)", duration: 0.4 });
+        }
+        
+        function renderLightboxMedia() {
+            lbContent.innerHTML = '<div class="spinner"></div>';
+            let f = currentFiles[currentIndex];
+            
+            if(f.mimeType.includes('video')) {
+                let video = document.createElement('video');
+                video.src = `https://drive.google.com/uc?export=download&id=${f.id}`;
+                video.controls = true;
+                video.playsInline = true;
+                video.autoplay = true;
+                
+                video.onerror = () => {
+                    lbContent.innerHTML = '';
+                    let iframe = document.createElement('iframe');
+                    iframe.src = `https://drive.google.com/file/d/${f.id}/preview?autoplay=1`;
+                    iframe.allow = "autoplay; fullscreen";
+                    lbContent.appendChild(iframe);
+                };
+                video.onloadeddata = () => { document.querySelector('#lb-content .spinner')?.remove(); };
+                lbContent.appendChild(video);
+            } else {
+                let img = document.createElement('img');
+                img.src = `https://drive.google.com/thumbnail?id=${f.id}&sz=w1920`;
+                img.onload = () => { document.querySelector('#lb-content .spinner')?.remove(); };
+                lbContent.appendChild(img);
+            }
+        }
+        
+        function changeSlide(direction) {
+            currentIndex += direction;
+            if(currentIndex < 0) currentIndex = currentFiles.length - 1;
+            if(currentIndex >= currentFiles.length) currentIndex = 0;
+            
+            gsap.fromTo(lbContent, { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.3 });
+            renderLightboxMedia();
+        }
+        
+        function closeLightbox() {
+            gsap.to(lightbox, { opacity: 0, duration: 0.3, onComplete: () => {
+                lightbox.style.display = 'none';
+                lbContent.innerHTML = ''; 
+            }});
+        }
+        
+        function downloadCurrent() {
+            let f = currentFiles[currentIndex];
+            window.open(`https://drive.google.com/uc?export=download&id=${f.id}`, '_blank');
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if(lightbox.style.display === 'flex') {
+                if(e.key === 'ArrowRight') changeSlide(1);
+                if(e.key === 'ArrowLeft') changeSlide(-1);
+                if(e.key === 'Escape') closeLightbox();
+            }
+        });
+    </script>
+</body>
+</html>
