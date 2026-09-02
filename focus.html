@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Focus Online Admission Classes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* =========================================
+           CSS RESET & GLOBAL SECURITY
+           ========================================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #050505;
+            background-image: radial-gradient(circle at top, #1a1814 0%, #050505 60%);
+            color: #e5e5e5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            
+            /* CRITICAL: Disable text selection across the entire site */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Typography */
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* =========================================
+           HERO SECTION
+           ========================================= */
+        .hero {
+            text-align: center;
+            padding: 4rem 1.5rem 2rem;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem); /* Scales beautifully on mobile/desktop */
+            font-weight: 600;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #FFD700 0%, #FDB931 50%, #D4AF37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 4px 30px rgba(255, 215, 0, 0.2);
+        }
+
+        .hero p {
+            font-size: clamp(1rem, 3vw, 1.25rem);
+            color: #a3a3a3;
+            letter-spacing: 1px;
+            font-weight: 300;
+        }
+
+        /* =========================================
+           SPA CONTAINER & VIEWS
+           ========================================= */
+        .main-container {
+            flex: 1;
+            padding: 2rem 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Smooth transition for hiding/showing views */
+        .view {
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .view.hidden {
+            opacity: 0;
+            transform: scale(0.98);
+            pointer-events: none;
+            position: absolute;
+            visibility: hidden;
+        }
+
+        .view.active {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: all;
+            position: relative;
+            visibility: visible;
+        }
+
+        /* =========================================
+           DASHBOARD CARDS (GLASSMORPHISM & GLOW)
+           ========================================= */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .card {
+            background: rgba(255, 215, 0, 0.03);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 215, 0, 0.05), transparent);
+            transform: skewX(-20deg);
+            transition: left 0.7s ease;
+        }
+
+        .card:hover::after {
+            left: 150%;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 215, 0, 0.06);
+            border-color: rgba(255, 215, 0, 0.4);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.15);
+        }
+
+        .card h2 {
+            font-size: 1.8rem;
+            color: #fdfdfd;
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            color: #8c8c8c;
+            font-size: 0.95rem;
+        }
+
+        /* =========================================
+           VIDEO PLAYER SECTION
+           ========================================= */
+        .video-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.15);
+            padding-bottom: 1rem;
+        }
+
+        .btn-back {
+            background: rgba(255, 215, 0, 0.1);
+            color: #FFD700;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            background: #FFD700;
+            color: #050505;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .video-wrapper {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .video-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #e5e5e5;
+        }
+
+        /* Responsive 16:9 Iframe Container */
+        .iframe-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.6);
+        }
+
+        .iframe-container iframe {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border: none;
+        }
+
+        /* =========================================
+           FOOTER
+           ========================================= */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="hero">
+        <h1>Focus Online Admission Classes</h1>
+        <p>Empowering Your Journey to Success</p>
+    </header>
+
+    <main class="main-container">
+        
+        <section id="dashboard" class="view active">
+            <div class="dashboard-grid">
+                <div class="card" onclick="openSection('bangla')">
+                    <h2>Bangla Classes</h2>
+                    <p>Unlock linguistic mastery</p>
+                </div>
+                <div class="card" onclick="openSection('english')">
+                    <h2>English Classes</h2>
+                    <p>Command global communication</p>
+                </div>
+                <div class="card" onclick="openSection('gk')">
+                    <h2>General Knowledge</h2>
+                    <p>Expand your worldly awareness</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="video-section" class="view hidden">
+            <div class="video-header">
+                <h2 id="section-title">Subject Title</h2>
+                <button class="btn-back" onclick="goBack()">← Return to Dashboard</button>
+            </div>
+            <div class="video-grid" id="video-container">
+                </div>
+        </section>
+
+    </main>
+
+    <footer>
+        © 2026 Focus Online Admission Classes | Created by Sabbir Rahoman
+    </footer>
+
+    <script>
+        /* ------------------------------------------------------------------
+           1. OBFUSCATED DATA STRUCTURE
+           The YouTube embed links are stored as Base64 strings.
+           This hides the plain text links from casual inspection.
+           
+           Decoded examples:
+           "aHR0cHM6Ly93d3cueW91dHViZS5jb20vZW1iZWQvak4wMFA2REpVV2M=" -> https://www.youtube.com/embed/jN00P6DJUWc
+        ------------------------------------------------------------------ */
+        const curriculum = {
+            bangla: {
+                title: "Bangla Classes",
+                videos: [
+                    { title: "Lecture 01", encodedUrl: "aHR0cHM6Ly93d3cueW91dHViZS5jb20vZW1iZWQvak4wMFA2REpVV2M=" },
+                    { title: "Lecture 02", encodedUrl: "aHR0cHM6Ly93d3cueW91dHViZS5jb20vZW1iZWQvaXp2eUZoM1d0VEE=" }
+                ]
+            },
+            english: {
+                title: "English Classes",
+                videos: [
+                    { title: "Lecture 01", encodedUrl: "aHR0cHM6Ly93d3cueW91dHViZS5jb20vZW1iZWQvOFRFTDB2VDZGaDQ=" },
+                    { title: "Lecture 02", encodedUrl: "aHR0cHM6Ly93d3cueW91dHViZS5jb20vZW1iZWQvSC00TFRyeGpwNms=" }
+                ]
+            },
+            gk: {
+                title: "General Knowledge (GK)",
+                videos: [
+                    { title: "Lecture 01", encodedUrl: "aHR0cHM6Ly93d3cueW91dHViZS5jb20vZW1iZWQvLUdNSlJ5RUQtSlE=" },
+                    { title: "Lecture 02", encodedUrl: "aHR0cHM6Ly93d3cueW91dHViZS5jb20vZW1iZWQvdHJoamlPajlfckk=" }
+                ]
+            }
+        };
+
+        /* ------------------------------------------------------------------
+           2. SPA ROUTING (VIEW SWITCHING)
+        ------------------------------------------------------------------ */
+        const dashboardView = document.getElementById('dashboard');
+        const videoSectionView = document.getElementById('video-section');
+        const videoContainer = document.getElementById('video-container');
+        const sectionTitle = document.getElementById('section-title');
+
+        // Function to open the video layout
+        function openSection(subjectKey) {
+            const data = curriculum[subjectKey];
+            sectionTitle.textContent = data.title;
+            
+            // Clear out any previous videos
+            videoContainer.innerHTML = '';
+
+            // Generate HTML dynamically and decode the URL on the fly using atob()
+            data.videos.forEach(video => {
+                const decodedUrl = atob(video.encodedUrl);
+                
+                const videoHTML = `
+                    <div class="video-wrapper">
+                        <div class="video-title">${video.title}</div>
+                        <div class="iframe-container">
+                            <iframe src="${decodedUrl}" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                `;
+                videoContainer.insertAdjacentHTML('beforeend', videoHTML);
+            });
+
+            // Transition logic
+            dashboardView.classList.remove('active');
+            dashboardView.classList.add('hidden');
+            
+            // Use timeout to allow CSS transitions to complete
+            setTimeout(() => {
+                videoSectionView.classList.remove('hidden');
+                videoSectionView.classList.add('active');
+            }, 300);
+        }
+
+        // Function to return to the dashboard
+        function goBack() {
+            videoSectionView.classList.remove('active');
+            videoSectionView.classList.add('hidden');
+            
+            // Clear innerHTML so videos stop playing in the background
+            setTimeout(() => {
+                videoContainer.innerHTML = '';
+                dashboardView.classList.remove('hidden');
+                dashboardView.classList.add('active');
+            }, 300);
+        }
+
+        /* ------------------------------------------------------------------
+           3. STRICT ANTI-PIRACY & SECURITY 
+        ------------------------------------------------------------------ */
+        
+        // 1. Disable Right-Click (Context Menu)
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+
+        // 2. Disable Developer Keyboard Shortcuts
+        document.addEventListener('keydown', function(e) {
+            
+            // Block F12
+            if (e.key === 'F12' || e.keyCode === 123) {
+                e.preventDefault();
+            }
+
+            // Block Ctrl+Shift+I (Inspector), J (Console), C (Element Inspector)
+            if (e.ctrlKey && e.shiftKey && 
+               (e.key === 'I' || e.key === 'i' || e.keyCode === 73 || 
+                e.key === 'J' || e.key === 'j' || e.keyCode === 74 || 
+                e.key === 'C' || e.key === 'c' || e.keyCode === 67)) {
+                e.preventDefault();
+            }
+
+            // Block Ctrl+U (View Source)
+            if (e.ctrlKey && (e.key === 'U' || e.key === 'u' || e.keyCode === 85)) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
